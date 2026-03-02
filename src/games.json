@@ -483,10 +483,17 @@
     "category": "Skill"
   },
   {
-    "id": "minecraft(fake)",
-    "title": "Minecraft (fake)",
+    "id": "minecraft1.8.8(fake)",
+    "title": "Minecraft 1.8.8 (fake)",
     "url": "https://uhidk.infotechnology.com/gamefile/1.8.8.html",
     "thumbnail": "https://upload.wikimedia.org/wikipedia/en/thumb/b/b6/Minecraft_2024_cover_art.png/250px-Minecraft_2024_cover_art.png",
+    "category": "Creative"
+  },
+  {
+    "id": "minecraftjava1.12.2(fake)",
+    "title": "Minecraft Java 1.12.2 (fake)"
+    "url": "https://uhidk.infotechnology.com/gamefile/1.12.2.html",
+    "thumbnail": "https://bevsbooks.com/wp-content/uploads/2021/03/minecraft-java.jpg",
     "category": "Creative"
   },
   {
