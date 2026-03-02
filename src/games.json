@@ -684,5 +684,26 @@
     "url": "https://uhidk.infotechnology.com/games/solitaire/index.html",
     "thumbnail": "https://cdn.jim-nielsen.com/ios/512/solitaire-2022-02-03.png?rf=1024",
     "category": "Puzzle"
+  },
+  {
+    "id": "tag",
+    "title": "Tag",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/originals/tag/",
+    "thumbnail": "https://icc-games.com/wp-content/uploads/2025/09/Tag-Unblocked.webp",
+    "category": "Action"
+  },
+  {
+    "id": "yohoho.io",
+    "title": "YoHoHo.io",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/originals/yohoho/",
+    "thumbnail": "https://imgs.crazygames.com/auto-covers/yohoho-io_1x1.jpg?format=auto&quality=70&metadata=none",
+    "category": "Action"
+  },
+  {
+    "id": "recoil",
+    "title": "Recoil",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/recoil/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1QkUNFpUJR2wsZIdUqxjxyyvtkB5o3xjtgA&s",
+    "category": "Action"
   }
 ]
