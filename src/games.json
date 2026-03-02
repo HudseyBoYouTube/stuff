@@ -649,5 +649,40 @@
     "url": "https://uhidk.infotechnology.com/games/littlealchemy/index.html",
     "thumbnail": "https://assets-prd.ignimgs.com/2022/08/15/little-academy-mobile-1660600636606.png",
     "category": "Creative"
+  },
+  {
+    "id": "achievementunlocked",
+    "title": "Achievement Unlocked",
+    "url": "https://uhidk.infotechnology.com/games/achieveunlocked/index.html",
+    "thumbnail": "https://a.silvergames.com/j/b/achievement-unlocked.jpg",
+    "category": "Platformer"
+  },
+  {
+    "id": "badpiggies",
+    "title": "Bad Piggies",
+    "url": "https://uhidk.infotechnology.com/games/badpiggies/index.html",
+    "thumbnail": "https://upload.wikimedia.org/wikipedia/en/5/51/Bad_Piggies.png",
+    "category": "Puzzle"
+  },
+  {
+    "id": "crazyballs",
+    "title": "Crazy Balls",
+    "url": "https://uhidk.infotechnology.com/gamefile/balls.html",
+    "thumbnail": "https://m.media-amazon.com/images/I/81+oWN5DssL.png",
+    "category": "Arcade"
+  },
+  {
+    "id": "tenbasket",
+    "title": "Ten Basket",
+    "url": "https://uhidk.infotechnology.com/games/ten-basket/index.html",
+    "thumbnail": "https://m.media-amazon.com/images/I/619n34pBURL.png",
+    "category": "Sports"
+  },
+  {
+    "id": "solitaire",
+    "title": "Solitaire",
+    "url": "https://uhidk.infotechnology.com/games/solitaire/index.html",
+    "thumbnail": "https://cdn.jim-nielsen.com/ios/512/solitaire-2022-02-03.png?rf=1024",
+    "category": "Puzzle"
   }
 ]
