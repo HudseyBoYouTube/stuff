@@ -13,7 +13,7 @@ function App() {
       title: 'Capybara Science', 
       favicon: 'https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg' 
     },
-    schoology: { 
+    powerschool: { 
       title: 'Home | PowerSchool', 
       favicon: 'https://asset-cdn.schoology.com/sites/all/themes/schoology_theme/favicon.ico' 
     },
