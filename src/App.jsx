@@ -7,15 +7,14 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSettings, setShowSettings] = useState(false);
 
-  // Updated presets: Removed Canvas and fixed the default 'None' icon
   const presets = {
     none: { 
       title: 'Capybara Science', 
       favicon: 'https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg' 
     },
     powerschool: { 
-      title: 'Home | PowerSchool', 
-      favicon: 'https://asset-cdn.schoology.com/sites/all/themes/schoology_theme/favicon.ico' 
+      title: 'PowerSchool', 
+      favicon: 'https://www.powerschool.com/favicon.ico' 
     },
     google: { 
       title: 'My Drive - Google Drive', 
@@ -131,7 +130,7 @@ function App() {
                 className="w-full bg-black text-zinc-100 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-[#10A5F5] appearance-none cursor-pointer"
               >
                 <option value="none" className="bg-black">None (Default)</option>
-                <option value="schoology" className="bg-black">Schoology</option>
+                <option value="powerschool" className="bg-black">PowerSchool</option>
                 <option value="google" className="bg-black">Google Drive</option>
               </select>
             </motion.div>
