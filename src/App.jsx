@@ -7,11 +7,20 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSettings, setShowSettings] = useState(false);
 
+  // Updated presets: Removed Canvas and fixed the default 'None' icon
   const presets = {
-    none: { title: 'Capybara Science', favicon: '/vite.svg' },
-    schoology: { title: 'Home | Schoology', favicon: 'https://asset-cdn.schoology.com/sites/all/themes/schoology_theme/favicon.ico' },
-    google: { title: 'My Drive - Google Drive', favicon: 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png' },
-    canvas: { title: 'Dashboard', favicon: 'https://du11hjcvhe07u.cloudfront.net/stable/static/images/favicon.ico' }
+    none: { 
+      title: 'Capybara Science', 
+      favicon: 'https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg' 
+    },
+    schoology: { 
+      title: 'Home | PowerSchool', 
+      favicon: 'https://asset-cdn.schoology.com/sites/all/themes/schoology_theme/favicon.ico' 
+    },
+    google: { 
+      title: 'My Drive - Google Drive', 
+      favicon: 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png' 
+    }
   };
 
   useEffect(() => {
@@ -124,7 +133,6 @@ function App() {
                 <option value="none" className="bg-black">None (Default)</option>
                 <option value="schoology" className="bg-black">Schoology</option>
                 <option value="google" className="bg-black">Google Drive</option>
-                <option value="canvas" className="bg-black">Canvas</option>
               </select>
             </motion.div>
           </motion.div>
