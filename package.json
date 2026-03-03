@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build",
+    "build": "rm -rf node_modules/.vite && rm -rf node_modules/esbuild && vite build",
     "preview": "vite preview",
     "lint": "vite build",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist node_modules"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.0",
