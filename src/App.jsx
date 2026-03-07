@@ -88,7 +88,6 @@ function App() {
   const favoriteGamesList = useMemo(() => filteredGames.filter(g => favorites.includes(g.id)), [filteredGames, favorites]);
   const otherGamesList = useMemo(() => filteredGames.filter(g => !favorites.includes(g.id)), [filteredGames, favorites]);
 
-  // Restored the proper Icon formatting here
   const GameCard = ({ game }) => (
     <motion.div layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} whileHover={{ y: -4 }}
       className="group relative bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden cursor-pointer" onClick={() => handleSelectGame(game)}>
@@ -119,7 +118,7 @@ function App() {
           <span className="text-[10px] font-bold uppercase tracking-wider text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md">{game.category}</span>
         </div>
         <p className="text-xs text-zinc-500">
-            {['request', 'report'].includes(game.id) ? 'Click to fill out instantly' : 'Click to play instantly'}
+            {['request', 'report'].includes(game.id) ? 'Click to fill out' : 'Click to play'}
         </p>
       </div>
     </motion.div>
@@ -128,33 +127,44 @@ function App() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-zinc-100 font-sans selection:bg-emerald-500/30">
       <header className="sticky top-0 z-40 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center relative">
+          
+          {/* Logo - Left Aligned */}
+          <div className="flex items-center gap-2 z-10">
             <div className="w-8 h-8 bg-[#10A5F5] rounded-lg flex items-center justify-center">
               <Gamepad2 className="w-5 h-5 text-black" />
             </div>
-            <span className="text-xl font-bold tracking-tight">Capybara <span className="text-[#10A5F5]">Science</span></span>
+            <span className="text-xl font-bold tracking-tight hidden sm:block">Capybara <span className="text-[#10A5F5]">Science</span></span>
           </div>
 
-          <div className="flex items-center gap-2 flex-1 max-w-md mx-8">
-            <div className="relative flex-1 hidden md:block">
+          {/* Search Bar - Center Aligned */}
+          <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-sm md:max-w-md px-4 flex items-center gap-2">
+            <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-              <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#10A5F5]/50 transition-colors" />
+              <input 
+                type="text" 
+                placeholder="Search games..." 
+                value={searchQuery} 
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#10A5F5]/50 transition-colors" 
+              />
             </div>
             <button onClick={handleRandomGame} title="Play Random Game"
-              className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[#10A5F5]/20 hover:border-[#10A5F5]/50 transition-all group">
-              <Shuffle className="w-5 h-5 text-zinc-400 group-hover:text-[#10A5F5]" />
+              className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[#10A5F5]/20 hover:border-[#10A5F5]/50 transition-all group shrink-0">
+              <Shuffle className="w-4 h-4 text-zinc-400 group-hover:text-[#10A5F5]" />
             </button>
           </div>
 
-          <button onClick={() => setShowSettings(!showSettings)} className="p-2 hover:bg-white/5 rounded-full transition-colors">
-            <Settings className="w-5 h-5 text-zinc-400" />
-          </button>
+          {/* Settings - Right Aligned */}
+          <div className="ml-auto z-10">
+            <button onClick={() => setShowSettings(!showSettings)} className="p-2 hover:bg-white/5 rounded-full transition-colors">
+              <Settings className="w-5 h-5 text-zinc-400" />
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Settings Modal (Restore Full Logic) */}
+      {/* Settings Modal Restored */}
       <AnimatePresence>
         {showSettings && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -209,11 +219,22 @@ function App() {
           </section>
         )}
         <section>
+          {favoriteGamesList.length > 0 && (
+            <div className="flex items-center gap-2 mb-6 text-zinc-500">
+              <Gamepad2 className="w-5 h-5" />
+              <h2 className="text-lg font-bold">All Games</h2>
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <AnimatePresence mode="popLayout">{otherGamesList.map(game => <GameCard key={game.id} game={game} />)}</AnimatePresence>
           </div>
         </section>
       </main>
+
+      <footer className="border-t border-white/5 py-12 mt-20 text-center opacity-50">
+          <span className="text-lg font-bold">Capybara <span className="text-[#10A5F5]">Science</span></span>
+          <p className="text-zinc-500 text-sm mt-2">The best place for classroom breaks.</p>
+      </footer>
     </div>
   );
 }
