@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Gamepad2, Play, Settings, X, ShieldAlert } from 'lucide-react';
+import { Search, Gamepad2, Play, Settings, X, ShieldAlert, Keyboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import gamesData from './games.json';
 
@@ -7,6 +7,8 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const [panicUrl, setPanicUrl] = useState(localStorage.getItem('panic-url') || 'https://classroom.google.com');
+  const [panicKey, setPanicKey] = useState(localStorage.getItem('panic-key') || 'Escape');
+  const [isRecording, setIsRecording] = useState(false);
 
   const presets = {
     none: { 
@@ -26,14 +28,24 @@ function App() {
   // --- Panic Key Logic ---
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
+      // If we are currently recording a new key, don't trigger the panic
+      if (isRecording) {
+        e.preventDefault();
+        setPanicKey(e.key);
+        localStorage.setItem('panic-key', e.key);
+        setIsRecording(false);
+        return;
+      }
+
+      // Trigger panic if the pressed key matches our saved key
+      if (e.key === panicKey) {
         window.location.href = panicUrl;
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [panicUrl]);
+  }, [panicKey, panicUrl, isRecording]);
 
   useEffect(() => {
     const savedTitle = localStorage.getItem('cloaked-title');
@@ -60,12 +72,6 @@ function App() {
       updateFavicon(preset.favicon);
       localStorage.setItem('cloaked-title', preset.title);
     }
-  };
-
-  const handlePanicUrlChange = (e) => {
-    const url = e.target.value;
-    setPanicUrl(url);
-    localStorage.setItem('panic-url', url);
   };
 
   const filteredGames = useMemo(() => {
@@ -159,17 +165,38 @@ function App() {
                   </select>
                 </div>
 
-                {/* Panic Key Settings */}
+                {/* Panic URL Settings */}
                 <div>
-                  <label className="text-xs font-bold uppercase text-zinc-500 mb-2 block">Panic Key (ESC Key)</label>
+                  <label className="text-xs font-bold uppercase text-zinc-500 mb-2 block">Panic Redirect URL</label>
                   <input 
                     type="text"
                     value={panicUrl}
-                    onChange={handlePanicUrlChange}
-                    placeholder="Redirect URL (e.g. google.com)"
+                    onChange={(e) => {
+                        setPanicUrl(e.target.value);
+                        localStorage.setItem('panic-url', e.target.value);
+                    }}
+                    placeholder="e.g. classroom.google.com"
                     className="w-full bg-black text-zinc-100 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-[#10A5F5]"
                   />
-                  <p className="text-[10px] text-zinc-500 mt-2 italic text-center">Press ESC at any time to instantly redirect.</p>
+                </div>
+
+                {/* Custom Panic Key */}
+                <div>
+                  <label className="text-xs font-bold uppercase text-zinc-500 mb-2 block">Panic Key bind</label>
+                  <button
+                    onClick={() => setIsRecording(true)}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
+                        isRecording 
+                        ? 'border-[#10A5F5] bg-[#10A5F5]/10 animate-pulse' 
+                        : 'border-white/10 bg-white/5 hover:bg-white/10'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 text-sm">
+                        <Keyboard className="w-4 h-4 text-zinc-400" />
+                        <span>{isRecording ? 'Press any key...' : `Current Key: ${panicKey}`}</span>
+                    </div>
+                    {!isRecording && <span className="text-[10px] text-[#10A5F5] font-bold">CHANGE</span>}
+                  </button>
                 </div>
               </div>
             </motion.div>
