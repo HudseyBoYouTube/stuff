@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Gamepad2, Play, Settings, X, ShieldAlert, Keyboard } from 'lucide-react';
+import { Search, Gamepad2, Play, Settings, X, ShieldAlert, Keyboard, Power } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import gamesData from './games.json';
 
@@ -9,6 +9,8 @@ function App() {
   const [panicUrl, setPanicUrl] = useState(localStorage.getItem('panic-url') || 'https://classroom.google.com');
   const [panicKey, setPanicKey] = useState(localStorage.getItem('panic-key') || 'Escape');
   const [isRecording, setIsRecording] = useState(false);
+  // New state to enable/disable the panic button entirely
+  const [panicEnabled, setPanicEnabled] = useState(localStorage.getItem('panic-enabled') !== 'false');
 
   const presets = {
     none: { 
@@ -28,7 +30,9 @@ function App() {
   // --- Panic Key Logic ---
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // If we are currently recording a new key, don't trigger the panic
+      // Don't do anything if panic mode is disabled
+      if (!panicEnabled) return;
+
       if (isRecording) {
         e.preventDefault();
         setPanicKey(e.key);
@@ -37,7 +41,6 @@ function App() {
         return;
       }
 
-      // Trigger panic if the pressed key matches our saved key
       if (e.key === panicKey) {
         window.location.href = panicUrl;
       }
@@ -45,7 +48,7 @@ function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [panicKey, panicUrl, isRecording]);
+  }, [panicKey, panicUrl, isRecording, panicEnabled]);
 
   useEffect(() => {
     const savedTitle = localStorage.getItem('cloaked-title');
@@ -72,6 +75,12 @@ function App() {
       updateFavicon(preset.favicon);
       localStorage.setItem('cloaked-title', preset.title);
     }
+  };
+
+  const togglePanic = () => {
+    const newState = !panicEnabled;
+    setPanicEnabled(newState);
+    localStorage.setItem('panic-enabled', newState);
   };
 
   const filteredGames = useMemo(() => {
@@ -152,7 +161,56 @@ function App() {
               </h2>
               
               <div className="space-y-6">
-                {/* Tab Cloaking */}
+                {/* Panic Master Toggle */}
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
+                  <div className="flex items-center gap-2">
+                    <Power className={`w-4 h-4 ${panicEnabled ? 'text-emerald-500' : 'text-zinc-500'}`} />
+                    <span className="text-sm font-medium">Enable Panic Key</span>
+                  </div>
+                  <button 
+                    onClick={togglePanic}
+                    className={`w-10 h-5 rounded-full relative transition-colors ${panicEnabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}
+                  >
+                    <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${panicEnabled ? 'left-6' : 'left-1'}`} />
+                  </button>
+                </div>
+
+                {panicEnabled && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-6">
+                    <div>
+                      <label className="text-xs font-bold uppercase text-zinc-500 mb-2 block">Panic Redirect URL</label>
+                      <input 
+                        type="text"
+                        value={panicUrl}
+                        onChange={(e) => {
+                            setPanicUrl(e.target.value);
+                            localStorage.setItem('panic-url', e.target.value);
+                        }}
+                        placeholder="e.g. classroom.google.com"
+                        className="w-full bg-black text-zinc-100 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-[#10A5F5]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold uppercase text-zinc-500 mb-2 block">Panic Key bind</label>
+                      <button
+                        onClick={() => setIsRecording(true)}
+                        className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
+                            isRecording 
+                            ? 'border-[#10A5F5] bg-[#10A5F5]/10 animate-pulse' 
+                            : 'border-white/10 bg-white/5 hover:bg-white/10'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 text-sm">
+                            <Keyboard className="w-4 h-4 text-zinc-400" />
+                            <span>{isRecording ? 'Press any key...' : `Current Key: ${panicKey}`}</span>
+                        </div>
+                        {!isRecording && <span className="text-[10px] text-[#10A5F5] font-bold">CHANGE</span>}
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+
                 <div>
                   <label className="text-xs font-bold uppercase text-zinc-500 mb-2 block">Tab Cloaking</label>
                   <select 
@@ -163,40 +221,6 @@ function App() {
                     <option value="powerschool" className="bg-black">PowerSchool</option>
                     <option value="google" className="bg-black">Google Drive</option>
                   </select>
-                </div>
-
-                {/* Panic URL Settings */}
-                <div>
-                  <label className="text-xs font-bold uppercase text-zinc-500 mb-2 block">Panic Redirect URL</label>
-                  <input 
-                    type="text"
-                    value={panicUrl}
-                    onChange={(e) => {
-                        setPanicUrl(e.target.value);
-                        localStorage.setItem('panic-url', e.target.value);
-                    }}
-                    placeholder="e.g. classroom.google.com"
-                    className="w-full bg-black text-zinc-100 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-[#10A5F5]"
-                  />
-                </div>
-
-                {/* Custom Panic Key */}
-                <div>
-                  <label className="text-xs font-bold uppercase text-zinc-500 mb-2 block">Panic Key bind</label>
-                  <button
-                    onClick={() => setIsRecording(true)}
-                    className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
-                        isRecording 
-                        ? 'border-[#10A5F5] bg-[#10A5F5]/10 animate-pulse' 
-                        : 'border-white/10 bg-white/5 hover:bg-white/10'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 text-sm">
-                        <Keyboard className="w-4 h-4 text-zinc-400" />
-                        <span>{isRecording ? 'Press any key...' : `Current Key: ${panicKey}`}</span>
-                    </div>
-                    {!isRecording && <span className="text-[10px] text-[#10A5F5] font-bold">CHANGE</span>}
-                  </button>
                 </div>
               </div>
             </motion.div>
