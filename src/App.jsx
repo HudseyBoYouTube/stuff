@@ -1,11 +1,12 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Gamepad2, Play, Settings, X } from 'lucide-react';
+import { Search, Gamepad2, Play, Settings, X, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import gamesData from './games.json';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSettings, setShowSettings] = useState(false);
+  const [panicUrl, setPanicUrl] = useState(localStorage.getItem('panic-url') || 'https://classroom.google.com');
 
   const presets = {
     none: { 
@@ -21,6 +22,18 @@ function App() {
       favicon: 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png' 
     }
   };
+
+  // --- Panic Key Logic ---
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        window.location.href = panicUrl;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [panicUrl]);
 
   useEffect(() => {
     const savedTitle = localStorage.getItem('cloaked-title');
@@ -47,6 +60,12 @@ function App() {
       updateFavicon(preset.favicon);
       localStorage.setItem('cloaked-title', preset.title);
     }
+  };
+
+  const handlePanicUrlChange = (e) => {
+    const url = e.target.value;
+    setPanicUrl(url);
+    localStorage.setItem('panic-url', url);
   };
 
   const filteredGames = useMemo(() => {
@@ -121,18 +140,38 @@ function App() {
               <button onClick={() => setShowSettings(false)} className="absolute top-4 right-4 text-zinc-500 hover:text-white">
                 <X className="w-5 h-5"/>
               </button>
-              <h2 className="text-xl font-bold mb-4">Tab Cloaking</h2>
-              <p className="text-sm text-zinc-400 mb-6">Change how this tab appears in your browser history.</p>
               
-              <label className="text-xs font-bold uppercase text-zinc-500 mb-2 block">Select Preset</label>
-              <select 
-                onChange={handlePresetChange}
-                className="w-full bg-black text-zinc-100 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-[#10A5F5] appearance-none cursor-pointer"
-              >
-                <option value="none" className="bg-black">None (Default)</option>
-                <option value="powerschool" className="bg-black">PowerSchool</option>
-                <option value="google" className="bg-black">Google Drive</option>
-              </select>
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings
+              </h2>
+              
+              <div className="space-y-6">
+                {/* Tab Cloaking */}
+                <div>
+                  <label className="text-xs font-bold uppercase text-zinc-500 mb-2 block">Tab Cloaking</label>
+                  <select 
+                    onChange={handlePresetChange}
+                    className="w-full bg-black text-zinc-100 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-[#10A5F5] appearance-none cursor-pointer"
+                  >
+                    <option value="none" className="bg-black">None (Default)</option>
+                    <option value="powerschool" className="bg-black">PowerSchool</option>
+                    <option value="google" className="bg-black">Google Drive</option>
+                  </select>
+                </div>
+
+                {/* Panic Key Settings */}
+                <div>
+                  <label className="text-xs font-bold uppercase text-zinc-500 mb-2 block">Panic Key (ESC Key)</label>
+                  <input 
+                    type="text"
+                    value={panicUrl}
+                    onChange={handlePanicUrlChange}
+                    placeholder="Redirect URL (e.g. google.com)"
+                    className="w-full bg-black text-zinc-100 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-[#10A5F5]"
+                  />
+                  <p className="text-[10px] text-zinc-500 mt-2 italic text-center">Press ESC at any time to instantly redirect.</p>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}
