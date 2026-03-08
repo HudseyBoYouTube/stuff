@@ -233,7 +233,7 @@ function App() {
 
       <footer className="border-t border-white/5 py-12 mt-20 text-center opacity-50">
           <span className="text-lg font-bold">Capybara <span className="text-[#10A5F5]">Science</span></span>
-          <p className="text-zinc-500 text-sm mt-2">A perfect place to play games and glaze Capabaras</p>
+          <p className="text-zinc-500 text-sm mt-2">The best place for classroom breaks.</p>
       </footer>
     </div>
   );
