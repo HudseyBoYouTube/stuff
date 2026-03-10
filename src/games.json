@@ -712,5 +712,40 @@
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/gobble/",
     "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/1801ed3d50240731304d3c98106a9e7a/gobble.png",
     "category": "Arcade"
+  },
+  {
+    "id": "highwayracer",
+    "title": "Highway Racer",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/originals/highway-racer/",
+    "thumbnail": "https://imgs.crazygames.com/auto-covers/highway-racer_1x1.png?metadata=none&quality=60&width=138",
+    "category": "Driving"
+  },
+  {
+    "id": "highwayracer2",
+    "title": "Highway Racer 2",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/originals/highway-race2/",
+    "thumbnail": "https://imgs.crazygames.com/games/highway-racer-2/cover_16x9-1693297858485.png?metadata=none&quality=100&width=1200&height=630&fit=crop",
+    "category": "Racing"
+  },
+  {
+    "id": "balldodge",
+    "title": "Ball Dodge",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/ball-dodge/",
+    "thumbnail": "https://static.wikia.nocookie.net/warehouse13/images/9/9d/Baylor_Dodgeball_%28Cut%29.png/revision/latest/thumbnail/width/360/height/450?cb=20130920183546",
+    "category": "Sports"
+  },
+  {
+    "id": "skyriders",
+    "title": "Sky Riders",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/sky-riders/",
+    "thumbnail": "https://imgs.crazygames.com/sky-riders-buk_1x1/20240206045724/sky-riders-buk_1x1-cover?format=auto&quality=70&metadata=none",
+    "category": "Driving"
+  },
+  {
+    "id": "sausageflip",
+    "title": "Sausage Flip",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/sausage-flip/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/7d0655113228257bad41d851c074600d/sausage-flip.png",
+    "category": "Arcade"
   }
 ]
