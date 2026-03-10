@@ -705,5 +705,12 @@
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/recoil/",
     "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1QkUNFpUJR2wsZIdUqxjxyyvtkB5o3xjtgA&s",
     "category": "Action"
+  },
+  {
+    "id": "gobble",
+    "title": "Gobble",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/gobble/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/1801ed3d50240731304d3c98106a9e7a/gobble.png",
+    "category": "Arcade"
   }
 ]
