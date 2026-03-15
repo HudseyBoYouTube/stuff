@@ -747,5 +747,12 @@
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/sausage-flip/",
     "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/7d0655113228257bad41d851c074600d/sausage-flip.png",
     "category": "Arcade"
+  },
+  {
+    "id": "chess",
+    "title": "Chess",
+    "url": "https://visit.prairievistamiddle.org/assets/storage/html/chess/",
+    "thumbnail": "https://img.freepik.com/premium-vector/pawn-line-icon-strategy-symbol-chess-piece_53562-17809.jpg?w=360",
+    "category": "Puzzle"
   }
 ]
