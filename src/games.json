@@ -943,6 +943,27 @@
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/originals/agar/",
     "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Agar.io_Logo.png",
     "category": "Arcade"
+  },
+  {
+    "id": "chickenmerge",
+    "title": "Chicken Merge",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/chicken-merge/",
+    "thumbnail": "https://store-images.s-microsoft.com/image/apps.15106.14254133833064387.d8da7968-e50c-4415-bfc2-4b1d13b7415f.94c6eb9a-1286-4336-881b-bdb099fa4307?h=210",
+    "category": "Merge"
+  },
+  {
+    "id": "speedking",
+    "title": "Speed King",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/speed-king/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBTSlru6w32H6aA6F0QOyDLnvXtMX2Vnb1vQ&s",
+    "category": "Easy"
+  },
+  {
+    "id": "battlewheels",
+    "title": "Battle Wheels",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/battle-wheels/",
+    "thumbnail": "https://cdn-1.webcatalog.io/catalog/poki-battle-wheels/poki-battle-wheels-icon-filled-256.png?v=1714780518391",
+    "category": "Driving"
   }
 ]
     
