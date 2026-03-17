@@ -231,6 +231,13 @@
     "category": "Action"
   },
   {
+    "id": "paper.io(fake)",
+    "title": "Paper.io (fake)",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/originals/paperio/",
+    "thumbnail": "https://i.pinimg.com/736x/33/48/8a/33488a03a8ec1fb8f79d4800e5d17dcf.jpg",
+    "category": "Arcade"
+  },
+  {
     "id": "paper.io2",
     "title": "Paper.io 2",
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/pages/other/interpreter/index.html?url=https://cdn.jsdelivr.net/gh/gn-math/html@main/102.html",
