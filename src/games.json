@@ -768,12 +768,12 @@
     "url": "https://www.backend.152.53.38.9.80.86.nip.io/pages/games-frame.v1.html?url=/pages/games/boxingrandom/index.html",
     "thumbnail": "https://imgs.crazygames.com/auto-covers/boxing-random_1x1.jpeg?format=auto&quality=100&metadata=none&width=1200",
     "category": "Random"
-    ],
-    {
-      "id": "agesofconflict",
-      "title": "Ages of Conflict",
-      "url": "https://neatliterature.majoitus.ee/books/files/ages-of-conflict/index.html",
-      "thumbnail": "https://gamefaqs.gamespot.com/a/box/7/4/2/898742_side.jpg",
-      "category": "Action"
-    }
+  },
+  {
+    "id": "agesofconflict",
+    "title": "Ages of Conflict",
+    "url": "https://neatliterature.majoitus.ee/books/files/ages-of-conflict/index.html",
+    "thumbnail": "https://gamefaqs.gamespot.com/a/box/7/4/2/898742_side.jpg",
+    "category": "Action"
+  }
 ]
