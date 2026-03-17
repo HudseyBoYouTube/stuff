@@ -936,6 +936,13 @@
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/flip-bros/",
     "thumbnail": "https://crossy-road.io/data/image/flip-bros.jpg",
     "category": "Easy"
+  },
+  {
+    "id": "agar.io",
+    "title": "Agar.io",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/originals/agar/",
+    "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Agar.io_Logo.png",
+    "category": "Arcade"
   }
 ]
     
