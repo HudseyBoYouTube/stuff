@@ -564,7 +564,7 @@
     "title": "Subway Surfers",
     "url": "https://clever.we-trade.cl/games/subway-surfers/index.html",
     "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/7f4c7dc492227ec127a47e4b3197754e/subway-surfers.png",
-    "category": "Arcade"
+    "category": "Runner"
   },
   {
     "id": "ngon",
@@ -620,7 +620,7 @@
     "title": "Om Nom: Run",
     "url": "https://clever.we-trade.cl/gamefile/omnomrun.html",
     "thumbnail": "https://imgs.crazygames.com/games/om-nom-run/cover_1x1-1707829613556.png?format=auto&quality=70&metadata=none",
-    "category": "Arcade"
+    "category": "Runner"
   },
   {
     "id": "houseofhazards",
@@ -789,6 +789,34 @@
     "url": "https://neatliterature.majoitus.ee/books/files/stick-merge/index.html",
     "thumbnail": "https://www.virlan.co/unblocked-games/wp-content/uploads/2022/08/stick-merge-game.jpg",
     "category": "Action"
+  ],
+  {
+    "id": "gimmietheairpod",
+    "title": "gimmie the airpod",
+    "url": "https://neatliterature.majoitus.ee/books/files/gimme-the-airpod/index.html",
+    "thumbnail": "https://img.itch.zone/aW1nLzIzNTc5ODkucG5n/original/YSJHRP.png",
+    "category": "Action"
+  ],
+  {
+    "id": "templerun2",
+    "title": "Temple Run 2",
+    "url": "https://neatliterature.majoitus.ee/books/files/temple-run-2/index.html",
+    "thumbnail": "https://cdn.jim-nielsen.com/ios/512/temple-run-2-2020-04-16.png?rf=1024",
+    "category": "Runner"
+  ],
+  {
+    "id": "world'shardestgame",
+    "title": "World's Hardest Game",
+    "url": "https://neatliterature.majoitus.ee/books/files/worlds-hardest-game/index.html",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/61368b108e1e8625e6f7b2daccb98324/worlds-hardest-game.png",
+    "category": "Skill"
+  ],
+  {
+    "id": "world'shardestgame2",
+    "title": "World's Hardest Game 2",
+    "url": "https://neatliterature.majoitus.ee/books/files/worlds-hardest-game-2/index.html",
+    "thumbnail": "https://www.coolmathgames.com/sites/default/files/WorldsHardestGame2_OG-logo.jpg",
+    "category": "Skill"
   }
 ]
     
