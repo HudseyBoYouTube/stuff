@@ -817,6 +817,34 @@
     "url": "https://neatliterature.majoitus.ee/books/files/worlds-hardest-game-2/index.html",
     "thumbnail": "https://www.coolmathgames.com/sites/default/files/WorldsHardestGame2_OG-logo.jpg",
     "category": "Skill"
+  },
+  {
+    "id": "angrysharks",
+    "title": "Angry Sharks",
+    "url": "https://neatliterature.majoitus.ee/books/files/angry-sharks/index.html",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRC7Z-xoxHVl0OmSCvjgVKpX134DrAgWkI2Lw&s",
+    "category": "Action"
+  },
+  {
+    "id": "ballisticchickens",
+    "title": "Ballistic Chickens",
+    "url": "https://neatliterature.majoitus.ee/books/files/ballistic-chickens/index.html",
+    "thumbnail": "https://www5.minijuegosgratis.com/v3/games/thumbnails/254610_7_sq.jpg",
+    "category": "Arcade"
+  },
+  {
+    "id": "bigredbutton",
+    "title": "Big Red Button",
+    "url": "https://neatliterature.majoitus.ee/books/files/bigredbutton/index.html",
+    "thumbnail": "https://pbs.twimg.com/profile_images/1105922638956814336/3qQe4a-Z_400x400.png",
+    "category": "Easy"
+  },
+  {
+    "id": "webglfluidsimulation",
+    "title": "WebGL Fluid Simulation",
+    "url": "https://neatliterature.majoitus.ee/books/files/webgl-fluid-simulation/index.html",
+    "thumbnail": "https://paveldogreat.github.io/WebGL-Fluid-Simulation/logo.png",
+    "category": "Creative"
   }
 ]
     
