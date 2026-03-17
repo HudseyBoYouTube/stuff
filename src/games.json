@@ -908,6 +908,27 @@
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/blumgi-paintball/",
     "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/59e84a26f2a9b86580160539bd525c13/blumgi-paintball.png",
     "category": "Action"
+  },
+  {
+    "id": "buckshotroulette",
+    "title": "Buckshot Roulette",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/gn/205-f.html",
+    "thumbnail": "https://static.wikia.nocookie.net/buckshot-roulette/images/c/ca/Buckshot_roulette_shell_%28Fix%29.png/revision/latest/scale-to-width/360?cb=20240216031803",
+    "category": "Skill"
+  },
+  {
+    "id": "skribbl.io",
+    "title": "Skribbl.io",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/originals/skribbl/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqIY6UkvxlSiBfKjT-QGtw2wf7lxgbrgA7sA&s",
+    "category": "Creative"
+  },
+  {
+    "id": "flipbros",
+    "title": "Flip Bros",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/flip-bros/",
+    "thumbnail": "https://crossy-road.io/data/image/flip-bros.jpg",
+    "category": "Easy"
   }
 ]
     
