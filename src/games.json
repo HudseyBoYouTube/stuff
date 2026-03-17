@@ -775,5 +775,20 @@
     "url": "https://neatliterature.majoitus.ee/books/files/ages-of-conflict/index.html",
     "thumbnail": "https://gamefaqs.gamespot.com/a/box/7/4/2/898742_side.jpg",
     "category": "Action"
+  },
+  {
+    "id": "aquapark.io",
+    "title": "auqapark.io (fake)",
+    "url": "https://neatliterature.majoitus.ee/books/files/aquapark-slides/index.html",
+    "thumbnail": "https://store-images.s-microsoft.com/image/apps.63925.14634069183662722.c171aa28-d69f-4e61-816b-bed08184b8ec.18c7544b-63c5-446f-b833-2ce5764c3668",
+    "category": "Arcade"
+  },
+  { 
+    "id": "stickmerge",
+    "title": "Stick Merge",
+    "url": "https://neatliterature.majoitus.ee/books/files/stick-merge/index.html",
+    "thumbnail": "https://www.virlan.co/unblocked-games/wp-content/uploads/2022/08/stick-merge-game.jpg",
+    "category": "Action"
   }
 ]
+    
