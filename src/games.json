@@ -845,6 +845,71 @@
     "url": "https://neatliterature.majoitus.ee/books/files/webgl-fluid-simulation/index.html",
     "thumbnail": "https://paveldogreat.github.io/WebGL-Fluid-Simulation/logo.png",
     "category": "Creative"
+  },
+  {
+    "id": "blumgiball",
+    "title": "Blumgi Ball",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/blumgi-ball/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/5cc06f22e46c13e1c7917dad7c48e5dd/blumgi-ball.png",
+    "category": "Sports"
+  },
+  {
+    "id": "blumgirocket",
+    "title": "Blumgi Rocket",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/blumgi-rocket/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/672fb98802b00740e3c885cb2b31fc51/blumgi-rocket.png",
+    "category": "Driving"
+  },
+  {
+    "id": "blumgicastle",
+    "title": "Blumgi Castle",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/blumgi-castle/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/535793fb806824a12dfe0136c4208b51/blumgi-castle.png",
+    "category": "Action"
+  },
+  {
+    "id": "blumgibloom",
+    "title": "Blumgi Bloom",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/blumgi-bloom/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/f9ea10a5c3cd14ac288a3fbd28b687d2/blumgi-bloom.png",
+    "category": "Easy"
+  },
+  {
+    "id": "blumgislime",
+    "title": "Blumgi Slime",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/blumgi-slime/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/9aa6000ed201eba3c8f878c489a7c3ce/blumgi-slime.png",
+    "category": "Easy"
+  },
+  {
+    "id": "blumgidragon",
+    "title": "Blumgi Dragon",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/blumgi-dragon/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/8f330ccd95d2be6425074df1d9d28e2a/blumgi-dragon.png",
+    "category": "Action"
+  },
+  {
+    "id": "blumgiracers"
+    "title": "Blumgi Racers",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/blumgi-racers/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/dbeb9170182271f87ecd5626b68a73aa/blumgi-racers.png",
+    "category": "Driving"
+  },
+  {
+    "id": "blumgisoccer"
+    "title": "Blumgi Soccer",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/blumgi-soccer/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPSMgCMa7NX8LLa6mh-c59939Up1jY_UMIBQ&s",
+    "category": "Sports"
+  },
+  {
+    "id": "blumgipaintball"
+    "title": "Blumgi Paintball"
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/blumgi-paintball/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/59e84a26f2a9b86580160539bd525c13/blumgi-paintball.png",
+    "category": "Action"
   }
 ]
+    
+
     
