@@ -964,6 +964,34 @@
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/battle-wheels/",
     "thumbnail": "https://cdn-1.webcatalog.io/catalog/poki-battle-wheels/poki-battle-wheels-icon-filled-256.png?v=1714780518391",
     "category": "Driving"
+  },
+  {
+    "id": "cowbay",
+    "title": "Cow Bay",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/cow-bay/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/cbeba74384bccce06ab61ad4aa08f9d3/cow-bay.png",
+    "category": "Easy"
+  },
+  {
+    "id": "choppyorc",
+    "title": "Choppy Orc",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/choppy-orc/",
+    "thumbnail": "https://www.speedrun.com/static/theme/6wyk4nrd/XXX_cover.png?v=dc5fcfb",
+    "categpry": "Action"
+  },
+  {
+    "id": "stack",
+    "title": "Stack",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/stack/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFRVDgoaMaGy5x027j5hGrJ0PF4ofqyiko1A&s",
+    "category": "Skill"
+  },
+  {
+    "id": "retrohighway",
+    "title": "Retro Highway",
+    "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/arsenic/retro-highway/",
+    "thumbnail": "https://gearheadgames.com/retrohighway/images/logo.png",
+    "category": "Driving"
   }
 ]
     
