@@ -77,13 +77,6 @@
     "category": "Sports"
   },
   {
-    "id": "chromedino",
-    "title": "Chrome Dino",
-    "url": "https://landon.infotechnology.com/games/dinosaur/index.html",
-    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLwcQpiWZ_US7ZZMdWUHRb61Bj--W2vPd3IQ&s",
-    "category": "Arcade"
-  },
-  {
     "id": "granny",
     "title": "Granny",
     "url": "https://clever.we-trade.cl/games/Granny/index.html",
@@ -163,15 +156,8 @@
   {
     "id": "ovo",
     "title": "OvO",
-    "url": "https://landon.infotechnology.com/games/ovo/index.html",
+    "url": "https://stophop.theveranda.co.id/cdn/projects/ovo/",
     "thumbnail": "https://imgs.crazygames.com/auto-covers2/ovo_1x1.png?format=auto&quality=70&metadata=none",
-    "category": "Platformer"
-  },
-  {
-    "id": "ovodimensions",
-    "title": "OvO Dimensions",
-    "url": "https://landon.infotechnology.com/games/OvoDimensions/index.html",
-    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/4f967f68314c35872eeab27c849d32c4/ovo-dimensions.png",
     "category": "Platformer"
   },
   {
@@ -184,7 +170,7 @@
   {
     "id": "asmallworldcup",
     "title": "A Small World Cup",
-    "url": "https://landon.infotechnology.com/gamefile/aswc.html",
+    "url": "https://stophop.theveranda.co.id/stuff/selfhosted/asmallworldcup/",
     "thumbnail": "https://doodlebaseball.io/cache/data/image/game/a-small-world-cup-m200x200.webp",
     "category": "Sports"
   },
@@ -497,20 +483,6 @@
     "category": "Creative"
   },
   {
-    "id": "raftwars",
-    "title": "Raft Wars",
-    "url": "https://landon.infotechnology.com/games/raft-wars/index.html",
-    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/d2a3bbd1bb8aea542835f4f8a353d388/raft-wars.png",
-    "category": "Action"
-  },
-  {
-    "id": "raftwars2",
-    "title": "Raft Wars 2",
-    "url": "https://landon.infotechnology.com/games/raft-wars-2/index.html",
-    "thumbnail": "https://howlongtobeat.com/games/52423_Raft_Wars_2.jpg",
-    "category": "Action"
-  },
-  {
     "id": "stealabrainrot(fake)",
     "title": "Steal a Brainrot (fake)",
     "url": "https://lum.815moniquelane.cfd/projects/id479/index.html",
@@ -527,161 +499,98 @@
   {
     "id": "doodlejump",
     "title": "Doodle Jump",
-    "url": "https://landon.infotechnology.com/gamefile/Doodle%20Jump.html",
+    "url": "https://neatliterature.majoitus.ee/books/files/doodle-jump/index.html",
     "thumbnail": "https://assets-prd.ignimgs.com/2022/03/16/doodlejump-1647405974576.jpg",
     "category": "Arcade"
   },
   {
     "id": "learn2fly",
     "title": "Learn 2 Fly",
-    "url": "https://landon.infotechnology.com/games/learntofly/index.html",
+    "url": "https://stophop.theveranda.co.id/stuff/selfhosted/flash/game/learn-to-fly.html",
     "thumbnail": "https://e.snmc.io/lk/lv/x/77e0aedce501ea412351ef15386c75e4/9441677",
     "category": "Arcade"
   },
   {
-    "id": "dontyoulecturemewithyourthirtydollarwebsite",
-    "title": "THIRTY DOLLAR",
-    "url": "https://landon.infotechnology.com/games/30dolar/index.html",
-    "thumbnail": "https://em-content.zobj.net/source/apple/81/moyai_1f5ff.png",
-    "category": "Soundboard"
-  },
-  {
     "id": "dogeminer",
     "title": "Doge Miner",
-    "url": "https://landon.infotechnology.com/gamefile/Doge%20Miner.html",
+    "url": "https://neatliterature.majoitus.ee/books/files/DogeMiner/index.html",
     "thumbnail": "https://www.dolldivine.com/images/doge-coin-miner-game.png",
     "category": "Idle"
   },
   {
     "id": "slowroads",
     "title": "Slow Roads",
-    "url": "https://landon.infotechnology.com/games/slowroads/index.html",
+    "url": "https://stophop.theveranda.co.id/stuff/selfhosted/slowroads/",
     "thumbnail": "https://cdn-1.webcatalog.io/catalog/slow-roads/slow-roads-icon-filled-256.png?v=1714780308395",
     "category": "Driving"
   },
   {
-    "id": "skibidishooter",
-    "title": "Skibidi Shooter",
-    "url": "https://landon.infotechnology.com/games/skibidi-shooter/index.html",
-    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/05cee9fd5cd50ccced66cd992dffeb1b/skibidi-shooter.png",
-    "category": "Brainrot"
-  },
-  {
     "id": "subwaysurfers",
     "title": "Subway Surfers",
-    "url": "https://clever.we-trade.cl/games/subway-surfers/index.html",
+    "url": "https://stophop.theveranda.co.id/cdn/projects/subway-surfers/",
     "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/7f4c7dc492227ec127a47e4b3197754e/subway-surfers.png",
     "category": "Runner"
   },
   {
     "id": "ngon",
     "title": "n-gon",
-    "url": "https://clever.we-trade.cl/games/n-gon/index.html",
+    "url": "https://neatliterature.majoitus.ee/books/files/n-gon/index.html",
     "thumbnail": "https://img.itch.zone/aW1hZ2UvNTE5MDkwLzEyMzMyODU5LnBuZw==/original/RGApqj.png",
     "category": "Action"
   },
   {
     "id": "csgoclicker",
     "title": "CSGO Clicker",
-    "url": "https://clever.we-trade.cl/games/csgo-clicker/index.html",
+    "url": "https://neatliterature.majoitus.ee/books/files/csgo-clicker/index.html",
     "thumbnail": "https://avatars.githubusercontent.com/u/39322951?s=280&v=4",
     "category": "Idle"
   },
   {
     "id": "1v1.lol",
     "title": "1v1.LOL",
-    "url": "https://clever.we-trade.cl/gamefile/1v1.html",
+    "url": "https://neatliterature.majoitus.ee/books/files/1v1lol/index.html",
     "thumbnail": "https://assets.about.me/background/users/u/n/b/unblockedgame1v1lol_1722245404_678.jpg",
     "category": "Action"
   },
   {
     "id": "2048",
     "title": "2048",
-    "url": "https://clever.we-trade.cl/games/2048/index.html",
+    "url": "https://neatliterature.majoitus.ee/books/files/2048/index.html",
     "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/1/18/2048_logo.svg",
     "category": "Puzzle"
   },
   {
     "id": "basketballstars",
     "title": "Basketball Stars",
-    "url": "https://clever.we-trade.cl/games/basketballstars/index.html",
+    "url": "https://stophop.theveranda.co.id/stuff/selfhosted/basketball-stars/",
     "thumbnail": "https://m.media-amazon.com/images/I/81BL1Hx2KuL.png",
-    "category": "Sports"
-  },
-  {
-    "id": "googlebaseball",
-    "title": "Google Baseball",
-    "url": "https://clever.we-trade.cl/gamefile/gbase.html",
-    "thumbnail": "https://pbs.twimg.com/media/D-jdlA6W4AE78L3.jpg",
     "category": "Sports"
   },
   {
     "id": "gettingoverit",
     "title": "Getting Over It ",
-    "url": "https://clever.we-trade.cl/gamefile/goi.html",
+    "url": "https://stophop.theveranda.co.id/stuff/selfhosted/gettingoverit/index.html",
     "thumbnail": "https://sm.ign.com/ign_nl/cover/g/getting-ov/getting-over-it-with-bennett-foddy_z7y4.jpg",
     "category": "Skill"
   },
   {
-    "id": "omnomrun",
-    "title": "Om Nom: Run",
-    "url": "https://clever.we-trade.cl/gamefile/omnomrun.html",
-    "thumbnail": "https://imgs.crazygames.com/games/om-nom-run/cover_1x1-1707829613556.png?format=auto&quality=70&metadata=none",
-    "category": "Runner"
-  },
-  {
     "id": "houseofhazards",
     "title": "House Of Hazards",
-    "url": "https://clever.we-trade.cl/games/houseofhazards/index.html",
+    "url": "https://stophop.theveranda.co.id/stuff/selfhosted/houseofhazards/index.html",
     "thumbnail": "https://imgs.crazygames.com/house-of-hazards_1x1/20250108101728/house-of-hazards_1x1-cover?format=auto&quality=100&metadata=none&width=1200",
     "category": "Action"
   },
   {
-    "id": "jellydrift",
-    "title": "Jelly Drift",
-    "url": "https://clever.we-trade.cl/gamefile/jelly.html",
-    "thumbnail": "https://img.itch.zone/aW1nLzU0MTAxNDAucG5n/original/5e798B.png",
-    "category": "Driving"
-  },
-  {
-    "id": "littlealchemy",
-    "title": "Little Alchemy",
-    "url": "https://clever.we-trade.cl/games/littlealchemy/index.html",
-    "thumbnail": "https://assets-prd.ignimgs.com/2022/08/15/little-academy-mobile-1660600636606.png",
-    "category": "Creative"
-  },
-  {
     "id": "achievementunlocked",
     "title": "Achievement Unlocked",
-    "url": "https://clever.we-trade.cl/games/achieveunlocked/index.html",
+    "url": "https://neatliterature.majoitus.ee/books/files/achievementunlocked/index.html",
     "thumbnail": "https://a.silvergames.com/j/b/achievement-unlocked.jpg",
     "category": "Platformer"
   },
   {
-    "id": "badpiggies",
-    "title": "Bad Piggies",
-    "url": "https://clever.we-trade.cl/gamefile/piggies.html",
-    "thumbnail": "https://upload.wikimedia.org/wikipedia/en/5/51/Bad_Piggies.png",
-    "category": "Puzzle"
-  },
-  {
-    "id": "crazyballs",
-    "title": "Crazy Balls",
-    "url": "https://clever.we-trade.cl/gamefile/balls.html",
-    "thumbnail": "https://m.media-amazon.com/images/I/81+oWN5DssL.png",
-    "category": "Arcade"
-  },
-  {
-    "id": "tenbasket",
-    "title": "Ten Basket",
-    "url": "https://clever.we-trade.cl/games/ten-basket/index.html",
-    "thumbnail": "https://m.media-amazon.com/images/I/619n34pBURL.png",
-    "category": "Sports"
-  },
-  {
     "id": "solitaire",
     "title": "Solitaire",
-    "url": "https://clever.we-trade.cl/games/solitaire/index.html",
+    "url": "https://neatliterature.majoitus.ee/books/files/solitaire/index.html",
     "thumbnail": "https://cdn.jim-nielsen.com/ios/512/solitaire-2022-02-03.png?rf=1024",
     "category": "Puzzle"
   },
@@ -749,16 +658,9 @@
     "category": "Arcade"
   },
   {
-    "id": "chess",
-    "title": "Chess",
-    "url": "https://www.backend.152.53.38.9.80.86.nip.io/pages/games-frame.v1.html?url=/pages/games/chess/index.html",
-    "thumbnail": "https://img.freepik.com/premium-vector/pawn-line-icon-strategy-symbol-chess-piece_53562-17809.jpg?w=360",
-    "category": "Puzzle"
-  },
-  {
     "id": "supermario64",
     "title": "Super Mario 64",
-    "url": "https://www.backend.152.53.38.9.80.86.nip.io/pages/games-frame.v1.html?url=/pages/games/super-mario-64/index.html",
+    "url": "https://neatliterature.majoitus.ee/books/files/sm64/index.html",
     "thumbnail": "https://upload.wikimedia.org/wikipedia/en/thumb/e/e9/Super_Mario_64.png/250px-Super_Mario_64.png",
     "category": "Platformer"
   },
@@ -772,7 +674,7 @@
   {
     "id": "boxingrandom",
     "title": "Boxing Random",
-    "url": "https://www.backend.152.53.38.9.80.86.nip.io/pages/games-frame.v1.html?url=/pages/games/boxingrandom/index.html",
+    "url": "https://stophop.theveranda.co.id/stuff/selfhosted/boxing-random/",
     "thumbnail": "https://imgs.crazygames.com/auto-covers/boxing-random_1x1.jpeg?format=auto&quality=100&metadata=none&width=1200",
     "category": "Random"
   },
