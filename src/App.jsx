@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Gamepad2, Play, Settings, X, ShieldAlert, Keyboard, Power, Heart, Shuffle } from 'lucide-react';
+import { Search, Gamepad2, Play, Settings, X, ShieldAlert, Keyboard, Heart, Shuffle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import gamesData from './games.json';
 
@@ -13,7 +13,11 @@ function App() {
   
   const [favorites, setFavorites] = useState(() => {
     const saved = localStorage.getItem('favorite-games');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   });
 
   const presets = {
@@ -29,6 +33,10 @@ function App() {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!panicEnabled) return;
+      
+      // FIX 1: Prevent panic trigger while typing in search bar
+      if (e.target.tagName === 'INPUT' && !isRecording) return;
+
       if (isRecording) {
         e.preventDefault();
         setPanicKey(e.key);
@@ -43,8 +51,9 @@ function App() {
   }, [panicKey, panicUrl, isRecording, panicEnabled]);
 
   const handleRandomGame = () => {
-    const playableGames = gamesData.filter(game => 
-      !['request', 'report'].includes(game.id.toLowerCase())
+    // FIX 2: Added optional chaining to prevent crash if id is missing
+    const playableGames = (gamesData || []).filter(game => 
+      game.id && !['request', 'report'].includes(game.id.toLowerCase())
     );
     if (playableGames.length > 0) {
       const randomGame = playableGames[Math.floor(Math.random() * playableGames.length)];
@@ -78,10 +87,13 @@ function App() {
     setFavorites(prev => prev.includes(id) ? prev.filter(gameId => gameId !== id) : [...prev, id]);
   };
 
+  // FIX 3: Robust filtering that won't crash on missing data
   const filteredGames = useMemo(() => {
+    if (!Array.isArray(gamesData)) return [];
+    const query = searchQuery.toLowerCase();
     return gamesData.filter(game =>
-      game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      game.category.toLowerCase().includes(searchQuery.toLowerCase())
+      game.title?.toLowerCase().includes(query) ||
+      game.category?.toLowerCase().includes(query)
     );
   }, [searchQuery]);
 
@@ -129,7 +141,6 @@ function App() {
       <header className="sticky top-0 z-40 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center relative">
           
-          {/* Logo - Left Aligned */}
           <div className="flex items-center gap-2 z-10">
             <div className="w-8 h-8 bg-[#10A5F5] rounded-lg flex items-center justify-center">
               <Gamepad2 className="w-5 h-5 text-black" />
@@ -137,7 +148,6 @@ function App() {
             <span className="text-xl font-bold tracking-tight hidden sm:block">Capybara <span className="text-[#10A5F5]">Science</span></span>
           </div>
 
-          {/* Search Bar - Center Aligned */}
           <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-sm md:max-w-md px-4 flex items-center gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
@@ -155,7 +165,6 @@ function App() {
             </button>
           </div>
 
-          {/* Settings - Right Aligned */}
           <div className="ml-auto z-10">
             <button onClick={() => setShowSettings(!showSettings)} className="p-2 hover:bg-white/5 rounded-full transition-colors">
               <Settings className="w-5 h-5 text-zinc-400" />
@@ -164,7 +173,6 @@ function App() {
         </div>
       </header>
 
-      {/* Settings Modal Restored */}
       <AnimatePresence>
         {showSettings && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
