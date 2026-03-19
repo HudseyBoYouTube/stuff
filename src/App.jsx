@@ -1,5 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Gamepad2, Play, Settings, X, ShieldAlert, Keyboard, Heart, Shuffle } from 'lucide-react';
+import { 
+  Search, Gamepad2, Play, Settings, X, ShieldAlert, 
+  Keyboard, Heart, Shuffle, Sun, Moon 
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import gamesData from './games.json';
 
@@ -11,6 +14,11 @@ function App() {
   const [isRecording, setIsRecording] = useState(false);
   const [panicEnabled, setPanicEnabled] = useState(localStorage.getItem('panic-enabled') !== 'false');
   
+  // NEW: Dark/Light Mode State
+  const [isLightMode, setIsLightMode] = useState(() => {
+    return localStorage.getItem('theme') === 'light';
+  });
+
   const [favorites, setFavorites] = useState(() => {
     const saved = localStorage.getItem('favorite-games');
     try {
@@ -26,6 +34,17 @@ function App() {
     google: { title: 'My Drive - Google Drive', favicon: 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png' }
   };
 
+  // NEW: Theme Effect
+  useEffect(() => {
+    if (isLightMode) {
+      document.documentElement.classList.add('light');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.classList.remove('light');
+      localStorage.setItem('theme', 'dark');
+    }
+  }, [isLightMode]);
+
   useEffect(() => {
     localStorage.setItem('favorite-games', JSON.stringify(favorites));
   }, [favorites]);
@@ -33,8 +52,6 @@ function App() {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!panicEnabled) return;
-      
-      // FIX 1: Prevent panic trigger while typing in search bar
       if (e.target.tagName === 'INPUT' && !isRecording) return;
 
       if (isRecording) {
@@ -51,7 +68,6 @@ function App() {
   }, [panicKey, panicUrl, isRecording, panicEnabled]);
 
   const handleRandomGame = () => {
-    // FIX 2: Added optional chaining to prevent crash if id is missing
     const playableGames = (gamesData || []).filter(game => 
       game.id && !['request', 'report'].includes(game.id.toLowerCase())
     );
@@ -87,7 +103,6 @@ function App() {
     setFavorites(prev => prev.includes(id) ? prev.filter(gameId => gameId !== id) : [...prev, id]);
   };
 
-  // FIX 3: Robust filtering that won't crash on missing data
   const filteredGames = useMemo(() => {
     if (!Array.isArray(gamesData)) return [];
     const query = searchQuery.toLowerCase();
@@ -102,8 +117,8 @@ function App() {
 
   const GameCard = ({ game }) => (
     <motion.div layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} whileHover={{ y: -4 }}
-      className="group relative bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden cursor-pointer" onClick={() => handleSelectGame(game)}>
-      <div className={`aspect-[4/3] overflow-hidden bg-zinc-800/50 flex items-center justify-center relative ${
+      className="group relative bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer" onClick={() => handleSelectGame(game)}>
+      <div className={`aspect-[4/3] overflow-hidden bg-zinc-800/20 flex items-center justify-center relative ${
           game.id === 'sandspiel' ? 'p-2' :
           game.category === 'Community' ? 'p-6' : 'p-0'
         }`}>
@@ -126,7 +141,7 @@ function App() {
       </div>
       <div className="p-4">
         <div className="flex items-center justify-between mb-1">
-          <h3 className="font-semibold text-zinc-100 group-hover:text-[#10A5F5] transition-colors">{game.title}</h3>
+          <h3 className="font-semibold text-[var(--text-main)] group-hover:text-[#10A5F5] transition-colors">{game.title}</h3>
           <span className="text-[10px] font-bold uppercase tracking-wider text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md">{game.category}</span>
         </div>
         <p className="text-xs text-zinc-500">
@@ -137,8 +152,9 @@ function App() {
   );
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-zinc-100 font-sans selection:bg-emerald-500/30">
-      <header className="sticky top-0 z-40 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-xl">
+    // Changed bg and text to use CSS variables
+    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans selection:bg-emerald-500/30 transition-colors duration-300">
+      <header className="sticky top-0 z-40 border-b border-white/5 bg-[var(--bg-main)]/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center relative">
           
           <div className="flex items-center gap-2 z-10">
@@ -165,7 +181,16 @@ function App() {
             </button>
           </div>
 
-          <div className="ml-auto z-10">
+          <div className="ml-auto z-10 flex items-center gap-2">
+            {/* NEW: Light/Dark Toggle Button */}
+            <button 
+              onClick={() => setIsLightMode(!isLightMode)} 
+              className="p-2 hover:bg-white/5 rounded-full transition-colors text-zinc-400 hover:text-[#10A5F5]"
+              title={isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
+            >
+              {isLightMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            </button>
+
             <button onClick={() => setShowSettings(!showSettings)} className="p-2 hover:bg-white/5 rounded-full transition-colors">
               <Settings className="w-5 h-5 text-zinc-400" />
             </button>
@@ -178,18 +203,18 @@ function App() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} className="bg-black border border-white/10 p-6 rounded-2xl max-w-sm w-full relative shadow-2xl">
               <button onClick={() => setShowSettings(false)} className="absolute top-4 right-4 text-zinc-500 hover:text-white"><X className="w-5 h-5"/></button>
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2"> <ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings </h2>
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-white"> <ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings </h2>
               <div className="space-y-6">
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
-                  <span className="text-sm">Enable Panic Key</span>
+                  <span className="text-sm text-white">Enable Panic Key</span>
                   <button onClick={() => { setPanicEnabled(!panicEnabled); localStorage.setItem('panic-enabled', !panicEnabled); }} className={`w-10 h-5 rounded-full relative transition-colors ${panicEnabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
                     <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${panicEnabled ? 'left-6' : 'left-1'}`} />
                   </button>
                 </div>
                 {panicEnabled && (
                   <div className="space-y-4">
-                    <input type="text" value={panicUrl} onChange={(e) => {setPanicUrl(e.target.value); localStorage.setItem('panic-url', e.target.value);}} className="w-full bg-black text-zinc-100 border border-white/10 rounded-xl p-3 text-sm focus:border-[#10A5F5]" />
-                    <button onClick={() => setIsRecording(true)} className={`w-full flex items-center justify-between p-3 rounded-xl border ${isRecording ? 'border-[#10A5F5] animate-pulse' : 'border-white/10 bg-white/5'}`}>
+                    <input type="text" value={panicUrl} onChange={(e) => {setPanicUrl(e.target.value); localStorage.setItem('panic-url', e.target.value);}} className="w-full bg-zinc-900 text-zinc-100 border border-white/10 rounded-xl p-3 text-sm focus:border-[#10A5F5] outline-none" />
+                    <button onClick={() => setIsRecording(true)} className={`w-full flex items-center justify-between p-3 rounded-xl border ${isRecording ? 'border-[#10A5F5] animate-pulse' : 'border-white/10 bg-white/5 text-white'}`}>
                         <div className="flex items-center gap-2 text-sm"><Keyboard className="w-4 h-4" /><span>{isRecording ? 'Press any key...' : `Key: ${panicKey}`}</span></div>
                     </button>
                   </div>
@@ -204,7 +229,7 @@ function App() {
                       localStorage.setItem('cloaked-title', preset.title);
                       localStorage.setItem('cloaked-icon', preset.favicon);
                     }
-                }} className="w-full bg-black text-zinc-100 border border-white/10 rounded-xl p-3 text-sm appearance-none cursor-pointer">
+                }} className="w-full bg-zinc-900 text-zinc-100 border border-white/10 rounded-xl p-3 text-sm appearance-none cursor-pointer outline-none">
                     <option value="none">None (Default)</option>
                     <option value="powerschool">PowerSchool</option>
                     <option value="google">Google Drive</option>
