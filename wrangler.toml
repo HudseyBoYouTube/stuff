@@ -1,8 +1,10 @@
 name = "carti-is-a-goat-rapper"
 compatibility_date = "2026-03-18"
+# This line is the key to fixing the 404
+main = "functions/api/players.js"
 
 [assets]
-directory = "./dist"
+directory = "./"
 
 [[kv_namespaces]]
 binding = "STATS_KV"
