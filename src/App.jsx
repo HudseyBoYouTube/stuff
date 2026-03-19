@@ -36,7 +36,7 @@ function App() {
     google: { title: 'My Drive - Google Drive', favicon: 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png' }
   };
 
-  // NEW: Real-time Player Counter Effect
+  // REAL-TIME COUNTER LOGIC
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
@@ -44,16 +44,17 @@ function App() {
         const data = await res.json();
         setActivePlayers(data.count);
       } catch (e) {
-        // Fallback: slow natural fluctuation if the API is asleep
+        // Fallback: simple movement if API is unavailable
         setActivePlayers(prev => prev + (Math.random() > 0.5 ? 1 : -1));
       }
     };
 
     fetchPlayers();
-    const interval = setInterval(fetchPlayers, 15000); // Update every 15 seconds
+    const interval = setInterval(fetchPlayers, 15000); // Refresh every 15 seconds
     return () => clearInterval(interval);
   }, []);
 
+  // THEME ENGINE
   useEffect(() => {
     if (isLightMode) {
       document.documentElement.classList.add('light');
@@ -68,6 +69,7 @@ function App() {
     localStorage.setItem('favorite-games', JSON.stringify(favorites));
   }, [favorites]);
 
+  // PANIC KEY ENGINE
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!panicEnabled) return;
@@ -181,11 +183,11 @@ function App() {
             </div>
             <span className="text-xl font-bold tracking-tight hidden sm:block">Capybara <span className="text-[#10A5F5]">Science</span></span>
             
-            {/* NEW: Active Players UI */}
+            {/* REAL-TIME COUNTER UI */}
             <div className="hidden lg:flex items-center gap-2 ml-4 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
               <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest whitespace-nowrap">
-                {activePlayers} Students
+                {activePlayers.toLocaleString()} Students Researching
               </span>
             </div>
           </div>
