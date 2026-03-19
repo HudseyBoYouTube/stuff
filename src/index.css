@@ -1,14 +1,34 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
+/* --- Step 1: Add your Dark/Light Mode Variables here --- */
+:root {
+  --bg-main: #0a0a0a;
+  --text-main: #f4f4f5; /* zinc-100 */
+  --card-bg: #18181b;   /* zinc-900 */
+}
+
+/* When the 'light' class is added to the <html> tag */
+:root.light {
+  --bg-main: #f4f4f5;
+  --text-main: #09090b; /* zinc-950 */
+  --card-bg: #ffffff;
+}
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  /* Tell Tailwind to use your variables */
+  --color-background: var(--bg-main);
+  --color-foreground: var(--text-main);
 }
 
 @layer base {
   body {
-    @apply bg-[#0a0a0a] text-zinc-100 antialiased;
+    /* Use the variables instead of hardcoded hex codes */
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    @apply antialiased transition-colors duration-300;
   }
 }
 
@@ -18,16 +38,14 @@
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-[#0a0a0a];
+  background-color: var(--bg-main);
 }
 
 ::-webkit-scrollbar-thumb {
-  /* Changed from zinc-800 to your branding blue */
   background-color: #10A5F5;
   @apply rounded-full transition-colors;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  /* A slightly darker blue for the hover effect */
   background-color: #0d84c4;
 }
