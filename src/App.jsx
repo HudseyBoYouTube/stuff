@@ -3,7 +3,7 @@ import {
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Keyboard, Heart, Shuffle, Sun, Moon 
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import gamesData from './games.json';
 
 function App() {
@@ -14,8 +14,8 @@ function App() {
   const [isRecording, setIsRecording] = useState(false);
   const [panicEnabled, setPanicEnabled] = useState(localStorage.getItem('panic-enabled') !== 'false');
   
-  // NEW: Real-time Player State
-  const [activePlayers, setActivePlayers] = useState(157);
+  // Real-time Player State
+  const [activePlayers, setActivePlayers] = useState(1274);
 
   const [isLightMode, setIsLightMode] = useState(() => {
     return localStorage.getItem('theme') === 'light';
@@ -44,13 +44,12 @@ function App() {
         const data = await res.json();
         setActivePlayers(data.count);
       } catch (e) {
-        // Fallback: simple movement if API is unavailable
         setActivePlayers(prev => prev + (Math.random() > 0.5 ? 1 : -1));
       }
     };
 
     fetchPlayers();
-    const interval = setInterval(fetchPlayers, 15000); // Refresh every 15 seconds
+    const interval = setInterval(fetchPlayers, 15000); 
     return () => clearInterval(interval);
   }, []);
 
@@ -200,8 +199,23 @@ function App() {
                 placeholder="Search games..." 
                 value={searchQuery} 
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#10A5F5]/50 transition-colors" 
+                className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-sm focus:outline-none focus:border-[#10A5F5]/50 transition-colors" 
               />
+              
+              {/* CLEAR SEARCH BUTTON */}
+              <AnimatePresence>
+                {searchQuery && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full text-zinc-500 hover:text-white transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
             </div>
             <button onClick={handleRandomGame} title="Play Random Game"
               className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[#10A5F5]/20 hover:border-[#10A5F5]/50 transition-all group shrink-0">
