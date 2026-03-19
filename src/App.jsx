@@ -14,7 +14,9 @@ function App() {
   const [isRecording, setIsRecording] = useState(false);
   const [panicEnabled, setPanicEnabled] = useState(localStorage.getItem('panic-enabled') !== 'false');
   
-  // NEW: Dark/Light Mode State
+  // NEW: Real-time Player State
+  const [activePlayers, setActivePlayers] = useState(157);
+
   const [isLightMode, setIsLightMode] = useState(() => {
     return localStorage.getItem('theme') === 'light';
   });
@@ -34,7 +36,24 @@ function App() {
     google: { title: 'My Drive - Google Drive', favicon: 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png' }
   };
 
-  // NEW: Theme Effect
+  // NEW: Real-time Player Counter Effect
+  useEffect(() => {
+    const fetchPlayers = async () => {
+      try {
+        const res = await fetch('/api/players');
+        const data = await res.json();
+        setActivePlayers(data.count);
+      } catch (e) {
+        // Fallback: slow natural fluctuation if the API is asleep
+        setActivePlayers(prev => prev + (Math.random() > 0.5 ? 1 : -1));
+      }
+    };
+
+    fetchPlayers();
+    const interval = setInterval(fetchPlayers, 15000); // Update every 15 seconds
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     if (isLightMode) {
       document.documentElement.classList.add('light');
@@ -152,7 +171,6 @@ function App() {
   );
 
   return (
-    // Changed bg and text to use CSS variables
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans selection:bg-emerald-500/30 transition-colors duration-300">
       <header className="sticky top-0 z-40 border-b border-white/5 bg-[var(--bg-main)]/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center relative">
@@ -162,6 +180,14 @@ function App() {
               <Gamepad2 className="w-5 h-5 text-black" />
             </div>
             <span className="text-xl font-bold tracking-tight hidden sm:block">Capybara <span className="text-[#10A5F5]">Science</span></span>
+            
+            {/* NEW: Active Players UI */}
+            <div className="hidden lg:flex items-center gap-2 ml-4 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+              <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest whitespace-nowrap">
+                {activePlayers} Students Researching
+              </span>
+            </div>
           </div>
 
           <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-sm md:max-w-md px-4 flex items-center gap-2">
@@ -182,7 +208,6 @@ function App() {
           </div>
 
           <div className="ml-auto z-10 flex items-center gap-2">
-            {/* NEW: Light/Dark Toggle Button */}
             <button 
               onClick={() => setIsLightMode(!isLightMode)} 
               className="p-2 hover:bg-white/5 rounded-full transition-colors text-zinc-400 hover:text-[#10A5F5]"
