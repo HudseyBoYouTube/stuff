@@ -80,25 +80,6 @@ function App() {
   useEffect(() => { localStorage.setItem('game-playtimes', JSON.stringify(playtimes)); }, [playtimes]);
 
   useEffect(() => {
-    const handleFocus = () => {
-      const activeGame = sessionStorage.getItem('active-game-id');
-      const startTime = sessionStorage.getItem('active-game-start');
-      if (activeGame && startTime) {
-        const elapsedMs = Date.now() - parseInt(startTime);
-        const elapsedMins = Math.floor(elapsedMs / 60000);
-        if (elapsedMins > 0) {
-          setPlaytimes(prev => ({ ...prev, [activeGame]: (prev[activeGame] || 0) + elapsedMins }));
-        }
-        sessionStorage.removeItem('active-game-id');
-        sessionStorage.removeItem('active-game-start');
-      }
-    };
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
-  }, []);
-
-  // Panic Key Logic Fix
-  useEffect(() => {
     const handleKeyDown = (e) => {
       if (isRecording) {
         setPanicKey(e.key);
@@ -163,7 +144,7 @@ function App() {
       <div className="group bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col transform-gpu" onClick={() => handleSelectGame(game)}>
         <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0">
           <img src={game.thumbnail} alt={game.title} referrerPolicy="no-referrer" className={`absolute inset-0 w-full h-full object-cover transform-gpu ${performanceMode ? '' : 'transition-transform duration-500 group-hover:scale-110'} ${isUtility ? 'object-contain p-6' : ''}`} />
-          <button onClick={(e) => { e.stopPropagation(); setFavorites(p => p.includes(game.id) ? p.filter(id => id !== game.id) : [...p, game.id]); }} className="absolute top-3 right-3 z-10 p-2 rounded-full border border-white/10 bg-black/40 backdrop-blur-md transition-colors hover:bg-black/60">
+          <button onClick={(e) => { e.stopPropagation(); setFavorites(p => p.includes(game.id) ? p.filter(id => id !== game.id) : [...p, game.id]); }} className="absolute top-3 right-3 z-10 p-2 rounded-full border border-white/10 bg-black/40 transition-colors hover:bg-black/60">
             <Heart className={`w-4 h-4 ${favorites.includes(game.id) ? 'fill-[#10A5F5] text-[#10A5F5]' : 'text-white'}`} />
           </button>
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -231,13 +212,14 @@ function App() {
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
             exit={{ opacity: 0 }} 
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pointer-events-auto"
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-4 overflow-hidden pointer-events-auto"
+            onClick={() => setShowSettings(false)}
           >
             <motion.div 
-              initial={{ scale: 0.95 }} 
-              animate={{ scale: 1 }} 
-              exit={{ scale: 0.95 }} 
-              className="bg-zinc-900 border border-white/10 p-6 rounded-2xl max-w-sm w-full relative shadow-2xl overflow-y-auto max-h-[90vh]"
+              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              exit={{ opacity: 0, y: 20 }} 
+              className="bg-zinc-900 border border-white/10 p-6 rounded-2xl max-w-sm w-full relative shadow-2xl pointer-events-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-500 hover:text-white" />
