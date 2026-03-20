@@ -113,4 +113,11 @@ function App() {
   }, [searchQuery]);
 
   const favoriteGamesList = useMemo(() => filteredGames.filter(g => favorites.includes(g.id)), [filteredGames, favorites]);
-  const other
+  const otherGamesList = useMemo(() => filteredGames.filter(g => !favorites.includes(g.id)), [filteredGames, favorites]);
+
+  const GameCard = ({ game }) => (
+    <motion.div layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} whileHover={{ y: -4 }}
+      className="group relative bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer" onClick={() => handleSelectGame(game)}>
+      <div className={`aspect-[4/3] overflow-hidden bg-zinc-800/20 flex items-center justify-center relative ${
+          game.id === 'sandspiel' ? 'p-2' :
+          game.category === 'Community' ? 'p-6' : 'p
