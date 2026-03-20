@@ -111,7 +111,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased" style={{ '--theme': theme }}>
-      {/* HEADER - Sticky at top */}
+      {/* HEADER */}
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#09090b]/95 backdrop-blur-md h-16 flex items-center px-4">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
@@ -144,8 +144,8 @@ function App() {
         </div>
       </header>
 
-      {/* CATEGORIES BAR - Now sticks directly below header with NO GAP */}
-      <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 shadow-xl">
+      {/* CATEGORY NAV - Clean Sticky */}
+      <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4">
         <div className="max-w-7xl mx-auto py-4">
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
             {categoriesWithCounts.map(cat => (
@@ -157,9 +157,9 @@ function App() {
         </div>
       </div>
 
-      {/* MAIN CONTENT - Tightened spacing (pt-6) */}
-      <main className="max-w-7xl mx-auto px-4 pt-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* GAME GRID - Original Sizes Restored */}
+      <main className="max-w-7xl mx-auto px-4 mt-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {filteredGames.map(game => (
             <GameCard 
               key={game.id} 
@@ -173,12 +173,12 @@ function App() {
         
         {filteredGames.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-zinc-600 font-bold uppercase tracking-widest">No games found</p>
+            <p className="text-zinc-800 font-black uppercase tracking-tighter text-4xl">Nothing found</p>
           </div>
         )}
       </main>
 
-      {/* SETTINGS MODAL */}
+      {/* SETTINGS */}
       {showSettings && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => setShowSettings(false)} />
@@ -215,33 +215,33 @@ function GameCard({ game, isFav, onLaunch, onFav }) {
   const isUtility = ['request', 'report'].includes(game.id);
   
   return (
-    <div className="group bg-zinc-900/40 rounded-[1.5rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer" onClick={() => onLaunch(game)}>
-      <div className="relative aspect-video overflow-hidden bg-black/20">
+    <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer" onClick={() => onLaunch(game)}>
+      <div className="relative aspect-[4/3] overflow-hidden bg-black/20">
         <img 
           src={game.thumbnail} 
           className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 
-            ${isUtility ? 'w-24 h-24 object-contain opacity-70' : 'w-full h-full object-cover'}`} 
+            ${isUtility ? 'w-36 h-36 object-contain opacity-70' : 'w-full h-full object-cover'}`} 
           alt="" 
         />
         {!isUtility && (
-          <div className="absolute top-3 right-3 z-10">
+          <div className="absolute top-4 right-4 z-10">
             <button onClick={(e) => { e.stopPropagation(); 
               const saved = JSON.parse(localStorage.getItem('capy-favorites') || '[]');
               const next = saved.includes(game.id) ? saved.filter(id => id !== game.id) : [...saved, game.id];
               localStorage.setItem('capy-favorites', JSON.stringify(next));
               onFav(next);
-            }} className={`p-1.5 rounded-lg backdrop-blur-md transition-all ${isFav ? 'bg-[var(--theme)] text-black' : 'bg-black/40 text-white opacity-0 group-hover:opacity-100'}`}>
-              <Star className={`w-3 h-3 ${isFav ? 'fill-current' : ''}`} />
+            }} className={`p-2 rounded-xl backdrop-blur-md transition-all ${isFav ? 'bg-[var(--theme)] text-black' : 'bg-black/40 text-white opacity-0 group-hover:opacity-100'}`}>
+              <Star className={`w-3.5 h-3.5 ${isFav ? 'fill-current' : ''}`} />
             </button>
           </div>
         )}
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <Play className="w-8 h-8 text-[var(--theme)] fill-current" />
+          <Play className="w-10 h-10 text-[var(--theme)] fill-current" />
         </div>
       </div>
-      <div className="p-4">
-        <h3 className="font-bold text-xs truncate group-hover:text-[var(--theme)]">{game.title}</h3>
-        <p className="text-[8px] text-zinc-600 uppercase font-black">{game.category}</p>
+      <div className="p-5">
+        <h3 className="font-bold text-sm truncate group-hover:text-[var(--theme)]">{game.title}</h3>
+        <p className="text-[9px] text-zinc-600 uppercase font-black">{game.category}</p>
       </div>
     </div>
   );
