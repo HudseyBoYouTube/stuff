@@ -25,7 +25,6 @@ const getEditDistance = (a, b) => {
 };
 
 function App() {
-  // --- DATA LOADING SAFETY NET ---
   const [dataError, setDataError] = useState(false);
   const gamesData = useMemo(() => {
     try {
@@ -42,7 +41,6 @@ function App() {
     return link ? link.href : '/vite.svg';
   }, []);
 
-  // --- STATE ---
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
@@ -58,7 +56,6 @@ function App() {
   const [ratings, setRatings] = useState(() => JSON.parse(localStorage.getItem('capy-ratings') || '{}'));
   const [confirmClear, setConfirmClear] = useState(false);
 
-  // --- LOGIC: STEALTH & REDIRECT ---
   useEffect(() => {
     const link = document.querySelector("link[rel~='icon']");
     if (stealthMode) {
@@ -71,7 +68,6 @@ function App() {
     localStorage.setItem('capy-stealth', stealthMode);
   }, [stealthMode, originalFavicon]);
 
-  // --- LOGIC: AUTO-REDIRECT FROM EMPTY FAVORITES ---
   useEffect(() => {
     if (activeCategory === 'Favorites' && favorites.length === 0) {
       setActiveCategory('All');
@@ -86,7 +82,6 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [panicKey, panicUrl, panicEnabled]);
 
-  // --- ACTIONS ---
   const launchGame = (game) => {
     if (!game || !game.url) return;
     const newHistory = [game.id, ...history.filter(id => id !== game.id)].slice(0, 5);
@@ -130,7 +125,6 @@ function App() {
     if (randomGame) launchGame(randomGame);
   };
 
-  // --- COMPUTED DATA ---
   const filteredGames = useMemo(() => {
     const q = searchQuery.toLowerCase();
     return gamesData.filter(g => {
@@ -188,7 +182,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased" style={{ '--theme': theme }}>
-      {/* HEADER */}
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#09090b]/90 backdrop-blur-md h-16 flex items-center px-4">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setView('grid'); window.scrollTo({top: 0, behavior: 'smooth'}); }}>
@@ -196,7 +189,6 @@ function App() {
             <span className="text-xl font-black hidden md:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
           </div>
 
-          {/* CENTER SECTION WITH SEARCH AND RANDOM BUTTON */}
           <div className="flex items-center gap-2 w-full max-w-sm mx-auto">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
@@ -214,7 +206,8 @@ function App() {
 
       {view === 'grid' ? (
         <>
-          <div className="sticky top-16 z-40 bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 px-4 overflow-hidden mt-4">
+          {/* CATEGORIES BAR - pt-4 added to move it down */}
+          <div className="sticky top-16 z-40 bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 px-4 overflow-hidden pt-4">
             <div className="max-w-7xl mx-auto py-3">
               <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
                 {categoriesWithCounts.map(cat => (
@@ -267,7 +260,6 @@ function App() {
         </main>
       )}
 
-      {/* SETTINGS MODAL */}
       {showSettings && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => setShowSettings(false)} />
@@ -311,7 +303,6 @@ function GameCard({ game, isFav, rating, stats, onLaunch, onFav, onRate }) {
   const isUtility = ['request', 'report'].includes(game.id);
   return (
     <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer" onClick={() => onLaunch(game)}>
-      {/* ALL IMAGES NOW USE ASPECT-[4/3] REGARDLESS OF ID */}
       <div className="relative aspect-[4/3] overflow-hidden">
         <img src={game.thumbnail} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="" />
         {!isUtility && (
