@@ -13,6 +13,11 @@ function App() {
     catch (e) { return []; }
   }, []);
 
+  const originalFavicon = useMemo(() => {
+    const link = document.querySelector("link[rel~='icon']");
+    return link ? link.href : '/vite.svg';
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
@@ -38,10 +43,10 @@ function App() {
       if (link) link.href = "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png";
     } else {
       document.title = "Capybara Science";
-      if (link) link.href = "/vite.svg";
+      if (link) link.href = originalFavicon;
     }
     localStorage.setItem('capy-stealth', stealthMode);
-  }, [stealthMode]);
+  }, [stealthMode, originalFavicon]);
 
   // --- LOGIC: GAME LAUNCHER ---
   const launchGame = (game) => {
@@ -64,7 +69,7 @@ function App() {
         const endTime = Date.now();
         const minutes = Math.floor((endTime - startTime) / 60000);
         const statsUpdate = JSON.parse(localStorage.getItem('capy-stats') || '{}');
-        if (statsUpdate[game.id]) statsUpdate[game.id].time += (minutes || 1); // Ensure at least 1m if played
+        if (statsUpdate[game.id]) statsUpdate[game.id].time += (minutes || 1);
         localStorage.setItem('capy-stats', JSON.stringify(statsUpdate));
         setPlayStats(statsUpdate);
       };
@@ -80,27 +85,21 @@ function App() {
     }
   };
 
-  // --- SMART RECOMMENDATIONS (FOR YOU) ---
+  // --- COMPUTED DATA ---
   const recommendedGames = useMemo(() => {
     if (Object.keys(playStats).length === 0) return [];
-
-    // 1. Find the favorite category based on total minutes
     const catTotals = {};
     gamesData.forEach(g => {
       const time = playStats[g.id]?.time || 0;
       catTotals[g.category] = (catTotals[g.category] || 0) + time;
     });
-    
     const favCat = Object.entries(catTotals).sort((a, b) => b[1] - a[1])[0]?.[0];
-
-    // 2. Recommend games from that category that HAVEN'T been played yet
     return gamesData
       .filter(g => g.category === favCat && !history.includes(g.id))
-      .sort(() => 0.5 - Math.random()) // Shuffle
+      .sort(() => 0.5 - Math.random())
       .slice(0, 4);
   }, [playStats, gamesData, history]);
 
-  // --- COMPUTED DATA ---
   const recentGames = useMemo(() => {
     return history.map(id => gamesData.find(g => g.id === id)).filter(Boolean);
   }, [history, gamesData]);
@@ -114,18 +113,29 @@ function App() {
     });
   }, [searchQuery, activeCategory, gamesData, favorites]);
 
+  // CATEGORY COUNTS LOGIC
+  const categoriesWithCounts = useMemo(() => {
+    const cats = gamesData.map(g => g?.category).filter(Boolean);
+    const uniqueCats = [...new Set(cats)];
+    
+    const base = uniqueCats.map(cat => ({
+      name: cat,
+      count: gamesData.filter(g => g.category === cat).length
+    }));
+
+    const final = [{ name: 'All', count: gamesData.length }, ...base];
+    if (favorites.length > 0) {
+      final.unshift({ name: 'Favorites', count: favorites.length });
+    }
+    return final;
+  }, [gamesData, favorites]);
+
   const leaderboard = useMemo(() => {
     return [...gamesData]
       .filter(g => playStats[g.id]?.time > 0)
       .sort((a, b) => (playStats[b.id]?.time || 0) - (playStats[a.id]?.time || 0))
       .slice(0, 10);
   }, [gamesData, playStats]);
-
-  const categories = useMemo(() => {
-    const cats = gamesData.map(g => g?.category).filter(Boolean);
-    const base = ['All', ...new Set(cats)];
-    return favorites.length > 0 ? ['Favorites', ...base] : base;
-  }, [gamesData, favorites]);
 
   // --- EFFECTS ---
   useEffect(() => {
@@ -220,16 +230,21 @@ function App() {
                   </div>
                 </div>
               )}
+              {/* Category Bar with Counts */}
               <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-                {categories.map(cat => (
-                  <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-5 py-2 rounded-full text-xs font-bold border shrink-0 transition-all ${activeCategory === cat ? 'bg-[var(--theme)] border-[var(--theme)] text-black shadow-lg shadow-[var(--theme)]/20' : 'bg-white/5 border-white/10 text-zinc-400'}`}>{cat}</button>
+                {categoriesWithCounts.map(cat => (
+                  <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-4 py-2 rounded-full text-xs font-bold border shrink-0 transition-all flex items-center gap-2 ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black shadow-lg shadow-[var(--theme)]/20' : 'bg-white/5 border-white/10 text-zinc-400'}`}>
+                    {cat.name}
+                    <span className={`px-1.5 py-0.5 rounded-md text-[9px] ${activeCategory === cat.name ? 'bg-black/20 text-black' : 'bg-white/10 text-zinc-500'}`}>
+                      {cat.count}
+                    </span>
+                  </button>
                 ))}
               </div>
             </div>
           </div>
 
           <main className="max-w-7xl mx-auto px-4 mt-8">
-            {/* RECOMMENDED SECTION */}
             {recommendedGames.length > 0 && activeCategory === 'All' && !searchQuery && (
               <div className="mb-12">
                 <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4 flex items-center gap-2">
