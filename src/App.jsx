@@ -97,27 +97,30 @@ function App() {
   };
 
   const GameCard = ({ game }) => {
-    // Reverting logic for Request/Report images to not be cropped
     const isUtility = ['request', 'report'].includes(game.id);
     const timeSpent = playtimes[game.id] || 0;
     
     return (
-      <motion.div whileHover={{ y: -5 }} className="group bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col shadow-lg" onClick={() => handleSelectGame(game)}>
+      <div 
+        className="group bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col shadow-lg transition-all duration-300 hover:translate-y-[-4px] hover:shadow-[#10A5F5]/10"
+        style={{ backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}
+        onClick={() => handleSelectGame(game)}
+      >
         <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0">
           <img 
             src={game.thumbnail} 
             alt={game.title} 
-            className={`absolute inset-0 w-full h-full transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'object-contain p-6' : 'object-cover'}`} 
+            className={`absolute inset-0 w-full h-full transition-transform duration-500 ease-out group-hover:scale-110 will-change-transform ${isUtility ? 'object-contain p-6' : 'object-cover'}`} 
           />
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center shadow-xl">
+          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center shadow-xl transform transition-transform duration-300 scale-90 group-hover:scale-100">
               <Play className="w-6 h-6 text-black fill-current" />
             </div>
           </div>
         </div>
         <div className="p-4 flex-1">
           <div className="flex items-center justify-between mb-1 gap-2">
-            <h3 className="font-bold text-white truncate text-sm">{game.title}</h3>
+            <h3 className="font-bold text-white truncate text-sm transition-colors group-hover:text-[#10A5F5]">{game.title}</h3>
             <span className="text-[9px] font-extrabold uppercase text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md border border-[#10A5F5]/20">{game.category}</span>
           </div>
           <div className="flex items-center justify-between">
@@ -130,7 +133,7 @@ function App() {
             )}
           </div>
         </div>
-      </motion.div>
+      </div>
     );
   };
 
@@ -148,7 +151,6 @@ function App() {
           </div>
           <div className="flex items-center gap-4 justify-self-end">
              <div className="hidden lg:flex items-center gap-3 px-4 py-1.5 bg-white/5 border border-white/5 rounded-full">
-              {/* Adding Date Back */}
               <div className="flex items-center gap-1.5 border-r border-white/10 pr-3">
                 <Calendar className="w-3.5 h-3.5 text-zinc-500" />
                 <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
