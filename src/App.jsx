@@ -210,7 +210,12 @@ function App() {
               <div className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-[#10A5F5]" />
                 <span className="text-[11px] font-bold text-zinc-200">
-                  {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {/* Clean time: AM/PM included, no leading zero */}
+                  {currentTime.toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    minute: '2-digit', 
+                    hour12: true 
+                  })}
                 </span>
               </div>
             </div>
@@ -223,7 +228,6 @@ function App() {
         </div>
       </header>
 
-      {/* Rest of the component remains the same */}
       <div className="max-w-7xl mx-auto px-4 mt-6">
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
           <Filter className="w-4 h-4 text-zinc-500 shrink-0" />
