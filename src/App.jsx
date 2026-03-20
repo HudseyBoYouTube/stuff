@@ -1,9 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
-  ArrowUp, Star, Trash2, Clock, Palette, EyeOff, Eye, 
-  Trophy, LayoutGrid, ChevronRight, History, Keyboard, Dices, 
-  SearchX, RotateCcw, Sparkles, ThumbsUp, ThumbsDown, Heart, AlertTriangle
+  Star, Trash2, Clock, Palette, EyeOff, Eye, 
+  Trophy, Keyboard, Dices, SearchX, ThumbsUp, ThumbsDown, AlertTriangle
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -68,7 +67,6 @@ function App() {
     localStorage.setItem('capy-stealth', stealthMode);
   }, [stealthMode, originalFavicon]);
 
-  // AUTO-REDIRECT LOGIC
   useEffect(() => {
     if (activeCategory === 'Favorites' && favorites.length === 0) {
       setActiveCategory('All');
@@ -92,7 +90,6 @@ function App() {
     const startTime = Date.now();
     const win = window.open('about:blank', '_blank');
     if (win) {
-      // SET TAB NAME TO DO NOT REFRESH
       win.document.title = "DO NOT REFRESH";
       win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
       const iframe = win.document.createElement('iframe');
@@ -192,12 +189,12 @@ function App() {
             <span className="text-xl font-black hidden md:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
           </div>
 
-          {/* SEARCH BAR & RANDOM BUTTON SIDE-BY-SIDE */}
           <div className="flex items-center gap-2 w-full max-w-sm mx-auto">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
               <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-xs outline-none focus:border-[var(--theme)]/50 text-center" />
             </div>
+            {/* RANDOM BUTTON NEXT TO SEARCH */}
             <button onClick={launchRandom} className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all shrink-0"><Dices className="w-5 h-5" /></button>
           </div>
 
@@ -210,8 +207,8 @@ function App() {
 
       {view === 'grid' ? (
         <>
-          {/* CATEGORIES BAR - Added mt-6 to push it down */}
-          <div className="sticky top-16 z-40 bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 px-4 overflow-hidden mt-6">
+          {/* CATEGORIES BAR - Pushed down with mt-10 */}
+          <div className="sticky top-16 z-40 bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 px-4 overflow-hidden mt-10">
             <div className="max-w-7xl mx-auto py-3">
               <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
                 {categoriesWithCounts.map(cat => (
@@ -305,14 +302,22 @@ function App() {
 
 function GameCard({ game, isFav, rating, stats, onLaunch, onFav, onRate }) {
   const isUtility = ['request', 'report'].includes(game.id);
+  
   return (
     <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer" onClick={() => onLaunch(game)}>
-      <div className="relative aspect-[4/3] overflow-hidden">
-        <img src={game.thumbnail} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="" />
+      <div className="relative aspect-[4/3] overflow-hidden bg-black/20">
         
-        {/* FAVORITE BUTTON POSITIONED ON THE RIGHT SIDE */}
+        {/* REVERTED IMAGE SIZES FOR UTILITY ONLY */}
+        <img 
+          src={game.thumbnail} 
+          className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 
+            ${isUtility ? 'w-24 h-24 object-contain opacity-60' : 'w-full h-full object-cover'}`} 
+          alt="" 
+        />
+        
         {!isUtility && (
           <div className="absolute top-4 left-4 right-4 flex justify-end items-start z-10">
+            {/* STAR ON RIGHT SIDE */}
             <button onClick={(e) => { e.stopPropagation(); 
               const saved = JSON.parse(localStorage.getItem('capy-favorites') || '[]');
               const next = saved.includes(game.id) ? saved.filter(id => id !== game.id) : [...saved, game.id];
