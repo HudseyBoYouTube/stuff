@@ -26,9 +26,15 @@ function App() {
   const applyCloak = (url) => {
     try {
       const domain = new URL(url.startsWith('http') ? url : `https://${url}`).hostname;
-      const cleanName = domain.replace('www.', '').split('.')[0]; // Get 'wikipedia' from 'www.wikipedia.org'
-      const formattedTitle = cleanName.charAt(0).toUpperCase() + cleanName.slice(1); // 'Wikipedia'
+      // 1. Remove www. and grab the first part of the domain
+      const rawName = domain.replace('www.', '').split('.')[0]; 
       
+      // 2. Handle dashes (like google-classroom) and capitalize each word
+      const formattedTitle = rawName
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+
       const icon = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
       
       document.title = formattedTitle;
