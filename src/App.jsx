@@ -144,8 +144,13 @@ function App() {
     const isUtility = ['request', 'report'].includes(game.id);
     const timeSpent = playtimes[game.id] || 0;
     return (
-      <motion.div layout={!performanceMode} initial={performanceMode ? { opacity: 1 } : { opacity: 0 }} animate={{ opacity: 1 }} whileHover={performanceMode ? {} : { y: -4 }}
-        className="group bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col" onClick={() => handleSelectGame(game)}>
+      <motion.div 
+        initial={{ opacity: 0 }} 
+        animate={{ opacity: 1 }} 
+        exit={{ opacity: 0 }}
+        whileHover={performanceMode ? {} : { y: -4 }}
+        className="group bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col" 
+        onClick={() => handleSelectGame(game)}>
         <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0">
           <img src={game.thumbnail} alt={game.title} referrerPolicy="no-referrer" className={`absolute inset-0 w-full h-full ${performanceMode ? '' : 'transition-transform duration-500 group-hover:scale-110'} ${isUtility ? 'object-contain p-6' : 'object-cover'}`} />
           <button onClick={(e) => { e.stopPropagation(); setFavorites(p => p.includes(game.id) ? p.filter(id => id !== game.id) : [...p, game.id]); }} 
@@ -193,7 +198,6 @@ function App() {
           </div>
 
           <div className="flex items-center gap-4 justify-self-end">
-            {/* Extended System Dashboard */}
             <div className="hidden lg:flex items-center gap-3 px-4 py-1.5 bg-white/5 border border-white/5 rounded-full">
               <div className="flex items-center gap-1.5 border-r border-white/10 pr-3">
                 <Calendar className="w-3.5 h-3.5 text-zinc-500" />
@@ -210,7 +214,6 @@ function App() {
               <div className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-[#10A5F5]" />
                 <span className="text-[11px] font-bold text-zinc-200">
-                  {/* Clean time: AM/PM included, no leading zero */}
                   {currentTime.toLocaleTimeString('en-US', { 
                     hour: 'numeric', 
                     minute: '2-digit', 
@@ -243,7 +246,7 @@ function App() {
       <AnimatePresence>
         {showSettings && (
           <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 ${performanceMode ? '' : 'backdrop-blur-sm'}`}>
-            <motion.div initial={performanceMode ? {} : { scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} className="bg-black border border-white/10 p-6 rounded-2xl max-w-sm w-full relative shadow-2xl">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-black border border-white/10 p-6 rounded-2xl max-w-sm w-full relative shadow-2xl">
               <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-500" />
               <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings</h2>
               <div className="space-y-4 text-white">
@@ -265,8 +268,33 @@ function App() {
       </AnimatePresence>
 
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-12">
-        {favs.length > 0 && (<section><div className="flex items-center gap-2 mb-6"><Heart className="w-5 h-5 text-[#10A5F5] fill-[#10A5F5]" /><h2 className="text-lg font-bold">Favorites</h2></div><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"><AnimatePresence mode={performanceMode ? undefined : "popLayout"}>{favs.map(g => <GameCard key={g.id} game={g} />)}</AnimatePresence></div></section>)}
-        <section>{favs.length > 0 && <div className="flex items-center gap-2 mb-6 text-zinc-500"><Gamepad2 className="w-5 h-5" /><h2 className="text-lg font-bold">All Games</h2></div>}<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"><AnimatePresence mode={performanceMode ? undefined : "popLayout"}>{others.map(g => <GameCard key={g.id} game={g} />)}</AnimatePresence></div></section>
+        {favs.length > 0 && (
+          <section>
+            <div className="flex items-center gap-2 mb-6">
+              <Heart className="w-5 h-5 text-[#10A5F5] fill-[#10A5F5]" />
+              <h2 className="text-lg font-bold">Favorites</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <AnimatePresence>
+                {favs.map(g => <GameCard key={g.id} game={g} />)}
+              </AnimatePresence>
+            </div>
+          </section>
+        )}
+        
+        <section>
+          {favs.length > 0 && (
+            <div className="flex items-center gap-2 mb-6 text-zinc-500">
+              <Gamepad2 className="w-5 h-5" />
+              <h2 className="text-lg font-bold">All Games</h2>
+            </div>
+          )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <AnimatePresence>
+              {others.map(g => <GameCard key={g.id} game={g} />)}
+            </AnimatePresence>
+          </div>
+        </section>
       </main>
     </div>
   );
