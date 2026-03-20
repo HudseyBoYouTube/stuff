@@ -70,11 +70,6 @@ function App() {
     } catch (e) { document.title = 'Capybara Science'; }
   };
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('light', isLightMode);
-    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
-  }, [isLightMode]);
-
   const categories = useMemo(() => {
     const cats = (gamesData || []).map(g => g.category);
     return ['All', ...new Set(cats.filter(Boolean))];
@@ -102,12 +97,18 @@ function App() {
   };
 
   const GameCard = ({ game }) => {
+    // Reverting logic for Request/Report images to not be cropped
     const isUtility = ['request', 'report'].includes(game.id);
     const timeSpent = playtimes[game.id] || 0;
+    
     return (
       <motion.div whileHover={{ y: -5 }} className="group bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col shadow-lg" onClick={() => handleSelectGame(game)}>
         <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0">
-          <img src={game.thumbnail} alt={game.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+          <img 
+            src={game.thumbnail} 
+            alt={game.title} 
+            className={`absolute inset-0 w-full h-full transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'object-contain p-6' : 'object-cover'}`} 
+          />
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center shadow-xl">
               <Play className="w-6 h-6 text-black fill-current" />
@@ -147,11 +148,21 @@ function App() {
           </div>
           <div className="flex items-center gap-4 justify-self-end">
              <div className="hidden lg:flex items-center gap-3 px-4 py-1.5 bg-white/5 border border-white/5 rounded-full">
+              {/* Adding Date Back */}
+              <div className="flex items-center gap-1.5 border-r border-white/10 pr-3">
+                <Calendar className="w-3.5 h-3.5 text-zinc-500" />
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
+                  {currentTime.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
+                </span>
+              </div>
               <div className="flex items-center gap-1.5 border-r border-white/10 pr-3">
                 {battery.charging ? <BatteryCharging className="w-4 h-4 text-emerald-500" /> : <BatteryFull className="w-4 h-4 text-[#10A5F5]" />}
                 <span className="text-[11px] font-bold text-zinc-400">{battery.level}%</span>
               </div>
-              <div className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-[#10A5F5]" /><span className="text-[11px] font-bold text-zinc-200">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></div>
+              <div className="flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-[#10A5F5]" />
+                <span className="text-[11px] font-bold text-zinc-200">{currentTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
+              </div>
             </div>
             <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-400 hover:text-[#10A5F5] transition-colors"><Settings className="w-5 h-5" /></button>
           </div>
@@ -164,11 +175,11 @@ function App() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowSettings(false)} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-sm w-full relative shadow-2xl z-10 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
               <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-500 hover:text-white" />
-              <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings</h2>
+              <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-white"><ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings</h2>
               
               <div className="space-y-5">
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded-2xl border border-white/10">
-                  <div className="flex items-center gap-2 text-sm">{performanceMode ? <ZapOff className="w-4 h-4 text-yellow-500" /> : <Zap className="w-4 h-4 text-yellow-500" />} Performance Mode</div>
+                  <div className="flex items-center gap-2 text-sm text-white">{performanceMode ? <ZapOff className="w-4 h-4 text-yellow-500" /> : <Zap className="w-4 h-4 text-yellow-500" />} Performance Mode</div>
                   <button onClick={() => setPerformanceMode(!performanceMode)} className={`w-10 h-5 rounded-full relative transition-colors ${performanceMode ? 'bg-[#10A5F5]' : 'bg-zinc-700'}`}><div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${performanceMode ? 'left-6' : 'left-1'}`} /></button>
                 </div>
 
