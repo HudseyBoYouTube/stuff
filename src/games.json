@@ -900,7 +900,7 @@
     "title": "Animals Volleyball",
     "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/animals-volleyball/",
     "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSybATHl8qbwbiJyNd0jsT3GJi-xk7T75MGGA&s",
-    "category": "Fun"
+    "category": "Sports"
   },
   {
     "id": "funnyshooter2",
@@ -957,6 +957,41 @@
     "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/super-liquid-soccer/",
     "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6vNQDe-vXlvkONIC4QwsTVkIBtVCOcQezrw&s",
     "category": "Sports"
+  },
+  {
+    "id": "crazycars",
+    "title": "Crazy Cars",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/crazy-cars/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/2bc8004fcbb4387908a636e2a9d9ab4a/crazy-cars.png",
+    "category": "Driving"
+  },
+  {
+    "id": "dreadheadparkour",
+    "title": "Dreadhead Parkour",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/dreadhead-parkour/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8E64pK7_M7ZFYwTi3cDRJhguQNiRcHbdHWw&s",
+    "category": "Parkour"
+  },
+  {
+    "id": "fakevirus",
+    "title": "Fake Virus",
+    "url": "https://neatliterature.majoitus.ee/books/files/fake-virus/index.html",
+    "thumbnail": "https://cdn-icons-png.flaticon.com/512/3022/3022151.png",
+    "category": "Prank"
+  },
+  {
+    "id": "googlesnake",
+    "title": "Google Snake",
+    "url": "https://neatliterature.majoitus.ee/books/files/google-snake/index.html",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSqJ8g7ciqYtlon-LpDTjrVpsgaBwvdL38Bg&s",
+    "category": "Classic"
+  },
+  {
+    "id": "jetpackjoyride",
+    "title": "Jetpack Joyride",
+    "url": "https://neatliterature.majoitus.ee/books/files/jetpack-joyride/index.html",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMp6a83tWwzGzLQdtI12IvUwzOThFf2nMMIA&s",
+    "category": "Easy"
   }
 ]
     
