@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Gamepad2, Play, Settings, X, ShieldAlert, Keyboard, Heart, Shuffle, Sun, Moon } from 'lucide-react';
+import { Search, Gamepad2, Play, Settings, X, ShieldAlert, Heart, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import gamesData from './games.json';
 
@@ -77,35 +77,39 @@ function App() {
   const favs = useMemo(() => filteredGames.filter(g => favorites.includes(g.id)), [filteredGames, favorites]);
   const others = useMemo(() => filteredGames.filter(g => !favorites.includes(g.id)), [filteredGames, favorites]);
 
-  const GameCard = ({ game }) => (
-    <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} whileHover={{ y: -4 }}
-      className="group bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col" onClick={() => handleSelectGame(game)}>
-      <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0">
-        <img 
-          src={game.thumbnail} 
-          alt={game.title} 
-          referrerPolicy="no-referrer" 
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-        />
-        <button onClick={(e) => { e.stopPropagation(); setFavorites(p => p.includes(game.id) ? p.filter(id => id !== game.id) : [...p, game.id]); }} 
-          className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 transition-colors hover:bg-black/60">
-          <Heart className={`w-4 h-4 ${favorites.includes(game.id) ? 'fill-[#10A5F5] text-[#10A5F5]' : 'text-white'}`} />
-        </button>
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-transform">
-            <Play className="w-6 h-6 text-black fill-current" />
+  const GameCard = ({ game }) => {
+    const isUtility = ['request', 'report'].includes(game.id);
+
+    return (
+      <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} whileHover={{ y: -4 }}
+        className="group bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col" onClick={() => handleSelectGame(game)}>
+        <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0">
+          <img 
+            src={game.thumbnail} 
+            alt={game.title} 
+            referrerPolicy="no-referrer" 
+            className={`absolute inset-0 w-full h-full transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'object-contain p-6' : 'object-cover'}`} 
+          />
+          <button onClick={(e) => { e.stopPropagation(); setFavorites(p => p.includes(game.id) ? p.filter(id => id !== game.id) : [...p, game.id]); }} 
+            className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 transition-colors hover:bg-black/60">
+            <Heart className={`w-4 h-4 ${favorites.includes(game.id) ? 'fill-[#10A5F5] text-[#10A5F5]' : 'text-white'}`} />
+          </button>
+          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-transform">
+              <Play className="w-6 h-6 text-black fill-current" />
+            </div>
           </div>
         </div>
-      </div>
-      <div className="p-4 flex-1">
-        <div className="flex items-center justify-between mb-1 gap-2">
-          <h3 className="font-semibold text-[var(--text-main)] group-hover:text-[#10A5F5] truncate text-sm">{game.title}</h3>
-          <span className="text-[9px] font-bold uppercase text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md shrink-0 border border-[#10A5F5]/20">{game.category}</span>
+        <div className="p-4 flex-1">
+          <div className="flex items-center justify-between mb-1 gap-2">
+            <h3 className="font-semibold text-[var(--text-main)] group-hover:text-[#10A5F5] truncate text-sm">{game.title}</h3>
+            <span className="text-[9px] font-bold uppercase text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md shrink-0 border border-[#10A5F5]/20">{game.category}</span>
+          </div>
+          <p className="text-[11px] text-zinc-500">{isUtility ? 'Click to fill out' : 'Click to play'}</p>
         </div>
-        <p className="text-[11px] text-zinc-500">{['request', 'report'].includes(game.id) ? 'Click to fill out' : 'Click to play'}</p>
-      </div>
-    </motion.div>
-  );
+      </motion.div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] transition-colors duration-300 pb-20">
@@ -159,7 +163,7 @@ function App() {
                 <select onChange={(e) => {
                   const p = presets[e.target.value];
                   if(p){ document.title=p.title; let l=document.querySelector("link[rel*='icon']"); if(!l){l=document.createElement('link');l.rel='icon';document.head.appendChild(l);} l.href=p.favicon; }
-                }} className="w-full bg-zinc-900 border border-white/10 rounded-xl p-3 text-sm outline-none">
+                }} className="w-full bg-zinc-900 border border-white/10 rounded-xl p-3 text-sm outline-none text-white">
                   <option value="none">Presets (Default Title)</option>
                   <option value="powerschool">PowerSchool</option>
                   <option value="google">Google Drive</option>
