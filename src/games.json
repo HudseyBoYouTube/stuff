@@ -669,7 +669,7 @@
     "title": "Super Mario 64",
     "url": "https://neatliterature.majoitus.ee/books/files/sm64/index.html",
     "thumbnail": "https://upload.wikimedia.org/wikipedia/en/thumb/e/e9/Super_Mario_64.png/250px-Super_Mario_64.png",
-    "category": "Platformer"
+    "category": "Classic"
   },
   {
     "id": "10minutestilldawn",
@@ -992,6 +992,13 @@
     "url": "https://neatliterature.majoitus.ee/books/files/jetpack-joyride/index.html",
     "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMp6a83tWwzGzLQdtI12IvUwzOThFf2nMMIA&s",
     "category": "Easy"
+  },
+  {
+    "id": "unfairmario",
+    "title": "Unfair Mario",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/echo/unfairmario/",
+    "thumbnail": "https://m.media-amazon.com/images/M/MV5BYjJhMGZjY2QtYWQ4YS00YmQyLTlhMjUtZGNlZTI1N2VlNGRjXkEyXkFqcGc@._V1_.jpg",
+    "category": "Meme"
   }
 ]
     
