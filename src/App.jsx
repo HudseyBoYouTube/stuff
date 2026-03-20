@@ -205,8 +205,8 @@ function App() {
 
       {view === 'grid' ? (
         <>
-          {/* CATEGORIES BAR - Pushed even lower with mt-16 */}
-          <div className="sticky top-16 z-40 bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 px-4 overflow-hidden mt-16">
+          {/* CATEGORIES BAR - Pushed even lower with mt-24 */}
+          <div className="sticky top-16 z-40 bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 px-4 overflow-hidden mt-24">
             <div className="max-w-7xl mx-auto py-3">
               <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
                 {categoriesWithCounts.map(cat => (
@@ -298,7 +298,7 @@ function GameCard({ game, isFav, rating, stats, onLaunch, onFav, onRate }) {
     <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer" onClick={() => onLaunch(game)}>
       <div className="relative aspect-[4/3] overflow-hidden bg-black/20">
         
-        {/* ICON SIZE ADJUSTED: w-36 h-36 for Request/Report */}
+        {/* ICON SIZE: w-36 h-36 for Utility icons */}
         <img 
           src={game.thumbnail} 
           className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 
