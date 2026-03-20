@@ -47,9 +47,6 @@ function App() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
   const [view, setView] = useState('grid'); 
-  const [showBackToTop, setShowBackToTop] = useState(false);
-  const [confirmClear, setConfirmClear] = useState(false);
-
   const [theme, setTheme] = useState(() => localStorage.getItem('capy-theme') || '#10A5F5');
   const [stealthMode, setStealthMode] = useState(() => localStorage.getItem('capy-stealth') === 'true');
   const [panicUrl, setPanicUrl] = useState(localStorage.getItem('panic-url') || 'https://classroom.google.com');
@@ -59,6 +56,7 @@ function App() {
   const [playStats, setPlayStats] = useState(() => JSON.parse(localStorage.getItem('capy-stats') || '{}'));
   const [history, setHistory] = useState(() => JSON.parse(localStorage.getItem('capy-history') || '[]'));
   const [ratings, setRatings] = useState(() => JSON.parse(localStorage.getItem('capy-ratings') || '{}'));
+  const [confirmClear, setConfirmClear] = useState(false);
 
   // --- LOGIC: STEALTH & REDIRECT ---
   useEffect(() => {
@@ -72,6 +70,13 @@ function App() {
     }
     localStorage.setItem('capy-stealth', stealthMode);
   }, [stealthMode, originalFavicon]);
+
+  // --- LOGIC: AUTO-REDIRECT FROM EMPTY FAVORITES ---
+  useEffect(() => {
+    if (activeCategory === 'Favorites' && favorites.length === 0) {
+      setActiveCategory('All');
+    }
+  }, [favorites, activeCategory]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -91,6 +96,7 @@ function App() {
     const startTime = Date.now();
     const win = window.open('about:blank', '_blank');
     if (win) {
+      win.document.title = "DO NOT REFRESH";
       win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
       const iframe = win.document.createElement('iframe');
       iframe.src = game.url;
@@ -98,7 +104,6 @@ function App() {
       iframe.allow = "fullscreen";
       win.document.body.appendChild(iframe);
       
-      // Tracking play time
       win.onbeforeunload = () => {
         const endTime = Date.now();
         const minutes = Math.floor((endTime - startTime) / 60000);
@@ -170,15 +175,12 @@ function App() {
     return final;
   }, [gamesData, favorites, ratings]);
 
-  // --- RENDER ERROR STATE ---
   if (dataError || gamesData.length === 0) {
     return (
       <div className="min-h-screen bg-[#09090b] text-white flex flex-col items-center justify-center p-6 text-center">
         <AlertTriangle className="w-16 h-16 text-yellow-500 mb-4" />
         <h1 className="text-2xl font-black">Data Error</h1>
-        <p className="text-zinc-500 max-w-md mt-2">
-          The app couldn't load <b>games.json</b>.
-        </p>
+        <p className="text-zinc-500 max-w-md mt-2">The app couldn't load <b>games.json</b>.</p>
         <button onClick={() => window.location.reload()} className="mt-8 px-6 py-2 bg-white/10 rounded-full font-bold hover:bg-white/20 transition-all">Retry Load</button>
       </div>
     );
@@ -194,13 +196,16 @@ function App() {
             <span className="text-xl font-black hidden md:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
           </div>
 
-          <div className="relative w-full max-w-sm mx-auto">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-            <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-xs outline-none focus:border-[var(--theme)]/50 text-center" />
+          {/* CENTER SECTION WITH SEARCH AND RANDOM BUTTON */}
+          <div className="flex items-center gap-2 w-full max-w-sm mx-auto">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+              <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-xs outline-none focus:border-[var(--theme)]/50 text-center" />
+            </div>
+            <button onClick={launchRandom} className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all shrink-0"><Dices className="w-5 h-5" /></button>
           </div>
 
           <div className="flex items-center justify-end gap-2">
-             <button onClick={launchRandom} className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all"><Dices className="w-5 h-5" /></button>
              <button onClick={() => setView(view === 'grid' ? 'leaderboard' : 'grid')} className={`p-2 border rounded-full transition-all ${view === 'leaderboard' ? 'bg-[var(--theme)] text-black' : 'bg-white/5 border-white/10'}`}><Trophy className="w-5 h-5" /></button>
              <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-500 hover:text-[var(--theme)]"><Settings className="w-6 h-6" /></button>
           </div>
@@ -209,8 +214,7 @@ function App() {
 
       {view === 'grid' ? (
         <>
-          {/* CATEGORIES */}
-          <div className="sticky top-16 z-40 bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 px-4 overflow-hidden">
+          <div className="sticky top-16 z-40 bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 px-4 overflow-hidden mt-4">
             <div className="max-w-7xl mx-auto py-3">
               <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
                 {categoriesWithCounts.map(cat => (
@@ -222,7 +226,6 @@ function App() {
             </div>
           </div>
 
-          {/* GRID */}
           <main className="max-w-7xl mx-auto px-4 mt-8">
             {filteredGames.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -240,7 +243,6 @@ function App() {
           </main>
         </>
       ) : (
-        /* LEADERBOARD VIEW */
         <main className="max-w-3xl mx-auto px-4 mt-12">
           <h1 className="text-3xl font-black mb-8 flex items-center gap-3">Hall of Fame</h1>
           <div className="space-y-3">
@@ -272,7 +274,6 @@ function App() {
           <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative z-10 shadow-2xl">
             <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-500" />
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-[var(--theme)]" /> System Config</h2>
-            
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 scrollbar-hide">
                <div className="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between">
                   <div className="text-sm flex items-center gap-2">{stealthMode ? <EyeOff className="w-4 h-4 text-[var(--theme)]" /> : <Eye className="w-4 h-4" />} Tab Disguise</div>
@@ -280,17 +281,13 @@ function App() {
                     <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${stealthMode ? 'left-6' : 'left-1'}`} />
                   </button>
                </div>
-
                <div className="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm flex items-center gap-2 font-bold"><Keyboard className="w-4 h-4 text-red-500" /> Panic Key</div>
-                  </div>
+                  <div className="text-sm flex items-center gap-2 font-bold"><Keyboard className="w-4 h-4 text-red-500" /> Panic Key</div>
                   <div className="grid grid-cols-2 gap-2">
                     <input type="text" maxLength="1" value={panicKey} onChange={(e) => {setPanicKey(e.target.value); localStorage.setItem('panic-key', e.target.value);}} className="bg-black/40 p-2 rounded-xl border border-white/5 text-xs outline-none text-center uppercase" />
                     <input type="text" value={panicUrl} onChange={(e) => {setPanicUrl(e.target.value); localStorage.setItem('panic-url', e.target.value);}} className="bg-black/40 p-2 rounded-xl border border-white/5 text-xs outline-none" />
                   </div>
                </div>
-
                <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
                   <div className="text-sm mb-3 font-bold flex items-center gap-2"><Palette className="w-4 h-4" /> Theme Color</div>
                   <div className="flex gap-3">
@@ -299,7 +296,6 @@ function App() {
                     ))}
                   </div>
                </div>
-
                <button onClick={() => { if(confirmClear) { localStorage.clear(); window.location.reload(); } else setConfirmClear(true); }} className={`w-full p-4 rounded-2xl border text-xs font-bold transition-all ${confirmClear ? 'bg-red-500/20 border-red-500 text-red-500' : 'bg-white/5 border-white/10 text-zinc-500'}`}>
                  <Trash2 className="w-4 h-4 inline mr-2" /> {confirmClear ? "Wipe Local Data?" : "Clear App Cache"}
                </button>
@@ -315,11 +311,11 @@ function GameCard({ game, isFav, rating, stats, onLaunch, onFav, onRate }) {
   const isUtility = ['request', 'report'].includes(game.id);
   return (
     <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer" onClick={() => onLaunch(game)}>
+      {/* ALL IMAGES NOW USE ASPECT-[4/3] REGARDLESS OF ID */}
       <div className="relative aspect-[4/3] overflow-hidden">
         <img src={game.thumbnail} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="" />
-        
         {!isUtility && (
-          <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-10">
+          <div className="absolute top-4 left-4 right-4 flex justify-end items-start z-10">
             <button onClick={(e) => { e.stopPropagation(); 
               const saved = JSON.parse(localStorage.getItem('capy-favorites') || '[]');
               const next = saved.includes(game.id) ? saved.filter(id => id !== game.id) : [...saved, game.id];
@@ -330,7 +326,6 @@ function GameCard({ game, isFav, rating, stats, onLaunch, onFav, onRate }) {
             </button>
           </div>
         )}
-
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <Play className="w-10 h-10 text-[var(--theme)] fill-current" />
         </div>
