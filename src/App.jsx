@@ -95,17 +95,15 @@ function App() {
     
     return (
       <div 
-        className="group relative bg-zinc-900/50 rounded-2xl overflow-hidden cursor-pointer flex flex-col border border-transparent hover:border-[#10A5F5]"
+        className="group relative bg-zinc-900/50 rounded-2xl overflow-hidden cursor-pointer flex flex-col border border-white/5 hover:border-[#10A5F5] transition-colors duration-0"
         onClick={() => handleSelectGame(game)}
       >
-        {/* THUMBNAIL AREA - No scaling or movement */}
         <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0 pointer-events-none">
           <img 
             src={game.thumbnail} 
             alt={game.title} 
             className={`absolute inset-0 w-full h-full pointer-events-none ${isUtility ? 'object-contain p-8' : 'object-cover'}`}
           />
-          {/* Overlay - Instant swap */}
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center pointer-events-none">
             <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center">
               <Play className="w-6 h-6 text-black fill-current" />
@@ -113,7 +111,6 @@ function App() {
           </div>
         </div>
         
-        {/* INFO AREA - No movement */}
         <div className="p-4 flex-1 pointer-events-none">
           <div className="flex items-center justify-between mb-1 gap-2">
             <h3 className="font-bold text-white truncate text-sm group-hover:text-[#10A5F5]">
@@ -140,7 +137,8 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased">
+    // overflow-y-scroll forces a stable layout so the page doesn't shift when content loads
+    <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased overflow-y-scroll">
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#09090b]/90 backdrop-blur-md h-16 flex items-center px-4">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
           <div className="flex items-center gap-2">
@@ -198,10 +196,31 @@ function App() {
           ))}
         </div>
 
+        {/* Grid is static to prevent initial paint flickering */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {filteredGames.map(game => <GameCard key={game.id} game={game} />)}
         </div>
       </main>
+
+      <AnimatePresence>
+        {showSettings && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowSettings(false)} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-sm w-full relative shadow-2xl z-10 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-500 hover:text-white" />
+              <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-white"><ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings</h2>
+              
+              <div className="space-y-5">
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-2xl border border-white/10">
+                  <div className="flex items-center gap-2 text-sm text-white">{performanceMode ? <ZapOff className="w-4 h-4 text-yellow-500" /> : <Zap className="w-4 h-4 text-yellow-500" />} Performance Mode</div>
+                  <button onClick={() => setPerformanceMode(!performanceMode)} className={`w-10 h-5 rounded-full relative transition-colors ${performanceMode ? 'bg-[#10A5F5]' : 'bg-zinc-700'}`}><div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${performanceMode ? 'left-6' : 'left-1'}`} /></button>
+                </div>
+                {/* REST OF SETTINGS... */}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
