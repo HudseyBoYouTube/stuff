@@ -144,13 +144,13 @@ function App() {
         </div>
       </header>
 
-      {/* COMPACT CATEGORY NAV */}
+      {/* ULTRA COMPACT CATEGORY NAV */}
       <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4">
-        <div className="max-w-7xl mx-auto py-2"> {/* Reduced padding from py-4 to py-2 */}
+        <div className="max-w-7xl mx-auto py-1.5"> {/* Shrunk vertical padding to 1.5 */}
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
             {categoriesWithCounts.map(cat => (
-              <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500'}`}>
-                {cat.name} <span className="opacity-50 ml-1">{cat.count}</span>
+              <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-2.5 py-1.5 rounded-full text-[9px] font-black uppercase border shrink-0 transition-all ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500'}`}>
+                {cat.name} <span className="opacity-50 ml-0.5">{cat.count}</span>
               </button>
             ))}
           </div>
@@ -158,7 +158,7 @@ function App() {
       </div>
 
       {/* GAME GRID */}
-      <main className="max-w-7xl mx-auto px-4 mt-4"> {/* Reduced margin from mt-6 to mt-4 */}
+      <main className="max-w-7xl mx-auto px-4 mt-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {filteredGames.map(game => (
             <GameCard 
