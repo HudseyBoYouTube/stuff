@@ -68,6 +68,7 @@ function App() {
     localStorage.setItem('capy-stealth', stealthMode);
   }, [stealthMode, originalFavicon]);
 
+  // AUTO-REDIRECT LOGIC
   useEffect(() => {
     if (activeCategory === 'Favorites' && favorites.length === 0) {
       setActiveCategory('All');
@@ -91,6 +92,7 @@ function App() {
     const startTime = Date.now();
     const win = window.open('about:blank', '_blank');
     if (win) {
+      // SET TAB NAME TO DO NOT REFRESH
       win.document.title = "DO NOT REFRESH";
       win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
       const iframe = win.document.createElement('iframe');
@@ -182,6 +184,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased" style={{ '--theme': theme }}>
+      {/* HEADER */}
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#09090b]/90 backdrop-blur-md h-16 flex items-center px-4">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setView('grid'); window.scrollTo({top: 0, behavior: 'smooth'}); }}>
@@ -189,6 +192,7 @@ function App() {
             <span className="text-xl font-black hidden md:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
           </div>
 
+          {/* SEARCH BAR & RANDOM BUTTON SIDE-BY-SIDE */}
           <div className="flex items-center gap-2 w-full max-w-sm mx-auto">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
@@ -206,8 +210,8 @@ function App() {
 
       {view === 'grid' ? (
         <>
-          {/* CATEGORIES BAR - pt-4 added to move it down */}
-          <div className="sticky top-16 z-40 bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 px-4 overflow-hidden pt-4">
+          {/* CATEGORIES BAR - Added mt-6 to push it down */}
+          <div className="sticky top-16 z-40 bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 px-4 overflow-hidden mt-6">
             <div className="max-w-7xl mx-auto py-3">
               <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
                 {categoriesWithCounts.map(cat => (
@@ -305,6 +309,8 @@ function GameCard({ game, isFav, rating, stats, onLaunch, onFav, onRate }) {
     <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer" onClick={() => onLaunch(game)}>
       <div className="relative aspect-[4/3] overflow-hidden">
         <img src={game.thumbnail} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="" />
+        
+        {/* FAVORITE BUTTON POSITIONED ON THE RIGHT SIDE */}
         {!isUtility && (
           <div className="absolute top-4 left-4 right-4 flex justify-end items-start z-10">
             <button onClick={(e) => { e.stopPropagation(); 
@@ -317,6 +323,7 @@ function GameCard({ game, isFav, rating, stats, onLaunch, onFav, onRate }) {
             </button>
           </div>
         )}
+
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <Play className="w-10 h-10 text-[var(--theme)] fill-current" />
         </div>
