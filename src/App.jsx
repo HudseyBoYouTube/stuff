@@ -79,11 +79,16 @@ function App() {
 
   const GameCard = ({ game }) => (
     <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} whileHover={{ y: -4 }}
-      className="group bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer" onClick={() => handleSelectGame(game)}>
-      <div className="aspect-[4/3] bg-zinc-800/20 flex items-center justify-center relative overflow-hidden">
-        <img src={game.thumbnail} alt={game.title} referrerPolicy="no-referrer" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+      className="group bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col" onClick={() => handleSelectGame(game)}>
+      <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0">
+        <img 
+          src={game.thumbnail} 
+          alt={game.title} 
+          referrerPolicy="no-referrer" 
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+        />
         <button onClick={(e) => { e.stopPropagation(); setFavorites(p => p.includes(game.id) ? p.filter(id => id !== game.id) : [...p, game.id]); }} 
-          className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10">
+          className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 transition-colors hover:bg-black/60">
           <Heart className={`w-4 h-4 ${favorites.includes(game.id) ? 'fill-[#10A5F5] text-[#10A5F5]' : 'text-white'}`} />
         </button>
         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -92,12 +97,12 @@ function App() {
           </div>
         </div>
       </div>
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-1">
-          <h3 className="font-semibold text-[var(--text-main)] group-hover:text-[#10A5F5] truncate">{game.title}</h3>
-          <span className="text-[10px] font-bold uppercase text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md shrink-0">{game.category}</span>
+      <div className="p-4 flex-1">
+        <div className="flex items-center justify-between mb-1 gap-2">
+          <h3 className="font-semibold text-[var(--text-main)] group-hover:text-[#10A5F5] truncate text-sm">{game.title}</h3>
+          <span className="text-[9px] font-bold uppercase text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md shrink-0 border border-[#10A5F5]/20">{game.category}</span>
         </div>
-        <p className="text-xs text-zinc-500">{['request', 'report'].includes(game.id) ? 'Click to fill out' : 'Click to play'}</p>
+        <p className="text-[11px] text-zinc-500">{['request', 'report'].includes(game.id) ? 'Click to fill out' : 'Click to play'}</p>
       </div>
     </motion.div>
   );
