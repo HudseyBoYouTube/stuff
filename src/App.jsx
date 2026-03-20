@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
-  Star, Trash2, Clock, Palette, EyeOff, Eye, 
-  Trophy, Keyboard, Dices, SearchX, ThumbsUp, ThumbsDown, AlertTriangle
+  Star, Trash2, Palette, EyeOff, Eye, 
+  Trophy, Dices, SearchX, AlertTriangle
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -49,9 +49,7 @@ function App() {
   const [panicKey, setPanicKey] = useState(localStorage.getItem('panic-key') || 'Escape');
   const [panicEnabled, setPanicEnabled] = useState(() => localStorage.getItem('panic-enabled') !== 'false');
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
-  const [playStats, setPlayStats] = useState(() => JSON.parse(localStorage.getItem('capy-stats') || '{}'));
   const [history, setHistory] = useState(() => JSON.parse(localStorage.getItem('capy-history') || '[]'));
-  const [ratings, setRatings] = useState(() => JSON.parse(localStorage.getItem('capy-ratings') || '{}'));
   const [confirmClear, setConfirmClear] = useState(false);
 
   useEffect(() => {
@@ -67,12 +65,6 @@ function App() {
   }, [stealthMode, originalFavicon]);
 
   useEffect(() => {
-    if (activeCategory === 'Favorites' && favorites.length === 0) {
-      setActiveCategory('All');
-    }
-  }, [favorites, activeCategory]);
-
-  useEffect(() => {
     const handleKeyDown = (e) => {
       if (panicEnabled && e.key === panicKey) window.location.href = panicUrl.startsWith('http') ? panicUrl : `https://${panicUrl}`;
     };
@@ -86,7 +78,6 @@ function App() {
     setHistory(newHistory);
     localStorage.setItem('capy-history', JSON.stringify(newHistory));
 
-    const startTime = Date.now();
     const win = window.open('about:blank', '_blank');
     if (win) {
       win.document.title = "DO NOT REFRESH";
@@ -96,26 +87,7 @@ function App() {
       iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
       iframe.allow = "fullscreen";
       win.document.body.appendChild(iframe);
-      
-      win.onbeforeunload = () => {
-        const endTime = Date.now();
-        const minutes = Math.floor((endTime - startTime) / 60000);
-        const statsUpdate = JSON.parse(localStorage.getItem('capy-stats') || '{}');
-        if (!statsUpdate[game.id]) statsUpdate[game.id] = { clicks: 0, time: 0 };
-        statsUpdate[game.id].time += (minutes || 1);
-        statsUpdate[game.id].clicks += 1;
-        localStorage.setItem('capy-stats', JSON.stringify(statsUpdate));
-        setPlayStats(statsUpdate);
-      };
     }
-  };
-
-  const handleRate = (gameId, type) => {
-    const newRatings = { ...ratings };
-    if (newRatings[gameId] === type) delete newRatings[gameId];
-    else newRatings[gameId] = type;
-    setRatings(newRatings);
-    localStorage.setItem('capy-ratings', JSON.stringify(newRatings));
   };
 
   const launchRandom = () => {
@@ -129,43 +101,18 @@ function App() {
       const matchesSearch = g?.title?.toLowerCase().includes(q);
       let matchesCategory = true;
       if (activeCategory === 'Favorites') matchesCategory = favorites.includes(g.id);
-      else if (activeCategory === 'Most Voted') matchesCategory = ratings[g.id] === 'up';
       else if (activeCategory !== 'All') matchesCategory = g?.category === activeCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [searchQuery, activeCategory, gamesData, favorites, ratings]);
-
-  const leaderboard = useMemo(() => {
-    return [...gamesData]
-      .filter(g => playStats[g.id]?.time > 0 || ratings[g.id])
-      .sort((a, b) => {
-        const scoreA = (playStats[a.id]?.time || 0) + (ratings[a.id] === 'up' ? 50 : ratings[a.id] === 'down' ? -50 : 0);
-        const scoreB = (playStats[b.id]?.time || 0) + (ratings[b.id] === 'up' ? 50 : ratings[b.id] === 'down' ? -50 : 0);
-        return scoreB - scoreA;
-      }).slice(0, 10);
-  }, [gamesData, playStats, ratings]);
-
-  const suggestion = useMemo(() => {
-    if (searchQuery.length < 2 || filteredGames.length > 0) return null;
-    const q = searchQuery.toLowerCase();
-    let bestMatch = null;
-    let minDist = 4;
-    gamesData.forEach(game => {
-      const d = getEditDistance(q, game.title.toLowerCase());
-      if (d < minDist) { minDist = d; bestMatch = game.title; }
-    });
-    return bestMatch;
-  }, [searchQuery, filteredGames, gamesData]);
+  }, [searchQuery, activeCategory, gamesData, favorites]);
 
   const categoriesWithCounts = useMemo(() => {
     const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
     const base = uniqueCats.map(cat => ({ name: cat, count: gamesData.filter(g => g.category === cat).length }));
     const final = [{ name: 'All', count: gamesData.length }, ...base];
-    const upVotedCount = Object.values(ratings).filter(v => v === 'up').length;
-    if (upVotedCount > 0) final.unshift({ name: 'Most Voted', count: upVotedCount });
     if (favorites.length > 0) final.unshift({ name: 'Favorites', count: favorites.length });
     return final;
-  }, [gamesData, favorites, ratings]);
+  }, [gamesData, favorites]);
 
   if (dataError || gamesData.length === 0) {
     return (
@@ -191,74 +138,59 @@ function App() {
           <div className="flex items-center gap-2 w-full max-w-sm mx-auto">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-              <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-xs outline-none focus:border-[var(--theme)]/50 text-center" />
+              <input 
+                type="text" 
+                placeholder="Search..." 
+                value={searchQuery} 
+                onChange={(e) => setSearchQuery(e.target.value)} 
+                className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 text-center" 
+              />
+              {searchQuery && (
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
             <button onClick={launchRandom} className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all shrink-0"><Dices className="w-5 h-5" /></button>
           </div>
 
           <div className="flex items-center justify-end gap-2">
-             <button onClick={() => setView(view === 'grid' ? 'leaderboard' : 'grid')} className={`p-2 border rounded-full transition-all ${view === 'leaderboard' ? 'bg-[var(--theme)] text-black' : 'bg-white/5 border-white/10'}`}><Trophy className="w-5 h-5" /></button>
              <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-500 hover:text-[var(--theme)]"><Settings className="w-6 h-6" /></button>
           </div>
         </div>
       </header>
 
-      {view === 'grid' ? (
-        <>
-          {/* CATEGORIES BAR - PUSHED EVEN LOWER WITH MT-40 */}
-          <div className="sticky top-16 z-40 bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 px-4 overflow-hidden mt-40">
-            <div className="max-w-7xl mx-auto py-3">
-              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-                {categoriesWithCounts.map(cat => (
-                  <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500'}`}>
-                    {cat.name} <span className="opacity-50 ml-1">{cat.count}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <main className="max-w-7xl mx-auto px-4 mt-8">
-            {filteredGames.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {filteredGames.map(game => (
-                  <GameCard key={game.id} game={game} isFav={favorites.includes(game.id)} rating={ratings[game.id]} stats={playStats[game.id]} onLaunch={launchGame} onFav={setFavorites} onRate={handleRate} />
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-20">
-                <SearchX className="w-12 h-12 text-zinc-800 mb-4" />
-                <p className="text-zinc-500">No games found.</p>
-                {suggestion && <button onClick={() => setSearchQuery(suggestion)} className="mt-2 text-[var(--theme)] font-bold italic underline">Did you mean {suggestion}?</button>}
-              </div>
-            )}
-          </main>
-        </>
-      ) : (
-        <main className="max-w-3xl mx-auto px-4 mt-12">
-          <h1 className="text-3xl font-black mb-8 flex items-center gap-3">Hall of Fame</h1>
-          <div className="space-y-3">
-            {leaderboard.map((game, i) => (
-              <div key={`rank-${game.id}`} onClick={() => launchGame(game)} className="group bg-white/5 border border-white/10 p-4 rounded-2xl flex items-center gap-4 cursor-pointer hover:border-[var(--theme)] transition-all">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg ${i === 0 ? 'bg-yellow-500 text-black' : i === 1 ? 'bg-zinc-300 text-black' : i === 2 ? 'bg-orange-600 text-black' : 'bg-zinc-800 text-zinc-500'}`}>{i + 1}</div>
-                <img src={game.thumbnail} className="w-12 h-12 rounded-lg object-cover" alt="" />
-                <div className="flex-1">
-                  <h3 className="font-bold text-sm group-hover:text-[var(--theme)]">{game.title}</h3>
-                  <div className="flex gap-2 items-center">
-                    <p className="text-[9px] text-zinc-600 uppercase font-black">{game.category}</p>
-                    {ratings[game.id] === 'up' && <ThumbsUp className="w-3 h-3 text-[var(--theme)]" />}
-                  </div>
-                </div>
-                <div className="text-right text-[10px] font-black text-zinc-500 uppercase">
-                  <div className="flex items-center gap-1 justify-end text-zinc-200"><Clock className="w-3 h-3 text-[var(--theme)]" /> {playStats[game.id]?.time || 0}m</div>
-                  <div>Score: {(playStats[game.id]?.time || 0) + (ratings[game.id] === 'up' ? 50 : -50)}</div>
-                </div>
-              </div>
+      {/* CATEGORIES BAR - mt-40 as requested */}
+      <div className="sticky top-16 z-40 bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 px-4 overflow-hidden mt-40">
+        <div className="max-w-7xl mx-auto py-3">
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+            {categoriesWithCounts.map(cat => (
+              <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500'}`}>
+                {cat.name} <span className="opacity-50 ml-1">{cat.count}</span>
+              </button>
             ))}
           </div>
-        </main>
-      )}
+        </div>
+      </div>
 
+      <main className="max-w-7xl mx-auto px-4 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {filteredGames.map(game => (
+            <GameCard 
+              key={game.id} 
+              game={game} 
+              isFav={favorites.includes(game.id)} 
+              onLaunch={launchGame} 
+              onFav={setFavorites} 
+            />
+          ))}
+        </div>
+      </main>
+
+      {/* SETTINGS MODAL */}
       {showSettings && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => setShowSettings(false)} />
@@ -291,13 +223,12 @@ function App() {
   );
 }
 
-function GameCard({ game, isFav, rating, stats, onLaunch, onFav, onRate }) {
+function GameCard({ game, isFav, onLaunch, onFav }) {
   const isUtility = ['request', 'report'].includes(game.id);
   
   return (
     <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer" onClick={() => onLaunch(game)}>
       <div className="relative aspect-[4/3] overflow-hidden bg-black/20">
-        
         <img 
           src={game.thumbnail} 
           className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 
@@ -306,7 +237,7 @@ function GameCard({ game, isFav, rating, stats, onLaunch, onFav, onRate }) {
         />
         
         {!isUtility && (
-          <div className="absolute top-4 left-4 right-4 flex justify-end items-start z-10">
+          <div className="absolute top-4 right-4 z-10">
             <button onClick={(e) => { e.stopPropagation(); 
               const saved = JSON.parse(localStorage.getItem('capy-favorites') || '[]');
               const next = saved.includes(game.id) ? saved.filter(id => id !== game.id) : [...saved, game.id];
@@ -323,17 +254,8 @@ function GameCard({ game, isFav, rating, stats, onLaunch, onFav, onRate }) {
         </div>
       </div>
       <div className="p-5">
-        <div className="flex justify-between items-start gap-2 mb-1">
-          <h3 className="font-bold text-sm truncate group-hover:text-[var(--theme)]">{game.title}</h3>
-          {!isUtility && stats?.time > 0 && <span className="text-[9px] font-black text-zinc-500 bg-white/5 px-2 py-0.5 rounded-md">{stats.time}m</span>}
-        </div>
+        <h3 className="font-bold text-sm truncate group-hover:text-[var(--theme)]">{game.title}</h3>
         <p className="text-[9px] text-zinc-600 uppercase font-black">{game.category}</p>
-        {!isUtility && (
-          <div className="flex gap-2 mt-3">
-            <button onClick={(e) => { e.stopPropagation(); onRate(game.id, 'up'); }} className={`p-1.5 rounded-md transition-all ${rating === 'up' ? 'bg-[var(--theme)]/20 text-[var(--theme)]' : 'text-zinc-600 hover:text-white'}`}><ThumbsUp className="w-4 h-4" /></button>
-            <button onClick={(e) => { e.stopPropagation(); onRate(game.id, 'down'); }} className={`p-1.5 rounded-md transition-all ${rating === 'down' ? 'bg-red-500/20 text-red-500' : 'text-zinc-600 hover:text-white'}`}><ThumbsDown className="w-4 h-4" /></button>
-          </div>
-        )}
       </div>
     </div>
   );
