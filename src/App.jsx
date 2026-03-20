@@ -95,26 +95,25 @@ function App() {
     
     return (
       <div 
-        className="group relative bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col shadow-lg"
+        className="group relative bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col transition-all duration-200 hover:border-[#10A5F5]/50 hover:shadow-[0_0_20px_rgba(16,165,245,0.15)]"
+        style={{ isolation: 'isolate' }}
         onClick={() => handleSelectGame(game)}
       >
-        {/* THE HITBOX: This stays perfectly still and handles the hover state */}
-        <div className="absolute inset-0 z-20" />
-
-        <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0 z-0">
+        <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0">
           <img 
             src={game.thumbnail} 
             alt={game.title} 
-            className={`absolute inset-0 w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.03] pointer-events-none ${isUtility ? 'object-contain p-6' : 'object-cover'}`}
+            className={`absolute inset-0 w-full h-full pointer-events-none ${isUtility ? 'object-contain p-6' : 'object-cover'}`}
           />
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
-            <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center shadow-xl">
+          {/* Tint Overlay - No Scale, No Flicker */}
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
+            <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center shadow-lg">
               <Play className="w-6 h-6 text-black fill-current" />
             </div>
           </div>
         </div>
         
-        <div className="p-4 flex-1 z-0 pointer-events-none">
+        <div className="p-4 flex-1 pointer-events-none">
           <div className="flex items-center justify-between mb-1 gap-2">
             <h3 className="font-bold text-white truncate text-sm transition-colors group-hover:text-[#10A5F5]">{game.title}</h3>
             <span className="text-[9px] font-extrabold uppercase text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md border border-[#10A5F5]/20">{game.category}</span>
@@ -138,7 +137,7 @@ function App() {
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#09090b]/90 backdrop-blur-md h-16 flex items-center px-4">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#10A5F5] rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(16,165,245,0.2)]"><Gamepad2 className="w-5 h-5 text-black" /></div>
+            <div className="w-8 h-8 bg-[#10A5F5] rounded-lg flex items-center justify-center"><Gamepad2 className="w-5 h-5 text-black" /></div>
             <span className="text-xl font-black hidden sm:block">Capybara <span className="text-[#10A5F5]">Science</span></span>
           </div>
 
@@ -168,50 +167,6 @@ function App() {
           </div>
         </div>
       </header>
-
-      <AnimatePresence>
-        {showSettings && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowSettings(false)} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-sm w-full relative shadow-2xl z-10 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-              <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-500 hover:text-white" />
-              <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-white"><ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings</h2>
-              
-              <div className="space-y-5">
-                <div className="flex items-center justify-between p-3 bg-white/5 rounded-2xl border border-white/10">
-                  <div className="flex items-center gap-2 text-sm text-white">{performanceMode ? <ZapOff className="w-4 h-4 text-yellow-500" /> : <Zap className="w-4 h-4 text-yellow-500" />} Performance Mode</div>
-                  <button onClick={() => setPerformanceMode(!performanceMode)} className={`w-10 h-5 rounded-full relative transition-colors ${performanceMode ? 'bg-[#10A5F5]' : 'bg-zinc-700'}`}><div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${performanceMode ? 'left-6' : 'left-1'}`} /></button>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase text-zinc-500">Panic Setup</label>
-                  <input type="text" value={panicUrl} onChange={(e) => setPanicUrl(e.target.value)} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-sm text-white outline-none focus:border-[#10A5F5]" placeholder="Panic URL" />
-                  <button onClick={() => setIsRecording(true)} className={`w-full p-3 rounded-xl border border-white/10 text-sm ${isRecording ? 'bg-[#10A5F5] text-black font-bold' : 'bg-white/5 text-zinc-400'}`}>{isRecording ? 'Press any key...' : `Panic Key: ${panicKey}`}</button>
-                </div>
-
-                <div className="space-y-3 pt-2 border-t border-white/10">
-                  <label className="text-[10px] font-bold uppercase text-zinc-500">Tab Cloaking</label>
-                  <div className="flex gap-2">
-                    <input type="text" placeholder="URL (e.g. google.com)" value={customCloakUrl} onChange={(e) => setCustomCloakUrl(e.target.value)} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-2 text-xs text-white outline-none focus:border-[#10A5F5]" />
-                    <button onClick={() => applyCloak(customCloakUrl)} className="px-3 bg-[#10A5F5] text-black font-bold rounded-xl text-xs">Apply</button>
-                  </div>
-                  <div className="flex gap-2">
-                    <input type="text" placeholder="Icon URL" value={customIconUrl} onChange={(e) => setCustomIconUrl(e.target.value)} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-2 text-xs text-white outline-none focus:border-[#10A5F5]" />
-                    <button onClick={() => updateIcon(customIconUrl)} className="px-3 bg-zinc-700 text-white font-bold rounded-xl text-xs"><ImageIcon className="w-3.5 h-3.5" /></button>
-                  </div>
-                  <select onChange={(e) => { const p = presets[e.target.value]; if(p){ document.title=p.title; updateIcon(p.favicon); }}} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-sm text-white outline-none">
-                    <option value="none">Presets</option>
-                    <option value="powerschool">PowerSchool</option>
-                    <option value="google">Google Drive</option>
-                  </select>
-                </div>
-
-                <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="w-full p-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl text-xs font-bold transition-colors">Emergency Factory Reset</button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center gap-2 overflow-x-auto pb-8 scrollbar-hide">
