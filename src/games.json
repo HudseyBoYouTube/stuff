@@ -894,6 +894,69 @@
     "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/retro-highway/",
     "thumbnail": "https://gearheadgames.com/retrohighway/images/logo.png",
     "category": "Driving"
+  },
+  {
+    "id": "animalsvolleyball",
+    "title": "Animals Volleyball",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/animals-volleyball/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSybATHl8qbwbiJyNd0jsT3GJi-xk7T75MGGA&s",
+    "category": "Fun"
+  },
+  {
+    "id": "funnyshooter2",
+    "title": "Funny Shooter 2",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/funny-shooter-2/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqencuICLTctSmggR6ykrTEvCUpFDNNul5gg&s",
+    "category": "Action"
+  },
+  {
+    "id": "timeshooter2",
+    "title": "Time Shooter 2",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/time-shooter-2/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQ9vvm-6jquCTDgiWqQLtZquLEOxjuHwLPQQ&s",
+    "category": "Action"
+  },
+  {
+    "id": "timeshooter3:swat",
+    "title": "Time Shooter 3: SWAT",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/gn/201.html",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNGkYVUi6X4WNyXaGZXMmi9ecT1PbdFBXwUw&s",
+    "category": "Action"
+  },
+  {
+    "id": "bulletbros",
+    "title": "Bullet Bros",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/bullet-bros/",
+    "thumbnail": "https://game-game.com/gamesimg/255419.jpg",
+    "category": "Action"
+  },
+  {
+    "id": "gladihoppers",
+    "title": "Gladihoppers",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/gladihoppers/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNAr1A5XDPj_A-DstsmCwi-aV5wYSGzL7O4Q&s",
+    "category": "Action"
+  },
+  {
+    "id": "superstarcar",
+    "title": "Super Star Car",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/originals/superstarcar/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBU7V3ZTOKbhQW0yjgeINvpHYeb5kfKSXK8A&s",
+    "category": "Driving"
+  },
+  {
+    "id": "googlefeud",
+    "title": "Google Feud",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/echo/google-feud/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNf-fRSBxl6viZ9h-xmCiJqFrp02MSOuNKgA&s",
+    "category": "Game Show"
+  },
+  {
+    "id": "superliquidsoccer",
+    "title": "Super Liquid Soccer",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/super-liquid-soccer/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6vNQDe-vXlvkONIC4QwsTVkIBtVCOcQezrw&s",
+    "category": "Sports"
   }
 ]
     
