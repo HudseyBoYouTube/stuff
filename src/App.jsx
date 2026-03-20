@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Search, Gamepad2, Play, Settings, X, ShieldAlert, Heart, Sun, Moon, Zap, ZapOff, Filter, Clock, Trash2, Dices, Battery, BatteryCharging, BatteryLow, BatteryMedium, BatteryFull, Calendar } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import gamesData from './games.json';
 
 function App() {
@@ -141,10 +140,10 @@ function App() {
     const isUtility = ['request', 'report'].includes(game.id);
     const timeSpent = playtimes[game.id] || 0;
     return (
-      <div className="group bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col transform-gpu" onClick={() => handleSelectGame(game)}>
+      <div className="group bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col" onClick={() => handleSelectGame(game)}>
         <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0">
-          <img src={game.thumbnail} alt={game.title} referrerPolicy="no-referrer" className={`absolute inset-0 w-full h-full object-cover transform-gpu ${performanceMode ? '' : 'transition-transform duration-500 group-hover:scale-110'} ${isUtility ? 'object-contain p-6' : ''}`} />
-          <button onClick={(e) => { e.stopPropagation(); setFavorites(p => p.includes(game.id) ? p.filter(id => id !== game.id) : [...p, game.id]); }} className="absolute top-3 right-3 z-10 p-2 rounded-full border border-white/10 bg-black/40 transition-colors hover:bg-black/60">
+          <img src={game.thumbnail} alt={game.title} referrerPolicy="no-referrer" className={`absolute inset-0 w-full h-full object-cover ${performanceMode ? '' : 'transition-transform duration-500 group-hover:scale-110'} ${isUtility ? 'object-contain p-6' : ''}`} />
+          <button onClick={(e) => { e.stopPropagation(); setFavorites(p => p.includes(game.id) ? p.filter(id => id !== game.id) : [...p, game.id]); }} className="absolute top-3 right-3 z-10 p-2 rounded-full border border-white/10 bg-black/40 backdrop-blur-md transition-colors hover:bg-black/60">
             <Heart className={`w-4 h-4 ${favorites.includes(game.id) ? 'fill-[#10A5F5] text-[#10A5F5]' : 'text-white'}`} />
           </button>
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -168,7 +167,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] transition-colors duration-300 pb-20 transform-gpu relative">
+    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] transition-colors duration-300 pb-20 relative">
       <header className="sticky top-0 z-40 border-b border-white/5 bg-[var(--bg-main)] h-16 flex items-center px-4">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
           <div className="flex items-center gap-2 justify-self-start">
@@ -197,6 +196,7 @@ function App() {
         </div>
       </header>
 
+      {/* CATEGORY NAV */}
       <div className="max-w-7xl mx-auto px-4 mt-6">
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
           <Filter className="w-4 h-4 text-zinc-500 shrink-0" />
@@ -206,69 +206,56 @@ function App() {
         </div>
       </div>
 
-      <AnimatePresence>
-        {showSettings && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }} 
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-4 overflow-hidden pointer-events-auto"
-            onClick={() => setShowSettings(false)}
-          >
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              exit={{ opacity: 0, y: 20 }} 
-              className="bg-zinc-900 border border-white/10 p-6 rounded-2xl max-w-sm w-full relative shadow-2xl pointer-events-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-500 hover:text-white" />
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-white"><ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings</h2>
-              
-              <div className="space-y-4 text-white">
-                <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
-                  <div className="flex items-center gap-2 text-sm">{performanceMode ? <ZapOff className="w-4 h-4 text-yellow-500" /> : <Zap className="w-4 h-4 text-yellow-500" />} Performance Mode</div>
-                  <button onClick={() => setPerformanceMode(!performanceMode)} className={`w-10 h-5 rounded-full relative transition-colors ${performanceMode ? 'bg-[#10A5F5]' : 'bg-zinc-700'}`}>
-                    <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${performanceMode ? 'left-6' : 'left-1'}`} />
-                  </button>
-                </div>
-                
-                <button onClick={() => { if(confirm('Clear all playtime data?')) setPlaytimes({}); }} className="w-full flex items-center justify-between p-3 bg-red-500/10 hover:bg-red-500/20 rounded-xl border border-red-500/20 text-red-500 text-sm transition-colors">Clear Playtime Data <Trash2 className="w-4 h-4" /></button>
-                
-                <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
-                  <span className="text-sm">Panic Key Enabled</span>
-                  <button onClick={() => setPanicEnabled(!panicEnabled)} className={`w-10 h-5 rounded-full relative ${panicEnabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
-                    <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${panicEnabled ? 'left-6' : 'left-1'}`} />
-                  </button>
-                </div>
-
-                {panicEnabled && (
-                  <div className="space-y-2">
-                    <input type="text" value={panicUrl} onChange={(e) => {setPanicUrl(e.target.value); localStorage.setItem('panic-url', e.target.value);}} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-sm outline-none text-white focus:border-[#10A5F5]" placeholder="Panic URL" />
-                    <button onClick={() => setIsRecording(true)} className={`w-full p-3 rounded-xl border border-white/10 text-sm transition-colors ${isRecording ? 'bg-[#10A5F5] text-black font-bold' : 'bg-white/5 text-zinc-300'}`}>{isRecording ? 'Press any key...' : `Panic Key: ${panicKey}`}</button>
-                  </div>
-                )}
-
-                <div className="space-y-2 pt-2 border-t border-white/10">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Custom URL Cloak</label>
-                  <div className="flex gap-2">
-                    <input type="text" placeholder="wikipedia.org" value={customCloakUrl} onChange={(e) => setCustomCloakUrl(e.target.value)} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-2 text-xs outline-none focus:border-[#10A5F5] text-white" />
-                    <button onClick={() => { applyCloak(customCloakUrl); localStorage.setItem('custom-cloak-url', customCloakUrl); }} className="px-3 bg-[#10A5F5] text-black font-bold rounded-xl text-xs hover:bg-[#0d8bc0]">Apply</button>
-                  </div>
-                </div>
-
-                <select onChange={(e) => { const p = presets[e.target.value]; if(p){ document.title=p.title; let l=document.querySelector("link[rel*='icon']"); if(!l){l=document.createElement('link');l.rel='icon';document.head.appendChild(l);} l.href=p.favicon; } }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-sm outline-none text-white">
-                  <option value="none">Presets (Default Title)</option>
-                  <option value="powerschool">PowerSchool</option>
-                  <option value="google">Google Drive</option>
-                </select>
+      {/* NEW NO-ANIMATION SETTINGS MODAL */}
+      {showSettings && (
+        <div className="fixed inset-0 w-full h-full flex items-center justify-center p-4 z-[99999]" style={{ backgroundColor: 'rgba(0,0,0,0.85)' }} onClick={() => setShowSettings(false)}>
+          <div className="bg-zinc-900 border border-white/10 p-6 rounded-2xl max-w-sm w-full relative shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-500 hover:text-white" />
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-white"><ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings</h2>
+            
+            <div className="space-y-4 text-white">
+              <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
+                <div className="flex items-center gap-2 text-sm">{performanceMode ? <ZapOff className="w-4 h-4 text-yellow-500" /> : <Zap className="w-4 h-4 text-yellow-500" />} Performance Mode</div>
+                <button onClick={() => setPerformanceMode(!performanceMode)} className={`w-10 h-5 rounded-full relative transition-colors ${performanceMode ? 'bg-[#10A5F5]' : 'bg-zinc-700'}`}>
+                  <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${performanceMode ? 'left-6' : 'left-1'}`} />
+                </button>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              
+              <button onClick={() => { if(confirm('Clear all playtime data?')) setPlaytimes({}); }} className="w-full flex items-center justify-between p-3 bg-red-500/10 hover:bg-red-500/20 rounded-xl border border-red-500/20 text-red-500 text-sm transition-colors">Clear Playtime Data <Trash2 className="w-4 h-4" /></button>
+              
+              <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
+                <span className="text-sm">Panic Key Enabled</span>
+                <button onClick={() => setPanicEnabled(!panicEnabled)} className={`w-10 h-5 rounded-full relative ${panicEnabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
+                  <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${panicEnabled ? 'left-6' : 'left-1'}`} />
+                </button>
+              </div>
 
-      <main className="max-w-7xl mx-auto px-4 py-8 space-y-12 transform-gpu">
+              {panicEnabled && (
+                <div className="space-y-2">
+                  <input type="text" value={panicUrl} onChange={(e) => {setPanicUrl(e.target.value); localStorage.setItem('panic-url', e.target.value);}} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-sm outline-none text-white focus:border-[#10A5F5]" placeholder="Panic URL" />
+                  <button onClick={() => setIsRecording(true)} className={`w-full p-3 rounded-xl border border-white/10 text-sm ${isRecording ? 'bg-[#10A5F5] text-black font-bold' : 'bg-white/5 text-zinc-300'}`}>{isRecording ? 'Press any key...' : `Panic Key: ${panicKey}`}</button>
+                </div>
+              )}
+
+              <div className="space-y-2 pt-2 border-t border-white/10">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Custom URL Cloak</label>
+                <div className="flex gap-2">
+                  <input type="text" placeholder="wikipedia.org" value={customCloakUrl} onChange={(e) => setCustomCloakUrl(e.target.value)} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-2 text-xs outline-none focus:border-[#10A5F5] text-white" />
+                  <button onClick={() => { applyCloak(customCloakUrl); localStorage.setItem('custom-cloak-url', customCloakUrl); }} className="px-3 bg-[#10A5F5] text-black font-bold rounded-xl text-xs hover:bg-[#0d8bc0]">Apply</button>
+                </div>
+              </div>
+
+              <select onChange={(e) => { const p = presets[e.target.value]; if(p){ document.title=p.title; let l=document.querySelector("link[rel*='icon']"); if(!l){l=document.createElement('link');l.rel='icon';document.head.appendChild(l);} l.href=p.favicon; } }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-sm outline-none text-white">
+                <option value="none">Presets (Default Title)</option>
+                <option value="powerschool">PowerSchool</option>
+                <option value="google">Google Drive</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <main className="max-w-7xl mx-auto px-4 py-8 space-y-12">
         {favs.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-6"><Heart className="w-5 h-5 text-[#10A5F5] fill-[#10A5F5]" /><h2 className="text-lg font-bold">Favorites</h2></div>
