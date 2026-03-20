@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
-  Zap, ZapOff, BellOff, Bell, ArrowUp, Dices, Star, Trash2,
-  Clock, Flame, Palette, EyeOff, Eye, Trophy, LayoutGrid, ChevronRight, History, Sparkles
+  ArrowUp, Star, Trash2, Clock, Palette, EyeOff, Eye, 
+  Trophy, LayoutGrid, ChevronRight, History, Keyboard, Dices
 } from 'lucide-react';
 import gamesDataRaw from './games.json';
 
@@ -85,21 +85,13 @@ function App() {
     }
   };
 
-  // --- COMPUTED DATA ---
-  const recommendedGames = useMemo(() => {
-    if (Object.keys(playStats).length === 0) return [];
-    const catTotals = {};
-    gamesData.forEach(g => {
-      const time = playStats[g.id]?.time || 0;
-      catTotals[g.category] = (catTotals[g.category] || 0) + time;
-    });
-    const favCat = Object.entries(catTotals).sort((a, b) => b[1] - a[1])[0]?.[0];
-    return gamesData
-      .filter(g => g.category === favCat && !history.includes(g.id))
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 4);
-  }, [playStats, gamesData, history]);
+  const launchRandom = () => {
+    if (gamesData.length === 0) return;
+    const randomIdx = Math.floor(Math.random() * gamesData.length);
+    launchGame(gamesData[randomIdx]);
+  };
 
+  // --- COMPUTED DATA ---
   const recentGames = useMemo(() => {
     return history.map(id => gamesData.find(g => g.id === id)).filter(Boolean);
   }, [history, gamesData]);
@@ -113,20 +105,15 @@ function App() {
     });
   }, [searchQuery, activeCategory, gamesData, favorites]);
 
-  // CATEGORY COUNTS LOGIC
   const categoriesWithCounts = useMemo(() => {
     const cats = gamesData.map(g => g?.category).filter(Boolean);
     const uniqueCats = [...new Set(cats)];
-    
     const base = uniqueCats.map(cat => ({
       name: cat,
       count: gamesData.filter(g => g.category === cat).length
     }));
-
     const final = [{ name: 'All', count: gamesData.length }, ...base];
-    if (favorites.length > 0) {
-      final.unshift({ name: 'Favorites', count: favorites.length });
-    }
+    if (favorites.length > 0) final.unshift({ name: 'Favorites', count: favorites.length });
     return final;
   }, [gamesData, favorites]);
 
@@ -167,22 +154,48 @@ function App() {
           <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative z-10 shadow-2xl">
             <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-500 hover:text-white" />
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-[var(--theme)]" /> Settings</h2>
+            
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 scrollbar-hide">
                <div className="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between">
                   <div className="text-sm flex items-center gap-2">{stealthMode ? <EyeOff className="w-4 h-4 text-[var(--theme)]" /> : <Eye className="w-4 h-4" />} Tab Disguise</div>
-                  <button onClick={() => setStealthMode(!stealthMode)} className={`w-10 h-5 rounded-full relative ${stealthMode ? 'bg-[var(--theme)]' : 'bg-zinc-700'}`}>
+                  <button onClick={() => setStealthMode(!stealthMode)} className={`w-10 h-5 rounded-full relative transition-colors ${stealthMode ? 'bg-[var(--theme)]' : 'bg-zinc-700'}`}>
                     <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${stealthMode ? 'left-6' : 'left-1'}`} />
                   </button>
                </div>
+
+               <div className="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm flex items-center gap-2 font-bold"><Keyboard className="w-4 h-4 text-red-500" /> Panic Button</div>
+                    <button onClick={() => {setPanicEnabled(!panicEnabled); localStorage.setItem('panic-enabled', !panicEnabled);}} className={`text-[10px] font-black uppercase px-2 py-1 rounded-md ${panicEnabled ? 'bg-red-500/20 text-red-500' : 'bg-zinc-800 text-zinc-500'}`}>
+                      {panicEnabled ? 'Active' : 'Disabled'}
+                    </button>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-zinc-500 uppercase font-black">Trigger Key</label>
+                      <div className="flex items-center gap-2 bg-black/40 p-2 rounded-xl border border-white/5">
+                        <kbd className="min-w-[24px] h-6 flex items-center justify-center bg-zinc-800 border-b-2 border-zinc-950 rounded text-[10px] font-mono text-[var(--theme)] px-1 uppercase">{panicKey === 'Escape' ? 'Esc' : panicKey}</kbd>
+                        <input type="text" maxLength="1" value={panicKey} onChange={(e) => {setPanicKey(e.target.value); localStorage.setItem('panic-key', e.target.value);}} className="w-full bg-transparent text-xs outline-none uppercase text-center" />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-zinc-500 uppercase font-black">Redirect URL</label>
+                      <input type="text" value={panicUrl} onChange={(e) => {setPanicUrl(e.target.value); localStorage.setItem('panic-url', e.target.value);}} className="w-full bg-black/40 p-2 rounded-xl border border-white/5 text-xs outline-none focus:border-[var(--theme)]/30" />
+                    </div>
+                  </div>
+               </div>
+
                <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                  <div className="text-sm mb-3 flex items-center gap-2"><Palette className="w-4 h-4" /> Theme Color</div>
+                  <div className="text-sm mb-3 flex items-center gap-2 font-bold"><Palette className="w-4 h-4" /> Theme Color</div>
                   <div className="flex gap-3">
                     {['#10A5F5', '#10f57b', '#f5107b', '#f5a610'].map(c => (
-                      <button key={c} onClick={() => {setTheme(c); localStorage.setItem('capy-theme', c);}} className={`w-8 h-8 rounded-full border-2 ${theme === c ? 'border-white' : 'border-transparent'}`} style={{background: c}} />
+                      <button key={c} onClick={() => {setTheme(c); localStorage.setItem('capy-theme', c);}} className={`w-8 h-8 rounded-full border-2 transition-all ${theme === c ? 'border-white scale-110' : 'border-transparent'}`} style={{background: c}} />
                     ))}
                   </div>
                </div>
-               <button onClick={() => { if(confirmClear) { localStorage.clear(); window.location.reload(); } else setConfirmClear(true); }} className={`w-full p-4 rounded-2xl border text-sm font-bold ${confirmClear ? 'bg-red-500/20 border-red-500 text-red-500' : 'bg-white/5 border-white/10 text-zinc-400'}`}>
+
+               <button onClick={() => { if(confirmClear) { localStorage.clear(); window.location.reload(); } else setConfirmClear(true); }} className={`w-full p-4 rounded-2xl border text-sm font-bold transition-all ${confirmClear ? 'bg-red-500/20 border-red-500 text-red-500' : 'bg-white/5 border-white/10 text-zinc-400'}`}>
                  <Trash2 className="w-4 h-4 inline mr-2" /> {confirmClear ? "Wipe EVERYTHING?" : "Reset All Site Data"}
                </button>
             </div>
@@ -192,25 +205,31 @@ function App() {
 
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#09090b]/90 backdrop-blur-md h-16 flex items-center px-4">
-        <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 flex-1 cursor-pointer" onClick={() => setView('grid')}>
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
+          
+          {/* Left: Logo */}
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setView('grid'); window.scrollTo({top: 0, behavior: 'smooth'}); }}>
             <div className="w-8 h-8 bg-[var(--theme)] rounded-lg flex items-center justify-center"><Gamepad2 className="w-5 h-5 text-black" /></div>
             <span className="text-xl font-black hidden md:block">Capybara <span className="text-[var(--theme)]">Science</span></span>
           </div>
 
-          <div className="flex items-center gap-2 w-full max-w-lg">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-              <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm outline-none focus:border-[var(--theme)]/50 text-center" />
-            </div>
-            <button onClick={() => setView(view === 'grid' ? 'leaderboard' : 'grid')} className="p-2.5 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all">
-              {view === 'grid' ? <Trophy className="w-5 h-5" /> : <LayoutGrid className="w-5 h-5" />}
-            </button>
+          {/* Center: Search Bar */}
+          <div className="relative w-full max-w-sm mx-auto">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+            <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm outline-none focus:border-[var(--theme)]/50 text-center" />
           </div>
 
-          <div className="flex items-center justify-end flex-1">
-            <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-400 hover:text-[var(--theme)]"><Settings className="w-6 h-6" /></button>
+          {/* Right: Actions */}
+          <div className="flex items-center justify-end gap-2">
+            <button onClick={launchRandom} className="p-2.5 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all group" title="Random Game">
+              <Dices className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+            </button>
+            <button onClick={() => setView(view === 'grid' ? 'leaderboard' : 'grid')} className={`p-2.5 border rounded-full transition-all ${view === 'leaderboard' ? 'bg-[var(--theme)] text-black border-[var(--theme)]' : 'bg-white/5 border-white/10 hover:border-[var(--theme)] hover:text-[var(--theme)]'}`} title="Leaderboard">
+              <Trophy className="w-5 h-5" />
+            </button>
+            <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-400 hover:text-[var(--theme)] ml-1"><Settings className="w-6 h-6" /></button>
           </div>
+
         </div>
       </header>
 
@@ -230,7 +249,6 @@ function App() {
                   </div>
                 </div>
               )}
-              {/* Category Bar with Counts */}
               <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
                 {categoriesWithCounts.map(cat => (
                   <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-4 py-2 rounded-full text-xs font-bold border shrink-0 transition-all flex items-center gap-2 ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black shadow-lg shadow-[var(--theme)]/20' : 'bg-white/5 border-white/10 text-zinc-400'}`}>
@@ -245,20 +263,6 @@ function App() {
           </div>
 
           <main className="max-w-7xl mx-auto px-4 mt-8">
-            {recommendedGames.length > 0 && activeCategory === 'All' && !searchQuery && (
-              <div className="mb-12">
-                <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-yellow-400" /> Recommended For You
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                  {recommendedGames.map(game => (
-                    <GameCard key={`rec-${game.id}`} game={game} isFav={favorites.includes(game.id)} stats={playStats[game.id]} onLaunch={launchGame} onFav={setFavorites} />
-                  ))}
-                </div>
-                <div className="mt-8 border-b border-white/5" />
-              </div>
-            )}
-
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {filteredGames.map(game => (
                 <GameCard key={game.id} game={game} isFav={favorites.includes(game.id)} stats={playStats[game.id]} onLaunch={launchGame} onFav={setFavorites} />
