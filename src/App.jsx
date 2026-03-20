@@ -102,23 +102,30 @@ function App() {
     
     return (
       <div 
-        className="group bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col shadow-lg transition-all duration-300 hover:translate-y-[-4px] hover:shadow-[#10A5F5]/10"
-        style={{ backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}
+        className="group bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col shadow-lg transition-transform duration-300 ease-out hover:-translate-y-1 active:scale-[0.98]"
+        style={{ 
+          transformStyle: 'preserve-3d', 
+          backfaceVisibility: 'hidden',
+          perspective: '1000px'
+        }}
         onClick={() => handleSelectGame(game)}
       >
-        <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0">
+        {/* Fixed Image Container */}
+        <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden pointer-events-none">
           <img 
             src={game.thumbnail} 
             alt={game.title} 
-            className={`absolute inset-0 w-full h-full transition-transform duration-500 ease-out group-hover:scale-110 will-change-transform ${isUtility ? 'object-contain p-6' : 'object-cover'}`} 
+            className={`absolute inset-0 w-full h-full transition-transform duration-500 ease-in-out group-hover:scale-110 ${isUtility ? 'object-contain p-6' : 'object-cover'}`}
+            style={{ transform: 'translate3d(0,0,0)' }}
           />
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-            <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center shadow-xl transform transition-transform duration-300 scale-90 group-hover:scale-100">
+            <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center shadow-2xl">
               <Play className="w-6 h-6 text-black fill-current" />
             </div>
           </div>
         </div>
-        <div className="p-4 flex-1">
+        
+        <div className="p-4 flex-1 pointer-events-none">
           <div className="flex items-center justify-between mb-1 gap-2">
             <h3 className="font-bold text-white truncate text-sm transition-colors group-hover:text-[#10A5F5]">{game.title}</h3>
             <span className="text-[9px] font-extrabold uppercase text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md border border-[#10A5F5]/20">{game.category}</span>
@@ -138,17 +145,19 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20">
-      <header className="sticky top-0 z-40 border-b border-white/5 bg-[#09090b]/90 backdrop-blur-md h-16 flex items-center px-4">
+    <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 selection:bg-[#10A5F5]/30">
+      <header className="sticky top-0 z-50 border-b border-white/5 bg-[#09090b]/80 backdrop-blur-md h-16 flex items-center px-4">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#10A5F5] rounded-lg flex items-center justify-center"><Gamepad2 className="w-5 h-5 text-black" /></div>
+            <div className="w-8 h-8 bg-[#10A5F5] rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(16,165,245,0.3)]"><Gamepad2 className="w-5 h-5 text-black" /></div>
             <span className="text-xl font-black hidden sm:block">Capybara <span className="text-[#10A5F5]">Science</span></span>
           </div>
+
           <div className="relative w-full max-w-md justify-self-center">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-            <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm outline-none focus:border-[#10A5F5]/50 transition-all" />
+            <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm outline-none focus:border-[#10A5F5]/50 focus:bg-white/[0.07] transition-all" />
           </div>
+
           <div className="flex items-center gap-4 justify-self-end">
              <div className="hidden lg:flex items-center gap-3 px-4 py-1.5 bg-white/5 border border-white/5 rounded-full">
               <div className="flex items-center gap-1.5 border-r border-white/10 pr-3">
@@ -174,7 +183,7 @@ function App() {
       <AnimatePresence>
         {showSettings && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowSettings(false)} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowSettings(false)} className="absolute inset-0 bg-black/85 backdrop-blur-sm" />
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-sm w-full relative shadow-2xl z-10 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
               <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-500 hover:text-white" />
               <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-white"><ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings</h2>
