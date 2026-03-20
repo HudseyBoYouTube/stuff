@@ -97,6 +97,23 @@ function App() {
     return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
+  // Panic Key Logic Fix
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (isRecording) {
+        setPanicKey(e.key);
+        localStorage.setItem('panic-key', e.key);
+        setIsRecording(false);
+        return;
+      }
+      if (panicEnabled && e.key === panicKey) {
+        window.location.href = panicUrl;
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [panicEnabled, panicKey, panicUrl, isRecording]);
+
   const handleSelectGame = (game) => {
     sessionStorage.setItem('active-game-id', game.id);
     sessionStorage.setItem('active-game-start', Date.now().toString());
@@ -133,7 +150,6 @@ function App() {
   const BatteryIcon = () => {
     const isLow = battery.level <= 20 && !battery.charging;
     const iconClass = `w-4 h-4 ${isLow ? 'text-red-500 animate-pulse' : ''}`;
-
     if (battery.charging) return <BatteryCharging className="w-4 h-4 text-emerald-500" />;
     if (battery.level > 80) return <BatteryFull className={iconClass || "text-[#10A5F5]"} />;
     if (battery.level > 30) return <BatteryMedium className={iconClass || "text-zinc-400"} />;
@@ -143,20 +159,11 @@ function App() {
   const GameCard = ({ game }) => {
     const isUtility = ['request', 'report'].includes(game.id);
     const timeSpent = playtimes[game.id] || 0;
-    
     return (
-      <div 
-        className="group bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col transform-gpu" 
-        onClick={() => handleSelectGame(game)}>
+      <div className="group bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col transform-gpu" onClick={() => handleSelectGame(game)}>
         <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0">
-          <img 
-            src={game.thumbnail} 
-            alt={game.title} 
-            referrerPolicy="no-referrer" 
-            className={`absolute inset-0 w-full h-full object-cover transform-gpu ${performanceMode ? '' : 'transition-transform duration-500 group-hover:scale-110'} ${isUtility ? 'object-contain p-6' : ''}`} 
-          />
-          <button onClick={(e) => { e.stopPropagation(); setFavorites(p => p.includes(game.id) ? p.filter(id => id !== game.id) : [...p, game.id]); }} 
-            className="absolute top-3 right-3 z-10 p-2 rounded-full border border-white/10 bg-black/40 backdrop-blur-md transition-colors hover:bg-black/60">
+          <img src={game.thumbnail} alt={game.title} referrerPolicy="no-referrer" className={`absolute inset-0 w-full h-full object-cover transform-gpu ${performanceMode ? '' : 'transition-transform duration-500 group-hover:scale-110'} ${isUtility ? 'object-contain p-6' : ''}`} />
+          <button onClick={(e) => { e.stopPropagation(); setFavorites(p => p.includes(game.id) ? p.filter(id => id !== game.id) : [...p, game.id]); }} className="absolute top-3 right-3 z-10 p-2 rounded-full border border-white/10 bg-black/40 backdrop-blur-md transition-colors hover:bg-black/60">
             <Heart className={`w-4 h-4 ${favorites.includes(game.id) ? 'fill-[#10A5F5] text-[#10A5F5]' : 'text-white'}`} />
           </button>
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -180,51 +187,27 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] transition-colors duration-300 pb-20 transform-gpu">
+    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] transition-colors duration-300 pb-20 transform-gpu relative">
       <header className="sticky top-0 z-40 border-b border-white/5 bg-[var(--bg-main)] h-16 flex items-center px-4">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
-          
           <div className="flex items-center gap-2 justify-self-start">
             <div className="w-8 h-8 bg-[#10A5F5] rounded-lg flex items-center justify-center"><Gamepad2 className="w-5 h-5 text-black" /></div>
             <span className="text-xl font-bold hidden sm:block">Capybara <span className="text-[#10A5F5]">Science</span></span>
           </div>
-
           <div className="flex items-center gap-2 w-full max-w-md justify-self-center">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-              <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-sm outline-none focus:border-[#10A5F5]/50" />
+              <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-sm outline-none focus:border-[#10A5F5]/50" />
               {searchQuery && <X onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 cursor-pointer text-zinc-500" />}
             </div>
             <button onClick={handleRandomGame} title="Random Game" className="p-2 bg-white/5 border border-white/10 rounded-full text-zinc-400 hover:text-[#10A5F5] transition-all"><Dices className="w-5 h-5" /></button>
           </div>
-
           <div className="flex items-center gap-4 justify-self-end">
             <div className="hidden lg:flex items-center gap-3 px-4 py-1.5 bg-white/5 border border-white/5 rounded-full">
-              <div className="flex items-center gap-1.5 border-r border-white/10 pr-3">
-                <Calendar className="w-3.5 h-3.5 text-zinc-500" />
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
-                  {currentTime.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5 border-r border-white/10 pr-3">
-                <BatteryIcon />
-                <span className={`text-[11px] font-bold ${battery.level <= 20 && !battery.charging ? 'text-red-500' : 'text-zinc-400'}`}>
-                  {battery.level}%
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-[#10A5F5]" />
-                <span className="text-[11px] font-bold text-zinc-200">
-                  {currentTime.toLocaleTimeString('en-US', { 
-                    hour: 'numeric', 
-                    minute: '2-digit', 
-                    hour12: true 
-                  })}
-                </span>
-              </div>
+              <div className="flex items-center gap-1.5 border-r border-white/10 pr-3"><Calendar className="w-3.5 h-3.5 text-zinc-500" /><span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">{currentTime.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}</span></div>
+              <div className="flex items-center gap-1.5 border-r border-white/10 pr-3"><BatteryIcon /><span className={`text-[11px] font-bold ${battery.level <= 20 && !battery.charging ? 'text-red-500' : 'text-zinc-400'}`}>{battery.level}%</span></div>
+              <div className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-[#10A5F5]" /><span className="text-[11px] font-bold text-zinc-200">{currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</span></div>
             </div>
-
             <div className="flex items-center gap-1">
               <button onClick={() => setIsLightMode(!isLightMode)} className="p-2 text-zinc-400 hover:text-[#10A5F5]">{isLightMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}</button>
               <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-400 hover:text-[#10A5F5]"><Settings className="w-5 h-5" /></button>
@@ -237,25 +220,28 @@ function App() {
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
           <Filter className="w-4 h-4 text-zinc-500 shrink-0" />
           {categories.map(cat => (
-            <button key={cat} onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors border ${activeCategory === cat ? 'bg-[#10A5F5] border-[#10A5F5] text-black' : 'bg-white/5 border-white/10 text-zinc-400 hover:border-[#10A5F5]/50'}`}>
-              {cat}
-            </button>
+            <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors border ${activeCategory === cat ? 'bg-[#10A5F5] border-[#10A5F5] text-black' : 'bg-white/5 border-white/10 text-zinc-400 hover:border-[#10A5F5]/50'}`}>{cat}</button>
           ))}
         </div>
       </div>
 
       <AnimatePresence>
         {showSettings && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 transform-gpu">
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }} 
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pointer-events-auto"
+          >
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }} 
-              animate={{ opacity: 1, scale: 1 }} 
-              exit={{ opacity: 0, scale: 0.95 }} 
-              className="bg-black border border-white/10 p-6 rounded-2xl max-w-sm w-full relative shadow-2xl"
+              initial={{ scale: 0.95 }} 
+              animate={{ scale: 1 }} 
+              exit={{ scale: 0.95 }} 
+              className="bg-zinc-900 border border-white/10 p-6 rounded-2xl max-w-sm w-full relative shadow-2xl overflow-y-auto max-h-[90vh]"
+              onClick={(e) => e.stopPropagation()}
             >
               <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-500 hover:text-white" />
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings</h2>
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-white"><ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings</h2>
               
               <div className="space-y-4 text-white">
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
@@ -275,54 +261,41 @@ function App() {
                 </div>
 
                 {panicEnabled && (
-                  <>
-                    <input type="text" value={panicUrl} onChange={(e) => {setPanicUrl(e.target.value); localStorage.setItem('panic-url', e.target.value);}} className="w-full bg-zinc-900 border border-white/10 rounded-xl p-3 text-sm outline-none" />
-                    <button onClick={() => setIsRecording(true)} className="w-full p-3 rounded-xl border border-white/10 bg-white/5 text-sm">{isRecording ? 'Press a key...' : `Key: ${panicKey}`}</button>
-                  </>
+                  <div className="space-y-2">
+                    <input type="text" value={panicUrl} onChange={(e) => {setPanicUrl(e.target.value); localStorage.setItem('panic-url', e.target.value);}} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-sm outline-none text-white focus:border-[#10A5F5]" placeholder="Panic URL" />
+                    <button onClick={() => setIsRecording(true)} className={`w-full p-3 rounded-xl border border-white/10 text-sm transition-colors ${isRecording ? 'bg-[#10A5F5] text-black font-bold' : 'bg-white/5 text-zinc-300'}`}>{isRecording ? 'Press any key...' : `Panic Key: ${panicKey}`}</button>
+                  </div>
                 )}
 
                 <div className="space-y-2 pt-2 border-t border-white/10">
                   <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Custom URL Cloak</label>
                   <div className="flex gap-2">
-                    <input type="text" placeholder="e.g. wikipedia.org" value={customCloakUrl} onChange={(e) => setCustomCloakUrl(e.target.value)} className="flex-1 bg-zinc-900 border border-white/10 rounded-xl p-2 text-xs outline-none focus:border-[#10A5F5]" />
+                    <input type="text" placeholder="wikipedia.org" value={customCloakUrl} onChange={(e) => setCustomCloakUrl(e.target.value)} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-2 text-xs outline-none focus:border-[#10A5F5] text-white" />
                     <button onClick={() => { applyCloak(customCloakUrl); localStorage.setItem('custom-cloak-url', customCloakUrl); }} className="px-3 bg-[#10A5F5] text-black font-bold rounded-xl text-xs hover:bg-[#0d8bc0]">Apply</button>
                   </div>
                 </div>
 
-                <select onChange={(e) => { const p = presets[e.target.value]; if(p){ document.title=p.title; let l=document.querySelector("link[rel*='icon']"); if(!l){l=document.createElement('link');l.rel='icon';document.head.appendChild(l);} l.href=p.favicon; } }} className="w-full bg-zinc-900 border border-white/10 rounded-xl p-3 text-sm outline-none text-white">
+                <select onChange={(e) => { const p = presets[e.target.value]; if(p){ document.title=p.title; let l=document.querySelector("link[rel*='icon']"); if(!l){l=document.createElement('link');l.rel='icon';document.head.appendChild(l);} l.href=p.favicon; } }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-sm outline-none text-white">
                   <option value="none">Presets (Default Title)</option>
                   <option value="powerschool">PowerSchool</option>
                   <option value="google">Google Drive</option>
                 </select>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-12 transform-gpu">
         {favs.length > 0 && (
           <section>
-            <div className="flex items-center gap-2 mb-6">
-              <Heart className="w-5 h-5 text-[#10A5F5] fill-[#10A5F5]" />
-              <h2 className="text-lg font-bold">Favorites</h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {favs.map(g => <GameCard key={g.id} game={g} />)}
-            </div>
+            <div className="flex items-center gap-2 mb-6"><Heart className="w-5 h-5 text-[#10A5F5] fill-[#10A5F5]" /><h2 className="text-lg font-bold">Favorites</h2></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">{favs.map(g => <GameCard key={g.id} game={g} />)}</div>
           </section>
         )}
-        
         <section>
-          {favs.length > 0 && (
-            <div className="flex items-center gap-2 mb-6 text-zinc-500">
-              <Gamepad2 className="w-5 h-5" />
-              <h2 className="text-lg font-bold">All Games</h2>
-            </div>
-          )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {others.map(g => <GameCard key={g.id} game={g} />)}
-          </div>
+          {favs.length > 0 && <div className="flex items-center gap-2 mb-6 text-zinc-500"><Gamepad2 className="w-5 h-5" /><h2 className="text-lg font-bold">All Games</h2></div>}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">{others.map(g => <GameCard key={g.id} game={g} />)}</div>
         </section>
       </main>
     </div>
