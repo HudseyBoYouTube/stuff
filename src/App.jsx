@@ -146,7 +146,7 @@ function App() {
     
     return (
       <div 
-        className="group bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col transform-gpu backface-hidden" 
+        className="group bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col transform-gpu" 
         onClick={() => handleSelectGame(game)}>
         <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0">
           <img 
@@ -181,7 +181,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] transition-colors duration-300 pb-20 transform-gpu">
-      {/* Fixed Header Background to prevent flickering */}
       <header className="sticky top-0 z-40 border-b border-white/5 bg-[var(--bg-main)] h-16 flex items-center px-4">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
           
@@ -248,10 +247,16 @@ function App() {
 
       <AnimatePresence>
         {showSettings && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="bg-black border border-white/10 p-6 rounded-2xl max-w-sm w-full relative shadow-2xl transform-gpu">
-              <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-500" />
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 transform-gpu">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }} 
+              animate={{ opacity: 1, scale: 1 }} 
+              exit={{ opacity: 0, scale: 0.95 }} 
+              className="bg-black border border-white/10 p-6 rounded-2xl max-w-sm w-full relative shadow-2xl"
+            >
+              <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-500 hover:text-white" />
               <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings</h2>
+              
               <div className="space-y-4 text-white">
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
                   <div className="flex items-center gap-2 text-sm">{performanceMode ? <ZapOff className="w-4 h-4 text-yellow-500" /> : <Zap className="w-4 h-4 text-yellow-500" />} Performance Mode</div>
@@ -259,11 +264,36 @@ function App() {
                     <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${performanceMode ? 'left-6' : 'left-1'}`} />
                   </button>
                 </div>
+                
                 <button onClick={() => { if(confirm('Clear all playtime data?')) setPlaytimes({}); }} className="w-full flex items-center justify-between p-3 bg-red-500/10 hover:bg-red-500/20 rounded-xl border border-red-500/20 text-red-500 text-sm transition-colors">Clear Playtime Data <Trash2 className="w-4 h-4" /></button>
-                <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10"><span className="text-sm">Panic Key Enabled</span><button onClick={() => setPanicEnabled(!panicEnabled)} className={`w-10 h-5 rounded-full relative ${panicEnabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}><div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${panicEnabled ? 'left-6' : 'left-1'}`} /></button></div>
-                {panicEnabled && (<><input type="text" value={panicUrl} onChange={(e) => {setPanicUrl(e.target.value); localStorage.setItem('panic-url', e.target.value);}} className="w-full bg-zinc-900 border border-white/10 rounded-xl p-3 text-sm outline-none" /><button onClick={() => setIsRecording(true)} className="w-full p-3 rounded-xl border border-white/10 bg-white/5 text-sm">{isRecording ? 'Press a key...' : `Key: ${panicKey}`}</button></>)}
-                <div className="space-y-2 pt-2 border-t border-white/10"><label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Custom URL Cloak</label><div className="flex gap-2"><input type="text" placeholder="e.g. wikipedia.org" value={customCloakUrl} onChange={(e) => setCustomCloakUrl(e.target.value)} className="flex-1 bg-zinc-900 border border-white/10 rounded-xl p-2 text-xs outline-none focus:border-[#10A5F5]" /><button onClick={() => { applyCloak(customCloakUrl); localStorage.setItem('custom-cloak-url', customCloakUrl); }} className="px-3 bg-[#10A5F5] text-black font-bold rounded-xl text-xs hover:bg-[#0d8bc0]">Apply</button></div></div>
-                <select onChange={(e) => { const p = presets[e.target.value]; if(p){ document.title=p.title; let l=document.querySelector("link[rel*='icon']"); if(!l){l=document.createElement('link');l.rel='icon';document.head.appendChild(l);} l.href=p.favicon; } }} className="w-full bg-zinc-900 border border-white/10 rounded-xl p-3 text-sm outline-none text-white"><option value="none">Presets (Default Title)</option><option value="powerschool">PowerSchool</option><option value="google">Google Drive</option></select>
+                
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
+                  <span className="text-sm">Panic Key Enabled</span>
+                  <button onClick={() => setPanicEnabled(!panicEnabled)} className={`w-10 h-5 rounded-full relative ${panicEnabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
+                    <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${panicEnabled ? 'left-6' : 'left-1'}`} />
+                  </button>
+                </div>
+
+                {panicEnabled && (
+                  <>
+                    <input type="text" value={panicUrl} onChange={(e) => {setPanicUrl(e.target.value); localStorage.setItem('panic-url', e.target.value);}} className="w-full bg-zinc-900 border border-white/10 rounded-xl p-3 text-sm outline-none" />
+                    <button onClick={() => setIsRecording(true)} className="w-full p-3 rounded-xl border border-white/10 bg-white/5 text-sm">{isRecording ? 'Press a key...' : `Key: ${panicKey}`}</button>
+                  </>
+                )}
+
+                <div className="space-y-2 pt-2 border-t border-white/10">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Custom URL Cloak</label>
+                  <div className="flex gap-2">
+                    <input type="text" placeholder="e.g. wikipedia.org" value={customCloakUrl} onChange={(e) => setCustomCloakUrl(e.target.value)} className="flex-1 bg-zinc-900 border border-white/10 rounded-xl p-2 text-xs outline-none focus:border-[#10A5F5]" />
+                    <button onClick={() => { applyCloak(customCloakUrl); localStorage.setItem('custom-cloak-url', customCloakUrl); }} className="px-3 bg-[#10A5F5] text-black font-bold rounded-xl text-xs hover:bg-[#0d8bc0]">Apply</button>
+                  </div>
+                </div>
+
+                <select onChange={(e) => { const p = presets[e.target.value]; if(p){ document.title=p.title; let l=document.querySelector("link[rel*='icon']"); if(!l){l=document.createElement('link');l.rel='icon';document.head.appendChild(l);} l.href=p.favicon; } }} className="w-full bg-zinc-900 border border-white/10 rounded-xl p-3 text-sm outline-none text-white">
+                  <option value="none">Presets (Default Title)</option>
+                  <option value="powerschool">PowerSchool</option>
+                  <option value="google">Google Drive</option>
+                </select>
               </div>
             </motion.div>
           </div>
