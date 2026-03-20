@@ -1,94 +1,60 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Gamepad2, Play, Settings, X, ShieldAlert, Zap, ZapOff, Clock, BatteryCharging, BatteryFull, Calendar, Image as ImageIcon } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Gamepad2, Play, Settings, X, ShieldAlert, Clock } from 'lucide-react';
 import gamesData from './games.json';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
-  const [performanceMode, setPerformanceMode] = useState(() => localStorage.getItem('perf-mode') === 'true');
-  const [panicUrl, setPanicUrl] = useState(localStorage.getItem('panic-url') || 'https://classroom.google.com');
-  const [panicKey, setPanicKey] = useState(localStorage.getItem('panic-key') || 'Escape');
-  const [isRecording, setIsRecording] = useState(false);
-  const [customCloakUrl, setCustomCloakUrl] = useState(localStorage.getItem('custom-cloak-url') || '');
-  const [customIconUrl, setCustomIconUrl] = useState(localStorage.getItem('custom-icon-url') || '');
-  
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [battery, setBattery] = useState({ level: 100, charging: false });
-
-  const [playtimes, setPlaytimes] = useState(() => {
-    const saved = localStorage.getItem('game-playtimes');
-    try { return saved ? JSON.parse(saved) : {}; } catch { return {}; }
-  });
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const handleSelectGame = (game) => {
-    const win = window.open('about:blank', '_blank');
-    if (!win) return;
-    const doc = win.document;
-    doc.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
-    const iframe = doc.createElement('iframe');
-    iframe.src = game.url;
-    iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
-    iframe.allow = "fullscreen";
-    doc.body.appendChild(iframe);
-  };
 
   const GameCard = ({ game }) => {
     const isUtility = ['request', 'report'].includes(game.id);
-    const timeSpent = playtimes[game.id] || 0;
     
     return (
-      <div className="relative group h-full">
-        {/* THE HITBOX: This invisible layer stays perfectly still to stop the flickering loop */}
-        <div 
-          className="absolute inset-0 z-30 cursor-pointer"
-          onClick={() => handleSelectGame(game)}
-        />
-
-        {/* THE VISUAL CARD: Responds to the 'group' hover but doesn't move */}
-        <div className="h-full bg-zinc-900/50 rounded-2xl overflow-hidden flex flex-col border border-white/5 transition-all duration-200 group-hover:border-[#10A5F5] group-hover:bg-zinc-900/80 group-hover:shadow-[0_0_20px_rgba(16,165,245,0.15)] transform-gpu">
-          
-          <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0">
-            <img 
-              src={game.thumbnail} 
-              alt={game.title} 
-              className={`absolute inset-0 w-full h-full pointer-events-none transform-gpu backface-hidden ${isUtility ? 'object-contain p-8' : 'object-cover'}`}
-            />
-            
-            {/* Play Button Overlay */}
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
-              <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center shadow-lg">
-                <Play className="w-6 h-6 text-black fill-current" />
-              </div>
+      <div 
+        className="group relative bg-zinc-900/50 rounded-2xl overflow-hidden cursor-pointer flex flex-col border-2 border-transparent hover:border-[#10A5F5] bg-clip-border"
+        style={{ contain: 'layout', willChange: 'contents' }}
+        onClick={() => {
+          const win = window.open('about:blank', '_blank');
+          if (win) {
+            win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
+            const iframe = win.document.createElement('iframe');
+            iframe.src = game.url;
+            iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
+            iframe.allow = "fullscreen";
+            win.document.body.appendChild(iframe);
+          }
+        }}
+      >
+        {/* THUMBNAIL AREA - STOPS ALL MOVEMENT */}
+        <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0 pointer-events-none">
+          <img 
+            src={game.thumbnail} 
+            alt={game.title} 
+            className={`absolute inset-0 w-full h-full pointer-events-none ${isUtility ? 'object-contain p-8' : 'object-cover'}`}
+          />
+          {/* Overlay - INSTANT SWAP (No Animation) */}
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center pointer-events-none">
+            <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center">
+              <Play className="w-6 h-6 text-black fill-current" />
             </div>
           </div>
-          
-          <div className="p-4 flex-1 pointer-events-none">
-            <div className="flex items-center justify-between mb-1 gap-2">
-              <h3 className="font-bold text-white truncate text-sm group-hover:text-[#10A5F5] transition-colors duration-200">
-                {game.title}
-              </h3>
-              <span className="text-[9px] font-extrabold uppercase text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md border border-[#10A5F5]/20">
-                {game.category}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="text-[11px] text-zinc-500">
-                {isUtility ? 'Click to fill out' : 'Click to play'}
-              </p>
-              {!isUtility && timeSpent > 0 && (
-                <div className="flex items-center gap-1 text-[10px] text-zinc-400 font-medium">
-                  <Clock className="w-3 h-3" />
-                  {timeSpent >= 60 ? `${Math.floor(timeSpent/60)}h ${timeSpent%60}m` : `${timeSpent}m`}
-                </div>
-              )}
-            </div>
+        </div>
+        
+        {/* INFO AREA - INSTANT COLOR SWAP */}
+        <div className="p-4 flex-1 pointer-events-none">
+          <div className="flex items-center justify-between mb-1 gap-2">
+            <h3 className="font-bold text-white truncate text-sm group-hover:text-[#10A5F5]">
+              {game.title}
+            </h3>
+            <span className="text-[9px] font-extrabold uppercase text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md border border-[#10A5F5]/20">
+              {game.category}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] text-zinc-500">
+              {isUtility ? 'Click to fill out' : 'Click to play'}
+            </p>
           </div>
         </div>
       </div>
@@ -114,7 +80,7 @@ function App() {
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#09090b]/90 backdrop-blur-md h-16 flex items-center px-4">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#10A5F5] rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-[#10A5F5] rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(16,165,245,0.2)]">
               <Gamepad2 className="w-5 h-5 text-black" />
             </div>
             <span className="text-xl font-black">Capybara <span className="text-[#10A5F5]">Science</span></span>
@@ -140,12 +106,12 @@ function App() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex items-center gap-2 overflow-x-auto pb-8">
+        <div className="flex items-center gap-2 overflow-x-auto pb-8 scrollbar-hide">
           {categories.map(cat => (
             <button 
               key={cat} 
               onClick={() => setActiveCategory(cat)} 
-              className={`px-5 py-2 rounded-full text-xs font-bold border transition-all ${activeCategory === cat ? 'bg-[#10A5F5] border-[#10A5F5] text-black' : 'bg-white/5 border-white/10 text-zinc-400'}`}
+              className={`px-5 py-2 rounded-full text-xs font-bold border transition-none ${activeCategory === cat ? 'bg-[#10A5F5] border-[#10A5F5] text-black' : 'bg-white/5 border-white/10 text-zinc-400'}`}
             >
               {cat}
             </button>
