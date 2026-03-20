@@ -207,19 +207,16 @@ function App() {
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#09090b]/90 backdrop-blur-md h-16 flex items-center px-4">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
           
-          {/* Left: Logo */}
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setView('grid'); window.scrollTo({top: 0, behavior: 'smooth'}); }}>
             <div className="w-8 h-8 bg-[var(--theme)] rounded-lg flex items-center justify-center"><Gamepad2 className="w-5 h-5 text-black" /></div>
             <span className="text-xl font-black hidden md:block">Capybara <span className="text-[var(--theme)]">Science</span></span>
           </div>
 
-          {/* Center: Search Bar */}
           <div className="relative w-full max-w-sm mx-auto">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
             <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm outline-none focus:border-[var(--theme)]/50 text-center" />
           </div>
 
-          {/* Right: Actions */}
           <div className="flex items-center justify-end gap-2">
             <button onClick={launchRandom} className="p-2.5 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all group" title="Random Game">
               <Dices className="w-5 h-5 group-hover:rotate-12 transition-transform" />
@@ -236,7 +233,7 @@ function App() {
       {view === 'grid' ? (
         <>
           <div className="sticky top-16 z-40 bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 px-4 overflow-hidden">
-            <div className="max-w-7xl mx-auto py-3 space-y-3">
+            <div className="max-w-7xl mx-auto pt-3 space-y-3">
               {recentGames.length > 0 && (
                 <div className="flex items-center gap-3 border-b border-white/5 pb-3">
                   <div className="text-[10px] font-black text-zinc-600 uppercase tracking-widest flex items-center gap-1 shrink-0"><History className="w-3 h-3" /> Recent</div>
@@ -249,7 +246,8 @@ function App() {
                   </div>
                 </div>
               )}
-              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+              {/* Category Container: pb-3 added to push scrollbar away from buttons */}
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-3">
                 {categoriesWithCounts.map(cat => (
                   <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-4 py-2 rounded-full text-xs font-bold border shrink-0 transition-all flex items-center gap-2 ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black shadow-lg shadow-[var(--theme)]/20' : 'bg-white/5 border-white/10 text-zinc-400'}`}>
                     {cat.name}
