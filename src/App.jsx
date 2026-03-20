@@ -7,7 +7,6 @@ import {
 
 import gamesDataRaw from './games.json';
 
-// --- HELPER: FUZZY SEARCH ---
 const getEditDistance = (a, b) => {
   if (a.length === 0) return b.length;
   if (b.length === 0) return a.length;
@@ -194,7 +193,6 @@ function App() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
               <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-xs outline-none focus:border-[var(--theme)]/50 text-center" />
             </div>
-            {/* RANDOM BUTTON NEXT TO SEARCH */}
             <button onClick={launchRandom} className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all shrink-0"><Dices className="w-5 h-5" /></button>
           </div>
 
@@ -207,8 +205,8 @@ function App() {
 
       {view === 'grid' ? (
         <>
-          {/* CATEGORIES BAR - Pushed down with mt-10 */}
-          <div className="sticky top-16 z-40 bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 px-4 overflow-hidden mt-10">
+          {/* CATEGORIES BAR - Pushed even lower with mt-16 */}
+          <div className="sticky top-16 z-40 bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 px-4 overflow-hidden mt-16">
             <div className="max-w-7xl mx-auto py-3">
               <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
                 {categoriesWithCounts.map(cat => (
@@ -274,13 +272,6 @@ function App() {
                     <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${stealthMode ? 'left-6' : 'left-1'}`} />
                   </button>
                </div>
-               <div className="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-4">
-                  <div className="text-sm flex items-center gap-2 font-bold"><Keyboard className="w-4 h-4 text-red-500" /> Panic Key</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <input type="text" maxLength="1" value={panicKey} onChange={(e) => {setPanicKey(e.target.value); localStorage.setItem('panic-key', e.target.value);}} className="bg-black/40 p-2 rounded-xl border border-white/5 text-xs outline-none text-center uppercase" />
-                    <input type="text" value={panicUrl} onChange={(e) => {setPanicUrl(e.target.value); localStorage.setItem('panic-url', e.target.value);}} className="bg-black/40 p-2 rounded-xl border border-white/5 text-xs outline-none" />
-                  </div>
-               </div>
                <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
                   <div className="text-sm mb-3 font-bold flex items-center gap-2"><Palette className="w-4 h-4" /> Theme Color</div>
                   <div className="flex gap-3">
@@ -307,17 +298,16 @@ function GameCard({ game, isFav, rating, stats, onLaunch, onFav, onRate }) {
     <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer" onClick={() => onLaunch(game)}>
       <div className="relative aspect-[4/3] overflow-hidden bg-black/20">
         
-        {/* REVERTED IMAGE SIZES FOR UTILITY ONLY */}
+        {/* ICON SIZE ADJUSTED: w-36 h-36 for Request/Report */}
         <img 
           src={game.thumbnail} 
           className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 
-            ${isUtility ? 'w-24 h-24 object-contain opacity-60' : 'w-full h-full object-cover'}`} 
+            ${isUtility ? 'w-36 h-36 object-contain opacity-70' : 'w-full h-full object-cover'}`} 
           alt="" 
         />
         
         {!isUtility && (
           <div className="absolute top-4 left-4 right-4 flex justify-end items-start z-10">
-            {/* STAR ON RIGHT SIDE */}
             <button onClick={(e) => { e.stopPropagation(); 
               const saved = JSON.parse(localStorage.getItem('capy-favorites') || '[]');
               const next = saved.includes(game.id) ? saved.filter(id => id !== game.id) : [...saved, game.id];
