@@ -43,31 +43,29 @@ function App() {
 
   const handleSelectGame = (game) => {
     const win = window.open('about:blank', '_blank');
-    if (win) {
-      win.document.title = 'DO NOT REFRESH';
-      const doc = win.document;
-      doc.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
-      const iframe = doc.createElement('iframe');
-      iframe.src = game.url;
-      iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
-      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-      iframe.allowFullscreen = true;
-      doc.body.appendChild(iframe);
-    }
+    if (!win) return;
+    win.document.title = 'DO NOT REFRESH';
+    const doc = win.document;
+    doc.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
+    const iframe = doc.createElement('iframe');
+    iframe.src = game.url;
+    iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
+    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen";
+    doc.body.appendChild(iframe);
   };
 
   const filteredGames = useMemo(() => {
-    const query = searchQuery.toLowerCase();
-    return (gamesData || []).filter(g => g.title?.toLowerCase().includes(query) || g.category?.toLowerCase().includes(query));
+    const q = searchQuery.toLowerCase();
+    return (gamesData || []).filter(g => g.title?.toLowerCase().includes(q) || g.category?.toLowerCase().includes(q));
   }, [searchQuery]);
 
   const favs = useMemo(() => filteredGames.filter(g => favorites.includes(g.id)), [filteredGames, favorites]);
   const others = useMemo(() => filteredGames.filter(g => !favorites.includes(g.id)), [filteredGames, favorites]);
 
   const GameCard = ({ game }) => (
-    <motion.div layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} whileHover={{ y: -4 }}
-      className="group relative bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer" onClick={() => handleSelectGame(game)}>
-      <div className="aspect-[4/3] overflow-hidden bg-zinc-800/20 flex items-center justify-center relative">
+    <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} whileHover={{ y: -4 }}
+      className="group bg-[var(--card-bg)] border border-white/5 rounded-2xl overflow-hidden cursor-pointer" onClick={() => handleSelectGame(game)}>
+      <div className="aspect-[4/3] bg-zinc-800/20 flex items-center justify-center relative overflow-hidden">
         <img src={game.thumbnail} alt={game.title} referrerPolicy="no-referrer" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
         <button onClick={(e) => { e.stopPropagation(); setFavorites(p => p.includes(game.id) ? p.filter(id => id !== game.id) : [...p, game.id]); }} 
           className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10">
@@ -80,16 +78,17 @@ function App() {
         </div>
       </div>
       <div className="p-4">
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-[var(--text-main)] group-hover:text-[#10A5F5]">{game.title}</h3>
-          <span className="text-[10px] font-bold uppercase text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md">{game.category}</span>
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="font-semibold text-[var(--text-main)] group-hover:text-[#10A5F5] truncate">{game.title}</h3>
+          <span className="text-[10px] font-bold uppercase text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md shrink-0">{game.category}</span>
         </div>
+        <p className="text-xs text-zinc-500">{['request', 'report'].includes(game.id) ? 'Click to fill out' : 'Click to play'}</p>
       </div>
     </motion.div>
   );
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] transition-colors duration-300">
+    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] transition-colors duration-300 pb-20">
       <header className="sticky top-0 z-40 border-b border-white/5 bg-[var(--bg-main)]/80 backdrop-blur-xl h-16 flex items-center px-4">
         <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -104,7 +103,7 @@ function App() {
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => setIsLightMode(!isLightMode)} className="p-2 text-zinc-400 hover:text-[#10A5F5]">{isLightMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}</button>
-            <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-400"><Settings className="w-5 h-5" /></button>
+            <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-400 hover:text-[#10A5F5]"><Settings className="w-5 h-5" /></button>
           </div>
         </div>
       </header>
@@ -112,10 +111,10 @@ function App() {
       <AnimatePresence>
         {showSettings && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="bg-black border border-white/10 p-6 rounded-2xl max-w-sm w-full relative">
+            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} className="bg-black border border-white/10 p-6 rounded-2xl max-w-sm w-full relative shadow-2xl">
               <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-500" />
               <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings</h2>
-              <div className="space-y-4">
+              <div className="space-y-4 text-white">
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
                   <span className="text-sm">Panic Key</span>
                   <button onClick={() => setPanicEnabled(!panicEnabled)} className={`w-10 h-5 rounded-full relative ${panicEnabled ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
@@ -146,11 +145,12 @@ function App() {
         {favs.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-6"><Heart className="w-5 h-5 text-[#10A5F5] fill-[#10A5F5]" /><h2 className="text-lg font-bold">Favorites</h2></div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"><AnimatePresence>{favs.map(g => <GameCard key={g.id} game={g} />)}</AnimatePresence></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"><AnimatePresence mode="popLayout">{favs.map(g => <GameCard key={g.id} game={g} />)}</AnimatePresence></div>
           </section>
         )}
         <section>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"><AnimatePresence>{others.map(g => <GameCard key={g.id} game={g} />)}</AnimatePresence></div>
+          {favs.length > 0 && <div className="flex items-center gap-2 mb-6 text-zinc-500"><Gamepad2 className="w-5 h-5" /><h2 className="text-lg font-bold">All Games</h2></div>}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"><AnimatePresence mode="popLayout">{others.map(g => <GameCard key={g.id} game={g} />)}</AnimatePresence></div>
         </section>
       </main>
     </div>
