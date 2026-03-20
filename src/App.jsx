@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Gamepad2, Play, Settings, X, ShieldAlert, Heart, Sun, Moon, Zap, ZapOff, Filter, Clock, Trash2 } from 'lucide-react';
+import { Search, Gamepad2, Play, Settings, X, ShieldAlert, Heart, Sun, Moon, Zap, ZapOff, Filter, Clock, Trash2, Dices } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import gamesData from './games.json';
 
@@ -15,7 +15,6 @@ function App() {
   const [isLightMode, setIsLightMode] = useState(() => localStorage.getItem('theme') === 'light');
   const [customCloakUrl, setCustomCloakUrl] = useState(localStorage.getItem('custom-cloak-url') || '');
   
-  // Playtime State
   const [playtimes, setPlaytimes] = useState(() => {
     const saved = localStorage.getItem('game-playtimes');
     try { return saved ? JSON.parse(saved) : {}; } catch { return {}; }
@@ -61,7 +60,6 @@ function App() {
   useEffect(() => { localStorage.setItem('favorite-games', JSON.stringify(favorites)); }, [favorites]);
   useEffect(() => { localStorage.setItem('game-playtimes', JSON.stringify(playtimes)); }, [playtimes]);
 
-  // Logic to catch when user returns from a game tab
   useEffect(() => {
     const handleFocus = () => {
       const activeGame = sessionStorage.getItem('active-game-id');
@@ -84,10 +82,8 @@ function App() {
   }, []);
 
   const handleSelectGame = (game) => {
-    // Start tracking playtime
     sessionStorage.setItem('active-game-id', game.id);
     sessionStorage.setItem('active-game-start', Date.now().toString());
-
     const win = window.open('about:blank', '_blank');
     if (!win) return;
     win.document.title = 'DO NOT REFRESH';
@@ -98,6 +94,12 @@ function App() {
     iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
     iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen";
     doc.body.appendChild(iframe);
+  };
+
+  const handleRandomGame = () => {
+    if (gamesData.length === 0) return;
+    const randomIdx = Math.floor(Math.random() * gamesData.length);
+    handleSelectGame(gamesData[randomIdx]);
   };
 
   const filteredGames = useMemo(() => {
@@ -158,18 +160,34 @@ function App() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] transition-colors duration-300 pb-20">
       <header className={`sticky top-0 z-40 border-b border-white/5 bg-[var(--bg-main)]/80 ${performanceMode ? '' : 'backdrop-blur-xl'} h-16 flex items-center px-4`}>
-        <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
+          
+          {/* Logo Section */}
+          <div className="flex items-center gap-2 justify-self-start">
             <div className="w-8 h-8 bg-[#10A5F5] rounded-lg flex items-center justify-center"><Gamepad2 className="w-5 h-5 text-black" /></div>
             <span className="text-xl font-bold hidden sm:block">Capybara <span className="text-[#10A5F5]">Science</span></span>
           </div>
-          <div className="flex-1 max-w-md mx-4 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-            <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-sm outline-none focus:border-[#10A5F5]/50" />
-            {searchQuery && <X onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 cursor-pointer text-zinc-500" />}
+
+          {/* Search Section - Centered */}
+          <div className="flex items-center gap-2 w-full max-w-md justify-self-center">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-sm outline-none focus:border-[#10A5F5]/50" />
+              {searchQuery && <X onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 cursor-pointer text-zinc-500" />}
+            </div>
+            {/* Random Game Icon */}
+            <button 
+              onClick={handleRandomGame}
+              title="Random Game"
+              className="p-2 bg-white/5 border border-white/10 rounded-full text-zinc-400 hover:text-[#10A5F5] hover:border-[#10A5F5]/50 transition-all"
+            >
+              <Dices className="w-5 h-5" />
+            </button>
           </div>
-          <div className="flex items-center gap-2">
+
+          {/* Settings Section */}
+          <div className="flex items-center gap-2 justify-self-end">
             <button onClick={() => setIsLightMode(!isLightMode)} className="p-2 text-zinc-400 hover:text-[#10A5F5]">{isLightMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}</button>
             <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-400 hover:text-[#10A5F5]"><Settings className="w-5 h-5" /></button>
           </div>
@@ -205,7 +223,6 @@ function App() {
                   </button>
                 </div>
                 
-                {/* Clear Playtime Option */}
                 <button 
                   onClick={() => { if(confirm('Clear all playtime data?')) setPlaytimes({}); }}
                   className="w-full flex items-center justify-between p-3 bg-red-500/10 hover:bg-red-500/20 rounded-xl border border-red-500/20 text-red-500 text-sm transition-colors"
