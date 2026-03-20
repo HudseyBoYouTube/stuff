@@ -94,43 +94,45 @@ function App() {
     const timeSpent = playtimes[game.id] || 0;
     
     return (
-      <div className="relative h-full group">
-        {/* HITBOX LAYER: Invisible, static, and captures all clicks */}
-        <div 
-          className="absolute inset-0 z-20 cursor-pointer" 
-          onClick={() => handleSelectGame(game)}
-        />
-
-        {/* VISUAL LAYER: Responds to group hover, but doesn't trigger it */}
-        <div className="h-full bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden flex flex-col transition-all duration-300 group-hover:border-[#10A5F5]/40 group-hover:bg-zinc-900/80 group-hover:shadow-[0_0_25px_rgba(16,165,245,0.1)]">
-          <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0">
-            <img 
-              src={game.thumbnail} 
-              alt={game.title} 
-              className={`absolute inset-0 w-full h-full object-cover pointer-events-none transition-transform duration-500 group-hover:scale-105 ${isUtility ? 'p-6 object-contain' : ''}`}
-            />
-            {/* Play Button */}
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
-              <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center shadow-2xl">
-                <Play className="w-6 h-6 text-black fill-current" />
-              </div>
+      <div 
+        className="group relative bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col hover:border-[#10A5F5]"
+        onClick={() => handleSelectGame(game)}
+      >
+        {/* IMAGE CONTAINER: No Scale, No Transition */}
+        <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0 pointer-events-none">
+          <img 
+            src={game.thumbnail} 
+            alt={game.title} 
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          />
+          {/* Overlay: Opacity swap only (No fade/transition) */}
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center pointer-events-none">
+            <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center">
+              <Play className="w-6 h-6 text-black fill-current" />
             </div>
           </div>
-          
-          <div className="p-4 flex-1 pointer-events-none">
-            <div className="flex items-center justify-between mb-1 gap-2">
-              <h3 className="font-bold text-white truncate text-sm transition-colors group-hover:text-[#10A5F5]">{game.title}</h3>
-              <span className="text-[9px] font-extrabold uppercase text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md border border-[#10A5F5]/20">{game.category}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="text-[11px] text-zinc-500">{isUtility ? 'Click to fill out' : 'Click to play'}</p>
-              {!isUtility && timeSpent > 0 && (
-                <div className="flex items-center gap-1 text-[10px] text-zinc-400 font-medium">
-                  <Clock className="w-3 h-3" />
-                  {timeSpent >= 60 ? `${Math.floor(timeSpent/60)}h ${timeSpent%60}m` : `${timeSpent}m`}
-                </div>
-              )}
-            </div>
+        </div>
+        
+        {/* TEXT AREA: No Movement, No Fade */}
+        <div className="p-4 flex-1 pointer-events-none">
+          <div className="flex items-center justify-between mb-1 gap-2">
+            <h3 className="font-bold text-white truncate text-sm group-hover:text-[#10A5F5]">
+              {game.title}
+            </h3>
+            <span className="text-[9px] font-extrabold uppercase text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md border border-[#10A5F5]/20">
+              {game.category}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] text-zinc-500">
+              {isUtility ? 'Click to fill out' : 'Click to play'}
+            </p>
+            {!isUtility && timeSpent > 0 && (
+              <div className="flex items-center gap-1 text-[10px] text-zinc-400 font-medium">
+                <Clock className="w-3 h-3" />
+                {timeSpent >= 60 ? `${Math.floor(timeSpent/60)}h ${timeSpent%60}m` : `${timeSpent}m`}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -142,13 +144,21 @@ function App() {
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#09090b]/90 backdrop-blur-md h-16 flex items-center px-4">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#10A5F5] rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(16,165,245,0.2)]"><Gamepad2 className="w-5 h-5 text-black" /></div>
+            <div className="w-8 h-8 bg-[#10A5F5] rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(16,165,245,0.2)]">
+              <Gamepad2 className="w-5 h-5 text-black" />
+            </div>
             <span className="text-xl font-black hidden sm:block">Capybara <span className="text-[#10A5F5]">Science</span></span>
           </div>
 
           <div className="relative w-full max-w-md justify-self-center">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-            <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm outline-none focus:border-[#10A5F5]/50 transition-all" />
+            <input 
+              type="text" 
+              placeholder="Search games..." 
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)} 
+              className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm outline-none focus:border-[#10A5F5]/50 transition-all" 
+            />
           </div>
 
           <div className="flex items-center gap-4 justify-self-end">
@@ -168,59 +178,23 @@ function App() {
                 <span className="text-[11px] font-bold text-zinc-200">{currentTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
               </div>
             </div>
-            <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-400 hover:text-[#10A5F5] transition-colors"><Settings className="w-5 h-5" /></button>
+            <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-400 hover:text-[#10A5F5] transition-colors">
+              <Settings className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </header>
 
-      <AnimatePresence>
-        {showSettings && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowSettings(false)} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-sm w-full relative shadow-2xl z-10 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-              <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-500 hover:text-white" />
-              <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-white"><ShieldAlert className="w-5 h-5 text-[#10A5F5]" /> Settings</h2>
-              
-              <div className="space-y-5">
-                <div className="flex items-center justify-between p-3 bg-white/5 rounded-2xl border border-white/10">
-                  <div className="flex items-center gap-2 text-sm text-white">{performanceMode ? <ZapOff className="w-4 h-4 text-yellow-500" /> : <Zap className="w-4 h-4 text-yellow-500" />} Performance Mode</div>
-                  <button onClick={() => setPerformanceMode(!performanceMode)} className={`w-10 h-5 rounded-full relative transition-colors ${performanceMode ? 'bg-[#10A5F5]' : 'bg-zinc-700'}`}><div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${performanceMode ? 'left-6' : 'left-1'}`} /></button>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase text-zinc-500">Panic Setup</label>
-                  <input type="text" value={panicUrl} onChange={(e) => setPanicUrl(e.target.value)} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-sm text-white outline-none focus:border-[#10A5F5]" placeholder="Panic URL" />
-                  <button onClick={() => setIsRecording(true)} className={`w-full p-3 rounded-xl border border-white/10 text-sm ${isRecording ? 'bg-[#10A5F5] text-black font-bold' : 'bg-white/5 text-zinc-400'}`}>{isRecording ? 'Press any key...' : `Panic Key: ${panicKey}`}</button>
-                </div>
-
-                <div className="space-y-3 pt-2 border-t border-white/10">
-                  <label className="text-[10px] font-bold uppercase text-zinc-500">Tab Cloaking</label>
-                  <div className="flex gap-2">
-                    <input type="text" placeholder="URL (e.g. google.com)" value={customCloakUrl} onChange={(e) => setCustomCloakUrl(e.target.value)} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-2 text-xs text-white outline-none focus:border-[#10A5F5]" />
-                    <button onClick={() => applyCloak(customCloakUrl)} className="px-3 bg-[#10A5F5] text-black font-bold rounded-xl text-xs">Apply</button>
-                  </div>
-                  <div className="flex gap-2">
-                    <input type="text" placeholder="Icon URL" value={customIconUrl} onChange={(e) => setCustomIconUrl(e.target.value)} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-2 text-xs text-white outline-none focus:border-[#10A5F5]" />
-                    <button onClick={() => updateIcon(customIconUrl)} className="px-3 bg-zinc-700 text-white font-bold rounded-xl text-xs"><ImageIcon className="w-3.5 h-3.5" /></button>
-                  </div>
-                  <select onChange={(e) => { const p = presets[e.target.value]; if(p){ document.title=p.title; updateIcon(p.favicon); }}} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-sm text-white outline-none">
-                    <option value="none">Presets</option>
-                    <option value="powerschool">PowerSchool</option>
-                    <option value="google">Google Drive</option>
-                  </select>
-                </div>
-
-                <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="w-full p-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl text-xs font-bold transition-colors">Emergency Factory Reset</button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center gap-2 overflow-x-auto pb-8 scrollbar-hide">
           {categories.map(cat => (
-            <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-5 py-2 rounded-full text-xs font-bold transition-all border ${activeCategory === cat ? 'bg-[#10A5F5] border-[#10A5F5] text-black shadow-lg shadow-[#10A5F5]/20' : 'bg-white/5 border-white/10 text-zinc-400 hover:border-white/20'}`}>{cat}</button>
+            <button 
+              key={cat} 
+              onClick={() => setActiveCategory(cat)} 
+              className={`px-5 py-2 rounded-full text-xs font-bold transition-all border ${activeCategory === cat ? 'bg-[#10A5F5] border-[#10A5F5] text-black shadow-lg shadow-[#10A5F5]/20' : 'bg-white/5 border-white/10 text-zinc-400 hover:border-white/20'}`}
+            >
+              {cat}
+            </button>
           ))}
         </div>
 
