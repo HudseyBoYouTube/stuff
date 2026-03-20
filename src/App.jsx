@@ -97,26 +97,27 @@ function App() {
     
     return (
       <div 
-        className="group bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col transition-all duration-300 hover:border-[#10A5F5]/30 hover:shadow-[0_0_20px_rgba(16,165,245,0.1)]"
-        style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
+        className="group relative bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col shadow-lg"
+        style={{ isolation: 'isolate', zIndex: 0 }}
         onClick={() => handleSelectGame(game)}
       >
-        <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0">
+        <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden pointer-events-none">
           <img 
             src={game.thumbnail} 
             alt={game.title} 
-            className={`absolute inset-0 w-full h-full transition-transform duration-700 ease-out group-hover:scale-110 ${isUtility ? 'object-contain p-6' : 'object-cover'}`} 
-            style={{ transform: 'translate3d(0,0,0)' }}
+            className={`absolute inset-0 w-full h-full transition-transform duration-500 ease-out group-hover:scale-105 ${isUtility ? 'object-contain p-6' : 'object-cover'}`}
           />
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+          {/* Static Overlay - No scale animation to prevent flickering */}
+          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
             <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center shadow-xl">
               <Play className="w-6 h-6 text-black fill-current" />
             </div>
           </div>
         </div>
-        <div className="p-4 flex-1">
+        
+        <div className="p-4 flex-1 pointer-events-none">
           <div className="flex items-center justify-between mb-1 gap-2">
-            <h3 className="font-bold text-white truncate text-sm transition-colors group-hover:text-[#10A5F5]">{game.title}</h3>
+            <h3 className="font-bold text-white truncate text-sm group-hover:text-[#10A5F5] transition-colors">{game.title}</h3>
             <span className="text-[9px] font-extrabold uppercase text-[#10A5F5] px-2 py-0.5 bg-[#10A5F5]/10 rounded-md border border-[#10A5F5]/20">{game.category}</span>
           </div>
           <div className="flex items-center justify-between">
@@ -134,8 +135,8 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased transform-gpu">
-      <header className="sticky top-0 z-40 border-b border-white/5 bg-[#09090b]/90 backdrop-blur-md h-16 flex items-center px-4">
+    <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased">
+      <header className="sticky top-0 z-50 border-b border-white/5 bg-[#09090b]/90 backdrop-blur-md h-16 flex items-center px-4">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-[#10A5F5] rounded-lg flex items-center justify-center"><Gamepad2 className="w-5 h-5 text-black" /></div>
