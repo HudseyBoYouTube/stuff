@@ -973,13 +973,6 @@
     "category": "Parkour"
   },
   {
-    "id": "fakevirus",
-    "title": "Fake Virus",
-    "url": "https://neatliterature.majoitus.ee/books/files/fake-virus/index.html",
-    "thumbnail": "https://cdn-icons-png.flaticon.com/512/3022/3022151.png",
-    "category": "Prank"
-  },
-  {
     "id": "googlesnake",
     "title": "Google Snake",
     "url": "https://neatliterature.majoitus.ee/books/files/google-snake/index.html",
