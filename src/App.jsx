@@ -11,10 +11,7 @@ function App() {
   const [isRecording, setIsRecording] = useState(false);
   const [panicEnabled, setPanicEnabled] = useState(localStorage.getItem('panic-enabled') !== 'false');
   const [isLightMode, setIsLightMode] = useState(() => localStorage.getItem('theme') === 'light');
-  
-  // New state for Dynamic Cloaking
   const [customCloakUrl, setCustomCloakUrl] = useState(localStorage.getItem('custom-cloak-url') || '');
-
   const [favorites, setFavorites] = useState(() => {
     const saved = localStorage.getItem('favorite-games');
     try { return saved ? JSON.parse(saved) : []; } catch { return []; }
@@ -26,23 +23,18 @@ function App() {
     google: { title: 'My Drive - Google Drive', favicon: 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png' }
   };
 
-  // Helper function for Dynamic Cloaking
   const applyCloak = (url) => {
     try {
       const domain = new URL(url.startsWith('http') ? url : `https://${url}`).hostname;
       const title = domain.replace('www.', '');
       const icon = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-      
       document.title = title;
-      let link = document.querySelector("link[rel*='icon']");
-      if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
-      link.href = icon;
-
+      let l = document.querySelector("link[rel*='icon']");
+      if (!l) { l = document.createElement('link'); l.rel = 'icon'; document.head.appendChild(l); }
+      l.href = icon;
       localStorage.setItem('cloaked-title', title);
       localStorage.setItem('cloaked-icon', icon);
-    } catch (e) {
-      document.title = 'Capybara Science';
-    }
+    } catch (e) { document.title = 'Capybara Science'; }
   };
 
   useEffect(() => {
@@ -150,38 +142,18 @@ function App() {
                     <button onClick={() => setIsRecording(true)} className="w-full p-3 rounded-xl border border-white/10 bg-white/5 text-sm">{isRecording ? 'Press a key...' : `Key: ${panicKey}`}</button>
                   </>
                 )}
-
-                {/* Custom URL Cloaking Section */}
                 <div className="space-y-2 pt-2 border-t border-white/10">
                   <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Custom URL Cloak</label>
                   <div className="flex gap-2">
-                    <input 
-                      type="text" 
-                      placeholder="e.g. wikipedia.org" 
-                      value={customCloakUrl}
-                      onChange={(e) => setCustomCloakUrl(e.target.value)}
-                      className="flex-1 bg-zinc-900 border border-white/10 rounded-xl p-2 text-xs outline-none focus:border-[#10A5F5]"
-                    />
-                    <button 
-                      onClick={() => {
-                        applyCloak(customCloakUrl);
-                        localStorage.setItem('custom-cloak-url', customCloakUrl);
-                      }}
-                      className="px-3 bg-[#10A5F5] text-black font-bold rounded-xl text-xs hover:bg-[#0d8bc0]"
-                    >
-                      Apply
-                    </button>
+                    <input type="text" placeholder="e.g. wikipedia.org" value={customCloakUrl} onChange={(e) => setCustomCloakUrl(e.target.value)}
+                      className="flex-1 bg-zinc-900 border border-white/10 rounded-xl p-2 text-xs outline-none focus:border-[#10A5F5]" />
+                    <button onClick={() => { applyCloak(customCloakUrl); localStorage.setItem('custom-cloak-url', customCloakUrl); }}
+                      className="px-3 bg-[#10A5F5] text-black font-bold rounded-xl text-xs hover:bg-[#0d8bc0]">Apply</button>
                   </div>
                 </div>
-
                 <select onChange={(e) => {
                   const p = presets[e.target.value];
-                  if(p){ 
-                    document.title=p.title; 
-                    let l=document.querySelector("link[rel*='icon']"); 
-                    if(!l){l=document.createElement('link');l.rel='icon';document.head.appendChild(l);} 
-                    l.href=p.favicon; 
-                  }
+                  if(p){ document.title=p.title; let l=document.querySelector("link[rel*='icon']"); if(!l){l=document.createElement('link');l.rel='icon';document.head.appendChild(l);} l.href=p.favicon; }
                 }} className="w-full bg-zinc-900 border border-white/10 rounded-xl p-3 text-sm outline-none">
                   <option value="none">Presets (Default Title)</option>
                   <option value="powerschool">PowerSchool</option>
