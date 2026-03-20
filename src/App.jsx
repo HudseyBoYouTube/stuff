@@ -26,15 +26,21 @@ function App() {
   const applyCloak = (url) => {
     try {
       const domain = new URL(url.startsWith('http') ? url : `https://${url}`).hostname;
-      const title = domain.replace('www.', '');
+      const cleanName = domain.replace('www.', '').split('.')[0]; // Get 'wikipedia' from 'www.wikipedia.org'
+      const formattedTitle = cleanName.charAt(0).toUpperCase() + cleanName.slice(1); // 'Wikipedia'
+      
       const icon = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-      document.title = title;
+      
+      document.title = formattedTitle;
       let l = document.querySelector("link[rel*='icon']");
       if (!l) { l = document.createElement('link'); l.rel = 'icon'; document.head.appendChild(l); }
       l.href = icon;
-      localStorage.setItem('cloaked-title', title);
+      
+      localStorage.setItem('cloaked-title', formattedTitle);
       localStorage.setItem('cloaked-icon', icon);
-    } catch (e) { document.title = 'Capybara Science'; }
+    } catch (e) { 
+      document.title = 'Capybara Science'; 
+    }
   };
 
   useEffect(() => {
@@ -162,7 +168,12 @@ function App() {
                 </div>
                 <select onChange={(e) => {
                   const p = presets[e.target.value];
-                  if(p){ document.title=p.title; let l=document.querySelector("link[rel*='icon']"); if(!l){l=document.createElement('link');l.rel='icon';document.head.appendChild(l);} l.href=p.favicon; }
+                  if(p){ 
+                    document.title=p.title; 
+                    let l=document.querySelector("link[rel*='icon']"); 
+                    if(!l){l=document.createElement('link');l.rel='icon';document.head.appendChild(l);} 
+                    l.href=p.favicon; 
+                  }
                 }} className="w-full bg-zinc-900 border border-white/10 rounded-xl p-3 text-sm outline-none text-white">
                   <option value="none">Presets (Default Title)</option>
                   <option value="powerschool">PowerSchool</option>
