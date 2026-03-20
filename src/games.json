@@ -329,6 +329,13 @@
     "category": "Arcade"
   },
   {
+    "id": "ironsnout",
+    "title": "Iron Snout",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/iron-snout/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-6nDGbtMIOccbg4-1DTYccv-HLjE4URbxqw&s",
+    "category": "Action"
+  },
+  {
     "id": "baconmaydie",
     "title": "Bacon May Die (Beta)",
     "url": "https://stophop.theveranda.co.id/stuff/selfhosted/bacon-may-die/",
