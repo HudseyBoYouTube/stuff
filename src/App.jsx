@@ -95,17 +95,17 @@ function App() {
     
     return (
       <div 
-        className="group relative bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden cursor-pointer flex flex-col hover:border-[#10A5F5] transition-colors duration-0"
+        className="group relative bg-zinc-900/50 rounded-2xl overflow-hidden cursor-pointer flex flex-col border border-transparent hover:border-[#10A5F5]"
         onClick={() => handleSelectGame(game)}
       >
-        {/* THUMBNAIL AREA */}
+        {/* THUMBNAIL AREA - No scaling or movement */}
         <div className="relative aspect-[4/3] bg-zinc-800/20 overflow-hidden shrink-0 pointer-events-none">
           <img 
             src={game.thumbnail} 
             alt={game.title} 
             className={`absolute inset-0 w-full h-full pointer-events-none ${isUtility ? 'object-contain p-8' : 'object-cover'}`}
           />
-          {/* Play Button Overlay - Instant swap, no animation */}
+          {/* Overlay - Instant swap */}
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center pointer-events-none">
             <div className="w-12 h-12 bg-[#10A5F5] rounded-full flex items-center justify-center">
               <Play className="w-6 h-6 text-black fill-current" />
@@ -113,7 +113,7 @@ function App() {
           </div>
         </div>
         
-        {/* INFO AREA */}
+        {/* INFO AREA - No movement */}
         <div className="p-4 flex-1 pointer-events-none">
           <div className="flex items-center justify-between mb-1 gap-2">
             <h3 className="font-bold text-white truncate text-sm group-hover:text-[#10A5F5]">
@@ -157,7 +157,7 @@ function App() {
               placeholder="Search games..." 
               value={searchQuery} 
               onChange={(e) => setSearchQuery(e.target.value)} 
-              className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm outline-none focus:border-[#10A5F5]/50 transition-all" 
+              className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm outline-none focus:border-[#10A5F5]/50" 
             />
           </div>
 
