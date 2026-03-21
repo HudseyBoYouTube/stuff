@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, AlertTriangle, RotateCcw, Check, Undo2, Sun,
-  Type, ImageIcon, Link as LinkIcon, Upload, Globe
+  Type, ImageIcon, Link as LinkIcon, Upload, Globe, Star
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -45,7 +45,7 @@ function App() {
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
-  // Derived Identity for the Preview & Logic
+  // Logic to handle Tab Identity
   const currentIdentity = useMemo(() => {
     if (disguise !== 'none') return DISGUISE_CONFIG[disguise];
     return {
@@ -65,6 +65,17 @@ function App() {
     link.href = currentIdentity.icon;
   }, [currentIdentity]);
 
+  // Category Logic
+  const categoriesWithCounts = useMemo(() => {
+    const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
+    const final = [{ name: 'All', count: gamesData.length }, ...uniqueCats.map(cat => ({ 
+      name: cat, 
+      count: gamesData.filter(g => g.category === cat).length 
+    }))];
+    if (favorites.length > 0) final.unshift({ name: 'Favorites', count: favorites.length });
+    return final;
+  }, [gamesData, favorites]);
+
   const handleIconUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -80,6 +91,20 @@ function App() {
   const handleResetSettings = () => {
     localStorage.clear();
     window.location.reload();
+  };
+
+  const launchContent = (item) => {
+    if (!item?.url) return;
+    const win = window.open('about:blank', '_blank');
+    if (win) {
+      win.document.title = "DO NOT REFRESH";
+      win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
+      const iframe = win.document.createElement('iframe');
+      iframe.src = item.url;
+      iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
+      iframe.allow = "fullscreen";
+      win.document.body.appendChild(iframe);
+    }
   };
 
   const filteredGames = useMemo(() => {
@@ -114,12 +139,28 @@ function App() {
         </div>
       </header>
 
+      {/* RESTORED CATEGORY BAR */}
+      <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 mb-[-1rem]">
+        <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+          {categoriesWithCounts.map(cat => (
+            <button 
+              key={cat.name} 
+              onClick={() => setActiveCategory(cat.name)} 
+              className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'}`}
+            >
+              {cat.name} <span className="opacity-50 ml-1">{cat.count}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       <main className="max-w-7xl mx-auto px-4 mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {filteredGames.map(game => (
-          <GameCard key={game.id} game={game} playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'} />
+          <GameCard key={game.id} game={game} onLaunch={launchContent} playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'} />
         ))}
       </main>
 
+      {/* FIXED SETTINGS MODAL */}
       {showSettings && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowSettings(false)} />
@@ -130,7 +171,6 @@ function App() {
             </div>
             
             <div className="space-y-5">
-              {/* LIVE PREVIEW BOX */}
               <div className="bg-black/40 border border-white/5 rounded-2xl p-3 flex flex-col gap-2">
                 <span className="text-[8px] uppercase font-black text-zinc-600 tracking-widest">Live Tab Preview</span>
                 <div className="bg-[#18181b] rounded-lg p-2 flex items-center gap-3 border border-white/10">
@@ -139,58 +179,43 @@ function App() {
                 </div>
               </div>
 
-              {/* BRANDING SECTION */}
               <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
                 <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Palette className="w-3 h-3" /> Custom Branding</label>
                 
                 <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] text-zinc-400 uppercase font-bold flex items-center gap-1"><Type className="w-2.5 h-2.5" /> Tab Name</span>
-                    {customTitle && <button onClick={() => { setCustomTitle(''); localStorage.removeItem('capy-custom-title'); }} className="text-[9px] font-black text-[var(--theme)] uppercase hover:underline">Reset</button>}
-                  </div>
+                  <span className="text-[9px] text-zinc-400 uppercase font-bold flex items-center gap-1"><Type className="w-2.5 h-2.5" /> Tab Name</span>
                   <input type="text" placeholder="Enter custom name..." value={customTitle} onChange={(e) => { setCustomTitle(e.target.value); localStorage.setItem('capy-custom-title', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)]/50 transition-colors" />
                 </div>
 
                 <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] text-zinc-400 uppercase font-bold flex items-center gap-1"><ImageIcon className="w-2.5 h-2.5" /> Tab Icon</span>
-                    {customIcon && <button onClick={() => { setCustomIcon(''); localStorage.removeItem('capy-custom-icon'); }} className="text-[9px] font-black text-[var(--theme)] uppercase hover:underline">Reset</button>}
-                  </div>
-                  
+                  <span className="text-[9px] text-zinc-400 uppercase font-bold flex items-center gap-1"><ImageIcon className="w-2.5 h-2.5" /> Tab Icon</span>
                   <div className="flex gap-2">
-                    <div className="relative">
-                      <input type="file" accept="image/*" onChange={handleIconUpload} className="hidden" id="icon-upload" />
-                      <label htmlFor="icon-upload" className="w-10 h-10 bg-zinc-800 border border-white/10 rounded-xl flex items-center justify-center cursor-pointer hover:border-[var(--theme)] transition-all">
-                        <Upload className="w-4 h-4 text-zinc-500" />
-                      </label>
-                    </div>
+                    <input type="file" accept="image/*" onChange={handleIconUpload} className="hidden" id="icon-upload" />
+                    <label htmlFor="icon-upload" className="w-10 h-10 bg-zinc-800 border border-white/10 rounded-xl flex items-center justify-center cursor-pointer hover:border-[var(--theme)] transition-all">
+                      <Upload className="w-4 h-4 text-zinc-500" />
+                    </label>
                     <div className="relative flex-1 flex items-center gap-2 bg-zinc-800 border border-white/10 rounded-xl pr-3">
-                      <div className="pl-3 shrink-0"><LinkIcon className="w-3.5 h-3.5 text-zinc-600" /></div>
+                      <div className="pl-3"><LinkIcon className="w-3.5 h-3.5 text-zinc-600" /></div>
                       <input type="text" placeholder="Paste Image URL..." value={customIcon.startsWith('data:') ? 'Local File Selected' : customIcon} onChange={(e) => { setCustomIcon(e.target.value); localStorage.setItem('capy-custom-icon', e.target.value); }} className="w-full bg-transparent py-3 text-xs outline-none" />
-                      {/* PREVIEW IMAGE ICON */}
-                      {customIcon && (
-                        <div className="w-6 h-6 rounded bg-black/40 flex items-center justify-center overflow-hidden shrink-0 border border-white/5">
-                          <img src={customIcon} className="w-full h-full object-contain" alt="" />
-                        </div>
-                      )}
+                      {customIcon && <img src={customIcon} className="w-6 h-6 rounded bg-black/40 object-contain shrink-0 border border-white/5" alt="" />}
                     </div>
                   </div>
                 </div>
               </section>
 
               <section className="space-y-2">
-                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest">Quick Presets</label>
-                <select value={disguise} onChange={(e) => { setDisguise(e.target.value); localStorage.setItem('capy-stealth-type', e.target.value); }} className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)] transition-all cursor-pointer appearance-none">
-                  <option value="none" className="bg-zinc-900 text-white">Use My Custom Branding</option>
-                  <option value="drive" className="bg-zinc-900 text-white">Google Drive</option>
-                  <option value="classroom" className="bg-zinc-900 text-white">Google Classroom</option>
-                  <option value="canvas" className="bg-zinc-900 text-white">Canvas LMS</option>
-                </select>
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest">Theme Accent</label>
+                <div className="flex gap-2">
+                   <div className="relative w-12 h-12 shrink-0 rounded-xl overflow-hidden border border-white/10">
+                      <input type="color" value={theme} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="absolute inset-[-10px] w-[200%] h-[200%] cursor-pointer" />
+                   </div>
+                   <input type="text" value={theme} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 text-xs outline-none focus:border-[var(--theme)] font-mono uppercase" />
+                </div>
               </section>
 
               <div className="pt-4">
-                <button onClick={handleResetSettings} className="w-full p-3 rounded-2xl border border-white/5 bg-white/5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-red-500/10 hover:border-red-500/20 transition-all flex items-center justify-center gap-2">
-                   <RotateCcw className="w-3 h-3" /> Factory Reset Site
+                <button onClick={handleResetSettings} className="w-full p-3 rounded-2xl border border-red-500/20 bg-red-500/5 text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500/10 transition-all flex items-center justify-center gap-2">
+                   <RotateCcw className="w-3 h-3" /> Factory Reset
                 </button>
               </div>
             </div>
@@ -201,14 +226,14 @@ function App() {
   );
 }
 
-function GameCard({ game, playtime }) {
+function GameCard({ game, onLaunch, playtime }) {
   const isUtility = ['request', 'report'].includes(game.id);
   return (
-    <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg">
+    <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg" onClick={() => onLaunch(game)}>
       <div className="relative w-full aspect-[4/3] bg-black/20 overflow-hidden group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)] transition-all duration-500">
         <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24' : 'w-full h-full object-cover'}`} alt="" />
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="w-12 h-12 bg-[var(--theme)] rounded-full flex items-center justify-center shadow-[0_0_20px_var(--theme)] transition-all">
+          <div className="w-12 h-12 bg-[var(--theme)] rounded-full flex items-center justify-center shadow-[0_0_20px_var(--theme)]">
             <Play className="w-6 h-6 text-black fill-current ml-1" />
           </div>
         </div>
