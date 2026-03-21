@@ -133,12 +133,11 @@ function App() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
                 <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 transition-colors" />
                 {searchQuery && (
-                  <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:text-white transition-colors">
-                    <X className="w-3 h-3" />
+                  <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--theme)] hover:opacity-70 transition-all">
+                    <X className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
-              {/* Updated random game button color to match theme */}
               <button onClick={() => {
                 const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
                 if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
