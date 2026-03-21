@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react'; // Added useRef
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
@@ -57,6 +57,9 @@ function App() {
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
+  // REFRESH-PROOFING: A ref to track click speed for themes
+  const lastThemeChange = useRef(0);
+
   // Logic: Panic Shortcut Listener
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -100,13 +103,17 @@ function App() {
     setFavorites(newFavs);
     localStorage.setItem('capy-favorites', JSON.stringify(newFavs));
 
-    // Fix: If we just removed the last favorite while viewing the favorite tab, go back to main
     if (isRemoving && newFavs.length === 0 && activeCategory === 'Favorites') {
         setActiveCategory('All');
     }
   };
 
   const applyTheme = (t) => {
+    // FIX: prevent "freezing" by ignoring clicks that happen too fast (within 50ms)
+    const now = Date.now();
+    if (now - lastThemeChange.current < 50) return;
+    lastThemeChange.current = now;
+
     setTheme(t.color);
     setGlowIntensity(t.glow);
     localStorage.setItem('capy-theme', t.color);
@@ -271,7 +278,6 @@ function App() {
                       <span className="text-[9px] text-zinc-500 font-bold uppercase ml-1">Activation Key</span>
                       <button onClick={() => { setPanicKey(''); localStorage.removeItem('capy-panic-key'); }} className="text-[9px] text-red-400 hover:text-red-300 font-black uppercase transition-colors">Clear Key</button>
                     </div>
-                    {/* Fix: Added stopPropagation so setting the key doesn't trigger the panic redirect */}
                     <input type="text" placeholder="Click and press a key" value={panicKey} onKeyDown={(e) => { e.preventDefault(); e.stopPropagation(); setPanicKey(e.key); localStorage.setItem('capy-panic-key', e.key); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50 text-center font-mono font-bold cursor-pointer" readOnly />
                   </div>
                 </div>
