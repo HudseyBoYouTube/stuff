@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
-  Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap
+  Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -54,6 +54,7 @@ function App() {
 
   // Background States
   const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
+  const [backgroundVideo, setBackgroundVideo] = useState(() => localStorage.getItem('capy-bg-video') || '');
   const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
 
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
@@ -96,15 +97,19 @@ function App() {
     }
   }, [confirmReset]);
 
-  // Handle Background Upload (supports GIF and Image)
   const handleBackgroundUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result;
-        setBackgroundImage(base64String);
-        localStorage.setItem('capy-bg-image', base64String);
+        if (file.type.startsWith('video/')) {
+          setBackgroundVideo(base64String);
+          localStorage.setItem('capy-bg-video', base64String);
+        } else {
+          setBackgroundImage(base64String);
+          localStorage.setItem('capy-bg-image', base64String);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -200,17 +205,15 @@ function App() {
     <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased relative" style={{ '--theme': theme, '--glow': `${glowIntensity}px` }}>
       
       {/* Background Layer */}
-      {backgroundImage && (
-        <div 
-          className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-500"
-          style={{ 
-            backgroundImage: `url(${backgroundImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            opacity: bgOpacity / 100
-          }}
-        />
-      )}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" style={{ opacity: bgOpacity / 100 }}>
+        {backgroundVideo ? (
+          <video autoPlay muted loop playsInline className="w-full h-full object-cover">
+            <source src={backgroundVideo} />
+          </video>
+        ) : backgroundImage ? (
+          <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${backgroundImage})` }} />
+        ) : null}
+      </div>
 
       <div className="relative z-10">
         <div className="sticky top-0 z-50">
@@ -284,22 +287,22 @@ function App() {
             <div className="space-y-6">
               {/* Background Section */}
               <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><ImageIcon className="w-3 h-3 text-[var(--theme)]" /> Background (Image/GIF)</label>
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><ImageIcon className="w-3 h-3 text-[var(--theme)]" /> Media Background</label>
                 <div className="flex gap-2">
                   <label className="flex-1 p-3 bg-zinc-800 border border-white/10 rounded-xl text-[10px] font-black uppercase hover:border-[var(--theme)]/50 transition-all text-center cursor-pointer">
                     <div className="flex items-center justify-center gap-2">
                       <Upload className="w-3 h-3 text-[var(--theme)]" />
-                      Upload File
+                      Upload IMG/GIF/MP4
                     </div>
-                    <input type="file" accept="image/*,image/gif" onChange={handleBackgroundUpload} className="hidden" />
+                    <input type="file" accept="image/*,video/*" onChange={handleBackgroundUpload} className="hidden" />
                   </label>
-                  {backgroundImage && (
-                    <button onClick={() => { setBackgroundImage(''); localStorage.removeItem('capy-bg-image'); }} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-all">
+                  {(backgroundImage || backgroundVideo) && (
+                    <button onClick={() => { setBackgroundImage(''); setBackgroundVideo(''); localStorage.removeItem('capy-bg-image'); localStorage.removeItem('capy-bg-video'); }} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-all">
                       <Trash2 className="w-3 h-3 text-red-500" />
                     </button>
                   )}
                 </div>
-                {backgroundImage && (
+                {(backgroundImage || backgroundVideo) && (
                   <div className="space-y-1.5">
                     <div className="flex justify-between text-[8px] font-black uppercase text-zinc-500">
                       <span>Opacity</span>
@@ -320,20 +323,8 @@ function App() {
                   </span>
                 </div>
                 <div className="space-y-3">
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between items-end">
-                      <span className="text-[9px] text-zinc-500 font-bold uppercase ml-1">Redirect URL</span>
-                      <button onClick={() => { setPanicUrl(''); localStorage.removeItem('capy-panic-url'); }} className="text-[9px] text-red-400 hover:text-red-300 font-black uppercase transition-colors">Clear URL</button>
-                    </div>
-                    <input type="text" placeholder="e.g. google.com" value={panicUrl} onChange={(e) => { setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between items-end">
-                      <span className="text-[9px] text-zinc-500 font-bold uppercase ml-1">Activation Key</span>
-                      <button onClick={() => { setPanicKey(''); localStorage.removeItem('capy-panic-key'); }} className="text-[9px] text-red-400 hover:text-red-300 font-black uppercase transition-colors">Clear Key</button>
-                    </div>
-                    <input type="text" placeholder="Click and press a key" value={panicKey} onKeyDown={(e) => { e.preventDefault(); e.stopPropagation(); setPanicKey(e.key); localStorage.setItem('capy-panic-key', e.key); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50 text-center font-mono font-bold cursor-pointer" readOnly />
-                  </div>
+                  <input type="text" placeholder="Redirect URL (google.com)" value={panicUrl} onChange={(e) => { setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50" />
+                  <input type="text" placeholder="Press key to set Panic" value={panicKey} onKeyDown={(e) => { e.preventDefault(); setPanicKey(e.key); localStorage.setItem('capy-panic-key', e.key); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50 text-center font-mono font-bold" readOnly />
                 </div>
               </section>
 
@@ -354,6 +345,10 @@ function App() {
                   {Object.keys(DISGUISE_CONFIG).map(type => (
                     <button key={type} onClick={() => { setDisguise(type); localStorage.setItem('capy-stealth-type', type); }} className={`px-3 py-2 rounded-lg text-[9px] font-bold uppercase border transition-all ${disguise === type ? 'bg-[var(--theme)] text-black' : 'bg-zinc-800 border-white/5'}`}>{type}</button>
                   ))}
+                </div>
+                <div className="pt-2 space-y-2">
+                  <input type="text" placeholder="Custom Tab Title" value={customTitle} onChange={(e) => { setCustomTitle(e.target.value); localStorage.setItem('capy-custom-title', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none" />
+                  <input type="text" placeholder="Custom Favicon URL" value={customIcon} onChange={(e) => { setCustomIcon(e.target.value); localStorage.setItem('capy-custom-icon', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none" />
                 </div>
               </section>
 
