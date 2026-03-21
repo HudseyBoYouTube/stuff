@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
-  Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video
+  Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video, Music, Volume2
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -38,6 +38,7 @@ function App() {
     return gamesDataRaw;
   }, []);
 
+  const audioRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
@@ -55,6 +56,9 @@ function App() {
   const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
   const [backgroundVideo, setBackgroundVideo] = useState(() => localStorage.getItem('capy-bg-video') || '');
   const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
+  
+  const [bgMusic, setBgMusic] = useState(() => localStorage.getItem('capy-bg-music') || '');
+  const [volume, setVolume] = useState(() => Number(localStorage.getItem('capy-volume')) || 50);
 
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
   const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || 'Escape');
@@ -65,6 +69,22 @@ function App() {
   useEffect(() => {
     updateThemeVariables(theme, glowIntensity);
   }, [theme, glowIntensity]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume / 100;
+    }
+  }, [volume]);
+
+  useEffect(() => {
+    const startAudio = () => {
+      if (audioRef.current && bgMusic) {
+        audioRef.current.play().catch(() => {});
+      }
+    };
+    window.addEventListener('click', startAudio, { once: true });
+    return () => window.removeEventListener('click', startAudio);
+  }, [bgMusic]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -109,6 +129,19 @@ function App() {
           setBackgroundImage(base64String);
           localStorage.setItem('capy-bg-image', base64String);
         }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAudioUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setBgMusic(base64String);
+        localStorage.setItem('capy-bg-music', base64String);
       };
       reader.readAsDataURL(file);
     }
@@ -204,7 +237,6 @@ function App() {
     }
   };
 
-  // UPDATED FILTER LOGIC: Fixes Utility items appearing in Favorites
   const filteredGames = useMemo(() => {
     const q = searchQuery.toLowerCase();
     return gamesData.filter(g => {
@@ -223,7 +255,6 @@ function App() {
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased relative" style={{ '--theme': theme, '--glow': `${glowIntensity}px` }}>
       
-      {/* Background Layer */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" style={{ opacity: bgOpacity / 100 }}>
         {backgroundVideo ? (
           <video autoPlay muted loop playsInline className="w-full h-full object-cover">
@@ -233,6 +264,8 @@ function App() {
           <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${backgroundImage})` }} />
         ) : null}
       </div>
+
+      {bgMusic && <audio ref={audioRef} src={bgMusic} loop autoPlay />}
 
       <div className="relative z-10">
         <div className="sticky top-0 z-50">
@@ -327,6 +360,33 @@ function App() {
                       <span>{bgOpacity}%</span>
                     </div>
                     <input type="range" min="0" max="100" value={bgOpacity} onChange={(e) => { setBgOpacity(e.target.value); localStorage.setItem('capy-bg-opacity', e.target.value); }} className="w-full accent-[var(--theme)]" />
+                  </div>
+                )}
+              </section>
+
+              <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Music className="w-3 h-3 text-[var(--theme)]" /> Menu Music</label>
+                <div className="flex gap-2">
+                  <label className="flex-1 p-3 bg-zinc-800 border border-white/10 rounded-xl text-[10px] font-black uppercase hover:border-[var(--theme)]/50 transition-all text-center cursor-pointer">
+                    <div className="flex items-center justify-center gap-2">
+                      <Upload className="w-3 h-3 text-[var(--theme)]" />
+                      Upload MP3
+                    </div>
+                    <input type="file" accept="audio/mpeg,audio/wav,audio/ogg" onChange={handleAudioUpload} className="hidden" />
+                  </label>
+                  {bgMusic && (
+                    <button onClick={() => { setBgMusic(''); localStorage.removeItem('capy-bg-music'); }} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-all">
+                      <Trash2 className="w-3 h-3 text-red-500" />
+                    </button>
+                  )}
+                </div>
+                {bgMusic && (
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-[8px] font-black uppercase text-zinc-500">
+                      <span className="flex items-center gap-1"><Volume2 className="w-2.5 h-2.5" /> Volume</span>
+                      <span>{volume}%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value={volume} onChange={(e) => { setVolume(e.target.value); localStorage.setItem('capy-volume', e.target.value); }} className="w-full accent-[var(--theme)]" />
                   </div>
                 )}
               </section>
