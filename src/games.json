@@ -966,6 +966,13 @@
     "category": "Driving"
   },
   {
+    "id": "crazybikes",
+    "title": "Crazy Bikes",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/crazy-bikes/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/3dffba10e1aa5980e65408012b38db6d/crazy-bikes.png",
+    "category": "Driving"
+  },
+  {
     "id": "dreadheadparkour",
     "title": "Dreadhead Parkour",
     "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/dreadhead-parkour/",
@@ -1069,6 +1076,20 @@
     "url": "https://play.coolmathgames.eu.org/storage/ag/gn/363.html",
     "thumbnail": "https://img.website.xin/contents/sitefiles3604/18022902/images/4371986.png",
     "category": "Idle"
+  },
+  {
+    "id": "unicyclehero",
+    "title": "Unicycle Hero",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/unicycle-hero/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/4089ea8322c7fe8a5416ef5ee237ea53/unicycle-hero.png",
+    "category": "Skill"
+  },
+  {
+    "id": "bitlife",
+    "title": "Bit Life",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/bitlife/",
+    "thumbnail": "https://bitlife-game.io/data/image/game/bitlife-game.jpg",
+    "category": "Simulation"
   }
 ]
     
