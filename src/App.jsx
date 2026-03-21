@@ -138,10 +138,11 @@ function App() {
                   </button>
                 )}
               </div>
+              {/* Updated random game button color to match theme */}
               <button onClick={() => {
                 const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
                 if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
-              }} className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all shrink-0">
+              }} className="p-2 bg-white/5 border border-white/10 rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all shrink-0">
                 <Dices className="w-5 h-5" />
               </button>
             </div>
@@ -156,7 +157,6 @@ function App() {
                   <span>{battery.level}%</span>
                 </div>
               </div>
-              {/* Updated settings icon color to match the info bar */}
               <button onClick={() => setShowSettings(true)} className="p-2 text-[var(--theme)] hover:opacity-70 transition-all"><Settings className="w-6 h-6" /></button>
             </div>
           </div>
