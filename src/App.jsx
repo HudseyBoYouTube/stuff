@@ -2,10 +2,18 @@ import { useState, useMemo, useEffect } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Star, Trash2, Palette, EyeOff, Eye, 
-  Dices, AlertTriangle, Battery, Zap
+  Dices, AlertTriangle, Battery, Zap, ChevronDown
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
+
+// --- CONFIGURATION FOR DISGUISES ---
+const DISGUISE_CONFIG = {
+  none: { title: "Capybara Science", icon: '/vite.svg' }, // Fallback icon
+  drive: { title: "My Drive - Google Drive", icon: "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" },
+  classroom: { title: "Classes", icon: "https://www.gstatic.com/classroom/favicon.png" },
+  canvas: { title: "Dashboard", icon: "https://du11hjcvhe620.cloudfront.net/favicon.ico" }
+};
 
 function App() {
   const [dataError, setDataError] = useState(false);
@@ -27,8 +35,13 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
+  
+  // Theme state now handles any color string
   const [theme, setTheme] = useState(() => localStorage.getItem('capy-theme') || '#10A5F5');
-  const [stealthMode, setStealthMode] = useState(() => localStorage.getItem('capy-stealth') === 'true');
+  
+  // Stealth mode is now a string matching DISGUISE_CONFIG keys
+  const [disguise, setDisguise] = useState(() => localStorage.getItem('capy-stealth-type') || 'none');
+  
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [confirmClear, setConfirmClear] = useState(false);
 
@@ -72,17 +85,18 @@ function App() {
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   };
 
+  // UPDATED EFFECT: Handles the multi-option disguise
   useEffect(() => {
     const link = document.querySelector("link[rel~='icon']");
-    if (stealthMode) {
-      document.title = "My Drive - Google Drive";
-      if (link) link.href = "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png";
-    } else {
-      document.title = "Capybara Science";
-      if (link) link.href = originalFavicon;
+    const selected = DISGUISE_CONFIG[disguise] || DISGUISE_CONFIG.none;
+    
+    document.title = selected.title;
+    if (link) {
+      link.href = disguise === 'none' ? originalFavicon : selected.icon;
     }
-    localStorage.setItem('capy-stealth', stealthMode);
-  }, [stealthMode, originalFavicon]);
+    
+    localStorage.setItem('capy-stealth-type', disguise);
+  }, [disguise, originalFavicon]);
 
   const launchGame = (game) => {
     if (!game || !game.url) return;
@@ -157,7 +171,6 @@ function App() {
                 onChange={(e) => setSearchQuery(e.target.value)} 
                 className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 text-center" 
               />
-              {/* CLEAR BUTTON */}
               {searchQuery.length > 0 && (
                 <button 
                   onClick={() => setSearchQuery('')}
@@ -225,21 +238,56 @@ function App() {
           <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative z-10 shadow-2xl">
             <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-400 hover:text-red-500" />
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-[var(--theme)]" /> System Config</h2>
+            
             <div className="space-y-4">
-               <div className="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between">
-                  <div className="text-sm flex items-center gap-2">{stealthMode ? <EyeOff className="w-4 h-4 text-[var(--theme)]" /> : <Eye className="w-4 h-4" />} Tab Disguise</div>
-                  <button onClick={() => setStealthMode(!stealthMode)} className={`w-10 h-5 rounded-full relative transition-all ${stealthMode ? 'bg-[var(--theme)]' : 'bg-zinc-700'}`}>
-                    <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${stealthMode ? 'left-6' : 'left-1'}`} />
-                  </button>
-               </div>
+               {/* TAB DISGUISE SELECTOR */}
                <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                  <div className="text-sm mb-3 font-bold flex items-center gap-2"><Palette className="w-4 h-4" /> Theme Color</div>
-                  <div className="flex gap-3">
-                    {['#10A5F5', '#10f57b', '#f5107b', '#f5a610'].map(c => (
-                      <button key={c} onClick={() => {setTheme(c); localStorage.setItem('capy-theme', c);}} className={`w-8 h-8 rounded-full border-2 transition-all ${theme === c ? 'border-white scale-110' : 'border-transparent opacity-60 hover:opacity-100'}`} style={{background: c}} />
-                    ))}
+                  <div className="text-sm mb-3 flex items-center gap-2">
+                    {disguise !== 'none' ? <EyeOff className="w-4 h-4 text-[var(--theme)]" /> : <Eye className="w-4 h-4" />} 
+                    Tab Disguise
+                  </div>
+                  <div className="relative">
+                    <select 
+                      value={disguise} 
+                      onChange={(e) => setDisguise(e.target.value)}
+                      className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs appearance-none focus:outline-none focus:border-[var(--theme)] cursor-pointer"
+                    >
+                      <option value="none">Default (Capybara Science)</option>
+                      <option value="drive">Google Drive</option>
+                      <option value="classroom">Google Classroom</option>
+                      <option value="canvas">Canvas Dashboard</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none text-zinc-500" />
                   </div>
                </div>
+
+               {/* THEME COLOR PICKER */}
+               <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                  <div className="text-sm mb-3 font-bold flex items-center justify-between">
+                    <div className="flex items-center gap-2"><Palette className="w-4 h-4" /> Theme Color</div>
+                    <div className="relative w-6 h-6 rounded-full border border-white/20 overflow-hidden" style={{ background: theme }}>
+                      <input 
+                        type="color" 
+                        value={theme} 
+                        onChange={(e) => {setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value);}}
+                        className="absolute inset-0 opacity-0 cursor-pointer scale-150"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    {['#10A5F5', '#10f57b', '#f5107b', '#f5a610'].map(c => (
+                      <button 
+                        key={c} 
+                        onClick={() => {setTheme(c); localStorage.setItem('capy-theme', c);}} 
+                        className={`w-8 h-8 rounded-full border-2 transition-all ${theme === c ? 'border-white scale-110' : 'border-transparent opacity-60 hover:opacity-100'}`} 
+                        style={{background: c}} 
+                      />
+                    ))}
+                    <div className="w-px h-8 bg-white/10 mx-1" />
+                    <span className="text-[10px] text-zinc-500 flex items-center">Custom: {theme.toUpperCase()}</span>
+                  </div>
+               </div>
+
                <button onClick={() => { if(confirmClear) { localStorage.clear(); window.location.reload(); } else setConfirmClear(true); }} className="w-full p-4 rounded-2xl border border-red-500/20 text-red-500 text-xs font-bold hover:bg-red-500/10 transition-colors">
                  <Trash2 className="w-4 h-4 inline mr-2" /> {confirmClear ? "Wipe All Data?" : "Clear App Data"}
                </button>
