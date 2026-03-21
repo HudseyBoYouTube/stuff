@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
-  Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2
+  Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -11,6 +11,13 @@ const DEFAULT_COLOR = '#10A5F5';
 const DEFAULT_GLOW = 50;
 const DEFAULT_TITLE = "Capybara Science";
 const DEFAULT_ICON = "https://img.icons8.com/color/32/capybara.png";
+
+const THEMES = {
+  cyber: { name: 'Cyberpunk', color: '#ff0055', glow: 60 },
+  midnight: { name: 'Midnight', color: '#7c3aed', glow: 40 },
+  forest: { name: 'Forest', color: '#10b981', glow: 30 },
+  classic: { name: 'Classic', color: DEFAULT_COLOR, glow: DEFAULT_GLOW }
+};
 
 const DISGUISE_CONFIG = {
   none: { title: DEFAULT_TITLE, icon: DEFAULT_ICON },
@@ -25,24 +32,44 @@ function App() {
     return gamesDataRaw;
   }, []);
 
+  // UI States
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmClearFavs, setConfirmClearFavs] = useState(false);
   
+  // System Info
   const [time, setTime] = useState(new Date());
   const [battery, setBattery] = useState({ level: 100, charging: false });
 
+  // Customization States
   const [theme, setTheme] = useState(() => localStorage.getItem('capy-theme') || DEFAULT_COLOR);
   const [glowIntensity, setGlowIntensity] = useState(() => Number(localStorage.getItem('capy-glow')) || DEFAULT_GLOW);
   const [disguise, setDisguise] = useState(() => localStorage.getItem('capy-stealth-type') || 'none');
   const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
   const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
 
+  // Panic Mode States
+  const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
+  const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || 'Escape');
+
+  // Favorites & Data
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
+  // Logic: Panic Button Listener
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (panicKey && e.key === panicKey) {
+        window.location.href = panicUrl || 'https://google.com';
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [panicUrl, panicKey]);
+
+  // Logic: Clock & Battery
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     if ('getBattery' in navigator) {
@@ -56,19 +83,13 @@ function App() {
     return () => clearInterval(timer);
   }, []);
 
+  // Logic: Auto-reset confirmation states
   useEffect(() => {
     if (confirmReset) {
       const timeout = setTimeout(() => setConfirmReset(false), 3000);
       return () => clearTimeout(timeout);
     }
   }, [confirmReset]);
-
-  useEffect(() => {
-    if (confirmClearFavs) {
-      const timeout = setTimeout(() => setConfirmClearFavs(false), 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [confirmClearFavs]);
 
   const toggleFavorite = (id, e) => {
     e.stopPropagation();
@@ -79,14 +100,19 @@ function App() {
     localStorage.setItem('capy-favorites', JSON.stringify(newFavs));
   };
 
-  const handleClearFavorites = () => {
-    if (confirmClearFavs) {
-      setFavorites([]);
-      localStorage.setItem('capy-favorites', '[]');
-      setConfirmClearFavs(false);
-      if (activeCategory === 'Favorites') setActiveCategory('All');
+  const applyTheme = (t) => {
+    setTheme(t.color);
+    setGlowIntensity(t.glow);
+    localStorage.setItem('capy-theme', t.color);
+    localStorage.setItem('capy-glow', t.glow);
+  };
+
+  const handleReset = () => {
+    if (confirmReset) {
+      localStorage.clear();
+      window.location.reload();
     } else {
-      setConfirmClearFavs(true);
+      setConfirmReset(true);
     }
   };
 
@@ -113,11 +139,7 @@ function App() {
   const categoriesWithCounts = useMemo(() => {
     const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
     const final = [{ name: 'All', count: gamesData.length }];
-    
-    if (validFavoritesCount > 0) {
-      final.unshift({ name: 'Favorites', count: validFavoritesCount });
-    }
-    
+    if (validFavoritesCount > 0) final.unshift({ name: 'Favorites', count: validFavoritesCount });
     uniqueCats.forEach(cat => {
       final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
     });
@@ -133,27 +155,12 @@ function App() {
       link.rel = 'icon';
       link.href = currentIdentity.icon;
       win.document.head.appendChild(link);
-
       win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
       const iframe = win.document.createElement('iframe');
       iframe.src = item.url;
       iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
       iframe.allow = "fullscreen";
       win.document.body.appendChild(iframe);
-      
-      const titleInterval = setInterval(() => {
-        if (win.document.title !== "DO NOT REFRESH") win.document.title = "DO NOT REFRESH";
-      }, 500);
-      win.onbeforeunload = () => clearInterval(titleInterval);
-    }
-  };
-
-  const handleReset = () => {
-    if (confirmReset) {
-      localStorage.clear();
-      window.location.reload();
-    } else {
-      setConfirmReset(true);
     }
   };
 
@@ -169,13 +176,12 @@ function App() {
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased" style={{ '--theme': theme, '--glow': `${glowIntensity}px` }}>
       
+      {/* NAVIGATION BAR */}
       <div className="sticky top-0 z-50">
         <header className="border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
           <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 flex items-center justify-center transition-all">
-                <img src={DEFAULT_ICON} alt="Logo" className="w-7 h-7 object-contain" />
-              </div>
+              <img src={DEFAULT_ICON} alt="Logo" className="w-7 h-7 object-contain" />
               <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
             </div>
 
@@ -183,11 +189,6 @@ function App() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
                 <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 transition-colors" />
-                {searchQuery && (
-                  <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--theme)] hover:opacity-70 transition-all">
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
               </div>
               <button onClick={() => {
                 const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
@@ -199,7 +200,6 @@ function App() {
 
             <div className="flex items-center justify-end gap-4">
               <div className="hidden sm:flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-[var(--theme)] bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-                <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString()}</span>
                 <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                 <div className="flex items-center gap-1 border-l border-white/10 pl-3">
                   <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500' : ''}`} />
@@ -222,6 +222,7 @@ function App() {
         </div>
       </div>
 
+      {/* GAME GRID */}
       <main className="max-w-7xl mx-auto px-4 mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {filteredGames.map(game => (
           <GameCard 
@@ -235,72 +236,69 @@ function App() {
         ))}
       </main>
 
+      {/* SETTINGS MODAL */}
       {showSettings && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
           <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-white/5 pb-4">
               <h2 className="text-xl font-bold flex items-center gap-2 text-[var(--theme)]"><ShieldAlert className="w-5 h-5" /> System Config</h2>
-              <X onClick={() => { setShowSettings(false); setConfirmReset(false); setConfirmClearFavs(false); }} className="cursor-pointer text-zinc-400 hover:text-white" />
+              <X onClick={() => { setShowSettings(false); setConfirmReset(false); }} className="cursor-pointer text-zinc-400 hover:text-white" />
             </div>
             
             <div className="space-y-6">
-              <div className="bg-black/40 border border-white/5 rounded-2xl p-3 flex flex-col gap-2">
-                <span className="text-[8px] uppercase font-black text-zinc-600 tracking-widest text-center">Live Disguise Preview</span>
-                <div className="bg-[#18181b] rounded-lg p-2 flex items-center gap-3 border border-white/10 shadow-inner">
-                  <img src={currentIdentity.icon} className="w-4 h-4 object-contain" alt="" onError={(e) => e.target.src = DEFAULT_ICON} />
-                  <span className="text-[11px] font-medium text-zinc-300 truncate">{currentIdentity.title}</span>
+              {/* PANIC MODE SECTION */}
+              <section className="space-y-4 bg-red-500/5 p-4 rounded-2xl border border-red-500/10">
+                <div className="flex justify-between items-center">
+                   <label className="text-[10px] uppercase font-black text-red-500 tracking-widest flex items-center gap-2">
+                    <Ghost className="w-3 h-3" /> Panic Mode
+                  </label>
+                  <span className="text-[9px] font-bold bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full uppercase">
+                    {panicKey ? `Active: ${panicKey}` : 'Disabled'}
+                  </span>
                 </div>
-              </div>
 
-              <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Palette className="w-3 h-3" /> Custom Branding</label>
-                <input type="text" placeholder="Custom Tab Title" value={customTitle} onChange={(e) => { setCustomTitle(e.target.value); localStorage.setItem('capy-custom-title', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)]/50 transition-colors" />
-                <div className="flex gap-2">
-                  <input type="file" accept="image/*" onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      const r = new FileReader();
-                      r.onloadend = () => { setCustomIcon(r.result); localStorage.setItem('capy-custom-icon', r.result); };
-                      r.readAsDataURL(file);
-                    }
-                  }} className="hidden" id="icon-up-centered" />
-                  <label htmlFor="icon-up-centered" className="w-12 h-12 bg-zinc-800 border border-white/10 rounded-xl flex items-center justify-center cursor-pointer hover:border-[var(--theme)] transition-all"><Upload className="w-4 h-4 text-zinc-500" /></label>
-                  <div className="relative flex-1">
-                    <input type="text" placeholder="Icon URL" value={customIcon.startsWith('data:') ? 'Local File' : customIcon} onChange={(e) => { setCustomIcon(e.target.value); localStorage.setItem('capy-custom-icon', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 pr-10 text-xs outline-none focus:border-[var(--theme)]/50" />
-                    {customIcon && (
-                      <button onClick={() => { setCustomIcon(''); localStorage.removeItem('capy-custom-icon'); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-[var(--theme)] transition-colors">
-                        <RotateCcw className="w-3.5 h-3.5" />
-                      </button>
-                    )}
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-end">
+                      <span className="text-[9px] text-zinc-500 font-bold uppercase ml-1">Redirect URL</span>
+                      <button onClick={() => { setPanicUrl(''); localStorage.removeItem('capy-panic-url'); }} className="text-[9px] text-red-400 hover:text-red-300 font-black uppercase transition-colors">Clear URL</button>
+                    </div>
+                    <input type="text" placeholder="e.g. google.com" value={panicUrl} onChange={(e) => { setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50" />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-end">
+                      <span className="text-[9px] text-zinc-500 font-bold uppercase ml-1">Activation Key</span>
+                      <button onClick={() => { setPanicKey(''); localStorage.removeItem('capy-panic-key'); }} className="text-[9px] text-red-400 hover:text-red-300 font-black uppercase transition-colors">Clear Key</button>
+                    </div>
+                    <input type="text" placeholder="Click here and press a key" value={panicKey} onKeyDown={(e) => { e.preventDefault(); setPanicKey(e.key); localStorage.setItem('capy-panic-key', e.key); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50 text-center font-mono font-bold" readOnly />
                   </div>
                 </div>
               </section>
 
-              <div className="grid grid-cols-2 gap-3">
-                <button 
-                  onClick={handleClearFavorites} 
-                  className={`p-4 rounded-2xl border transition-all flex flex-col items-center justify-center gap-1 text-[10px] font-black uppercase ${
-                    confirmClearFavs 
-                    ? 'bg-amber-600 border-amber-400 text-white animate-pulse' 
-                    : 'border-white/5 bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  <Trash2 className="w-4 h-4" /> 
-                  {confirmClearFavs ? 'Sure?' : 'Clear Favs'}
-                </button>
+              {/* THEME PRESETS */}
+              <section className="space-y-3">
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Palette className="w-3 h-3" /> Capy-Themes</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(THEMES).map(([id, t]) => (
+                    <button key={id} onClick={() => applyTheme(t)} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:border-[var(--theme)] flex items-center gap-2 transition-all">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: t.color }} /> {t.name}
+                    </button>
+                  ))}
+                </div>
+              </section>
 
-                <button 
-                  onClick={handleReset} 
-                  className={`p-4 rounded-2xl border transition-all flex flex-col items-center justify-center gap-1 text-[10px] font-black uppercase ${
-                    confirmReset 
-                    ? 'bg-red-600 border-red-400 text-white animate-pulse' 
-                    : 'border-red-500/20 bg-red-500/5 text-red-500 hover:bg-red-500/10'
-                  }`}
-                >
-                  <RotateCcw className={`w-4 h-4 ${confirmReset ? 'animate-spin' : ''}`} /> 
-                  {confirmReset ? 'Sure?' : 'Full Reset'}
-                </button>
-              </div>
+              {/* DISGUISE SETTINGS */}
+              <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Zap className="w-3 h-3" /> Stealth Presets</label>
+                <div className="flex flex-wrap gap-2">
+                  {Object.keys(DISGUISE_CONFIG).map(type => (
+                    <button key={type} onClick={() => { setDisguise(type); localStorage.setItem('capy-stealth-type', type); }} className={`px-3 py-2 rounded-lg text-[9px] font-bold uppercase border transition-all ${disguise === type ? 'bg-[var(--theme)] text-black' : 'bg-zinc-800 border-white/5'}`}>{type}</button>
+                  ))}
+                </div>
+              </section>
+
+              <button onClick={handleReset} className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-center gap-2 text-[10px] font-black uppercase ${confirmReset ? 'bg-red-600 border-red-400 text-white animate-pulse' : 'border-red-500/20 bg-red-500/5 text-red-500'}`}>{confirmReset ? 'Are you sure?' : 'Wipe System Data'}</button>
             </div>
           </div>
         </div>
@@ -315,21 +313,11 @@ function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite }) {
     <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg" onClick={() => onLaunch(game)}>
       <div className="relative w-full aspect-[4/3] bg-black/20 overflow-hidden group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)] transition-all duration-500">
         <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-40' : 'w-full h-full object-cover'}`} alt="" />
-        
         {!isUtility && (
-          <button 
-            onClick={onToggleFavorite} 
-            className="absolute top-4 right-4 z-10 p-2 bg-zinc-900/80 backdrop-blur-sm rounded-full border border-white/10 hover:scale-110 transition-transform shadow-lg"
-          >
-            <Heart 
-              className={`w-4 h-4 transition-colors`} 
-              stroke={isFavorite ? "var(--theme)" : "#71717a"}
-              strokeWidth={2.5}
-              fill={isFavorite ? 'var(--theme)' : 'none'}
-            />
+          <button onClick={onToggleFavorite} className="absolute top-4 right-4 z-10 p-2 bg-zinc-900/80 backdrop-blur-sm rounded-full border border-white/10 hover:scale-110 transition-transform shadow-lg">
+            <Heart className={`w-4 h-4 transition-colors`} stroke={isFavorite ? "var(--theme)" : "#71717a"} strokeWidth={2.5} fill={isFavorite ? 'var(--theme)' : 'none'} />
           </button>
         )}
-
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <div className="w-12 h-12 bg-[var(--theme)] rounded-full flex items-center justify-center shadow-[0_0_20px_var(--theme)] transition-all">
             <Play className="w-6 h-6 text-black fill-current ml-1" />
