@@ -102,8 +102,7 @@ function App() {
     if (!item?.url) return;
     const win = window.open('about:blank', '_blank');
     if (win) {
-      // UPDATED TITLE WITH MUTE REMINDER
-      win.document.title = "🔇 MUTE TAB - DO NOT REFRESH";
+      win.document.title = "DO NOT REFRESH";
       const link = win.document.createElement('link');
       link.rel = 'icon';
       link.href = currentIdentity.icon;
@@ -117,9 +116,7 @@ function App() {
       win.document.body.appendChild(iframe);
       
       const titleInterval = setInterval(() => {
-        if (win.document.title !== "🔇 MUTE TAB - DO NOT REFRESH") {
-          win.document.title = "🔇 MUTE TAB - DO NOT REFRESH";
-        }
+        if (win.document.title !== "DO NOT REFRESH") win.document.title = "DO NOT REFRESH";
       }, 500);
       win.onbeforeunload = () => clearInterval(titleInterval);
     }
