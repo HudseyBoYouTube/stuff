@@ -28,7 +28,6 @@ function App() {
     }
   }, []);
 
-  // STATES
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
@@ -38,7 +37,7 @@ function App() {
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [confirmClear, setConfirmClear] = useState(false);
 
-  // CLOCK & BATTERY LOGIC
+  // RESTORED: CLOCK & BATTERY LOGIC
   const [currentTime, setCurrentTime] = useState(new Date());
   const [batteryLevel, setBatteryLevel] = useState(100);
   const [isCharging, setIsCharging] = useState(false);
@@ -55,6 +54,19 @@ function App() {
     }
     return () => clearInterval(timer);
   }, []);
+
+  const formatTime = (date) => {
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    return `${hours}:${minutes} ${ampm}`;
+  };
+
+  const formatDate = (date) => {
+    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  };
 
   // TAB DISGUISE EFFECT
   useEffect(() => {
@@ -99,6 +111,15 @@ function App() {
     }
   };
 
+  // RESTORED: RANDOM LAUNCHER
+  const launchRandom = () => {
+    const playableGames = gamesData.filter(g => g.id !== 'request' && g.id !== 'report');
+    if (playableGames.length > 0) {
+      const randomGame = playableGames[Math.floor(Math.random() * playableGames.length)];
+      launchGame(randomGame);
+    }
+  };
+
   const filteredGames = useMemo(() => {
     const q = searchQuery.toLowerCase();
     return gamesData.filter(g => {
@@ -123,6 +144,7 @@ function App() {
       {/* HEADER */}
       <header className="sticky top-0 z-50 border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
+          
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
             <div className="w-8 h-8 bg-[var(--theme)] rounded-lg flex items-center justify-center shadow-lg shadow-[var(--theme)]/20"><Gamepad2 className="w-5 h-5 text-black" /></div>
             <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
@@ -134,9 +156,22 @@ function App() {
               <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 text-center" />
               {searchQuery.length > 0 && <X className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 cursor-pointer" onClick={() => setSearchQuery('')} />}
             </div>
+            {/* RESTORED: RANDOM BUTTON */}
+            <button onClick={launchRandom} title="Random Game" className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all shrink-0"><Dices className="w-5 h-5" /></button>
           </div>
 
           <div className="flex items-center justify-end gap-3">
+            {/* RESTORED: DATE, TIME, BATTERY */}
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-zinc-400 whitespace-nowrap">
+              <span>{formatDate(currentTime)}</span>
+              <span className="w-px h-3 bg-white/10" />
+              <span>{formatTime(currentTime)}</span>
+              <span className="w-px h-3 bg-white/10" />
+              <div className="flex items-center gap-1">
+                {isCharging ? <Zap className="w-2.5 h-2.5 text-yellow-400 animate-pulse" /> : <Battery className="w-2.5 h-2.5 text-[var(--theme)]" />}
+                <span>{batteryLevel}%</span>
+              </div>
+            </div>
              <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-500 hover:text-[var(--theme)] shrink-0"><Settings className="w-6 h-6" /></button>
           </div>
         </div>
@@ -159,50 +194,63 @@ function App() {
         ))}
       </main>
 
-      {/* SETTINGS MODAL */}
       {showSettings && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSettings(false)} />
           <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative z-10 shadow-2xl space-y-4">
+            <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-400 hover:text-red-500" />
             <h2 className="text-xl font-bold flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-[var(--theme)]" /> System Config</h2>
             
-            {/* DISGUISE SELECT */}
-            <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-              <label className="text-sm block mb-2 font-bold">Tab Disguise</label>
-              <select value={disguise} onChange={(e) => setDisguise(e.target.value)} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none">
-                <option value="none">Default (Capybara Science)</option>
-                <option value="drive">Google Drive</option>
-                <option value="classroom">Google Classroom</option>
-                <option value="canvas">Canvas Dashboard</option>
-              </select>
-            </div>
-
-            {/* FAVICON UPLOAD */}
-            <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-              <label className="text-sm block mb-2 font-bold">Custom Favicon (Default Mode)</label>
-              <div className="flex items-center gap-3">
-                <button onClick={() => fileInputRef.current.click()} className="flex-1 p-3 bg-zinc-800 rounded-xl text-[10px] flex items-center justify-center gap-2 border border-dashed border-white/20 hover:border-[var(--theme)] transition-colors">
-                  <Upload className="w-3 h-3" /> Upload Icon
-                </button>
-                {customFavicon && <button onClick={() => { setCustomFavicon(null); localStorage.removeItem('capy-custom-icon'); }} className="p-3 text-red-500 text-[10px] font-bold">Reset</button>}
-              </div>
-              <input type="file" ref={fileInputRef} onChange={handleFaviconUpload} accept="image/*" className="hidden" />
-            </div>
-
-            {/* THEME + HEX INPUT */}
-            <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-              <div className="flex items-center justify-between mb-3">
-                <label className="text-sm font-bold flex items-center gap-2"><Palette className="w-4 h-4" /> Theme Color</label>
-                <div className="flex items-center gap-2">
-                  <input type="text" value={theme} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="w-20 bg-zinc-800 border border-white/10 rounded-lg px-2 py-1 text-[10px] font-mono outline-none focus:border-[var(--theme)]" />
-                  <div className="w-6 h-6 rounded-full border border-white/20 relative" style={{ background: theme }}>
-                    <input type="color" value={theme.length === 7 ? theme : '#10A5F5'} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="absolute inset-0 opacity-0 cursor-pointer" />
-                  </div>
+            <div className="space-y-4">
+              <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                <label className="text-sm block mb-2 font-bold flex items-center gap-2">
+                  {disguise !== 'none' ? <EyeOff className="w-4 h-4 text-[var(--theme)]" /> : <Eye className="w-4 h-4" />} Tab Disguise
+                </label>
+                <div className="relative">
+                  <select value={disguise} onChange={(e) => setDisguise(e.target.value)} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs appearance-none focus:outline-none focus:border-[var(--theme)] cursor-pointer">
+                    <option value="none">Default (Capybara Science)</option>
+                    <option value="drive">Google Drive</option>
+                    <option value="classroom">Google Classroom</option>
+                    <option value="canvas">Canvas Dashboard</option>
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none text-zinc-500" />
                 </div>
               </div>
-            </div>
 
-            <button onClick={() => setShowSettings(false)} className="w-full p-4 bg-[var(--theme)] text-black font-black rounded-2xl uppercase text-xs tracking-widest">Save & Close</button>
+              {/* FAVICON UPLOAD */}
+              <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                <label className="text-sm block mb-2 font-bold">Custom Favicon (Default Mode)</label>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => fileInputRef.current.click()} className="flex-1 p-3 bg-zinc-800 rounded-xl text-[10px] flex items-center justify-center gap-2 border border-dashed border-white/20 hover:border-[var(--theme)] transition-colors">
+                    <Upload className="w-3 h-3" /> Upload Icon
+                  </button>
+                  {customFavicon && <button onClick={() => { setCustomFavicon(null); localStorage.removeItem('capy-custom-icon'); }} className="p-3 text-red-500 text-[10px] font-bold">Reset</button>}
+                </div>
+                <input type="file" ref={fileInputRef} onChange={handleFaviconUpload} accept="image/*" className="hidden" />
+              </div>
+
+              {/* HEX INPUT RESTORED & THEME */}
+              <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-sm font-bold flex items-center gap-2"><Palette className="w-4 h-4" /> Theme Color</label>
+                  <div className="flex items-center gap-2">
+                    <input type="text" value={theme} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="w-20 bg-zinc-800 border border-white/10 rounded-lg px-2 py-1 text-[10px] font-mono outline-none focus:border-[var(--theme)]" />
+                    <div className="w-6 h-6 rounded-full border border-white/20 relative" style={{ background: theme }}>
+                      <input type="color" value={theme.startsWith('#') && theme.length === 7 ? theme : '#10A5F5'} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="absolute inset-0 opacity-0 cursor-pointer" />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  {['#10A5F5', '#10f57b', '#f5107b', '#f5a610'].map(c => (
+                    <button key={c} onClick={() => {setTheme(c); localStorage.setItem('capy-theme', c);}} className={`w-8 h-8 rounded-full border-2 transition-all ${theme.toLowerCase() === c.toLowerCase() ? 'border-white scale-110' : 'border-transparent opacity-60 hover:opacity-100'}`} style={{background: c}} />
+                  ))}
+                </div>
+              </div>
+
+              <button onClick={() => { if(confirmClear) { localStorage.clear(); window.location.reload(); } else setConfirmClear(true); }} className="w-full p-4 rounded-2xl border border-red-500/20 text-red-500 text-xs font-bold hover:bg-red-500/10 transition-colors">
+                <Trash2 className="w-4 h-4 inline mr-2" /> {confirmClear ? "Wipe All Data?" : "Clear App Data"}
+              </button>
+            </div>
           </div>
         </div>
       )}
