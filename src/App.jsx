@@ -257,14 +257,13 @@ function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite }) {
         {!isUtility && (
           <button 
             onClick={onToggleFavorite} 
-            className="absolute top-4 right-4 z-10 p-2 bg-black/40 backdrop-blur-md rounded-full border border-white/10 hover:scale-110 transition-transform shadow-lg"
+            className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full border border-black/5 hover:scale-110 transition-transform shadow-lg"
           >
             <Heart 
               className={`w-4 h-4 transition-colors`} 
               stroke="#000"
-              strokeWidth={2}
-              fill={isFavorite ? '#000' : 'rgba(0,0,0,0.3)'}
-              style={{ color: isFavorite ? '#000' : 'rgba(0,0,0,0.3)' }}
+              strokeWidth={2.5}
+              fill={isFavorite ? '#000' : 'none'}
             />
           </button>
         )}
