@@ -179,14 +179,6 @@ function App() {
                 onChange={(e) => setSearchQuery(e.target.value)} 
                 className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50" 
               />
-              {searchQuery && (
-                <button 
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-colors"
-                >
-                  <X className="w-3.5 h-3.5 text-zinc-400" />
-                </button>
-              )}
             </div>
           </div>
 
@@ -287,20 +279,8 @@ function App() {
             <section className="space-y-4">
               <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2 px-1"><Type className="w-3 h-3 text-[var(--theme)]" /> Tab Identity</label>
               <div className="space-y-3">
-                <div className="space-y-1">
-                  <div className="flex justify-between items-center px-1">
-                    <span className="text-[9px] text-zinc-600 font-bold uppercase">Custom Page Title</span>
-                    <button onClick={() => {setCustomTitle(''); localStorage.removeItem('capy-custom-title');}} className="text-[8px] text-[var(--theme)] font-black uppercase hover:underline">Reset</button>
-                  </div>
-                  <input type="text" placeholder="Custom Page Title" value={customTitle} onChange={(e) => {setCustomTitle(e.target.value); localStorage.setItem('capy-custom-title', e.target.value);}} className="w-full bg-zinc-800 border border-white/5 rounded-2xl p-4 text-xs font-bold outline-none focus:border-[var(--theme)]/50" />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex justify-between items-center px-1">
-                    <span className="text-[9px] text-zinc-600 font-bold uppercase">Custom Icon URL</span>
-                    <button onClick={() => {setCustomIcon(''); localStorage.removeItem('capy-custom-icon');}} className="text-[8px] text-[var(--theme)] font-black uppercase hover:underline">Reset</button>
-                  </div>
-                  <input type="text" placeholder="Custom Icon URL" value={customIcon} onChange={(e) => {setCustomIcon(e.target.value); localStorage.setItem('capy-custom-icon', e.target.value);}} className="w-full bg-zinc-800 border border-white/5 rounded-2xl p-4 text-xs font-bold outline-none focus:border-[var(--theme)]/50" />
-                </div>
+                <input type="text" placeholder="Custom Page Title" value={customTitle} onChange={(e) => {setCustomTitle(e.target.value); localStorage.setItem('capy-custom-title', e.target.value);}} className="w-full bg-zinc-800 border border-white/5 rounded-2xl p-4 text-xs font-bold outline-none focus:border-[var(--theme)]/50" />
+                <input type="text" placeholder="Custom Icon URL" value={customIcon} onChange={(e) => {setCustomIcon(e.target.value); localStorage.setItem('capy-custom-icon', e.target.value);}} className="w-full bg-zinc-800 border border-white/5 rounded-2xl p-4 text-xs font-bold outline-none focus:border-[var(--theme)]/50" />
               </div>
             </section>
 
@@ -361,6 +341,7 @@ function App() {
 }
 
 function GameCard({ game }) {
+  // Not used in main render but kept for component integrity
   return null;
 }
 
