@@ -115,6 +115,19 @@ function App() {
     }
   };
 
+  const handleFaviconUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setCustomIcon(base64String);
+        localStorage.setItem('capy-custom-icon', base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const toggleFavorite = (id, e) => {
     e.stopPropagation();
     const isRemoving = favorites.includes(id);
@@ -348,7 +361,13 @@ function App() {
                 </div>
                 <div className="pt-2 space-y-2">
                   <input type="text" placeholder="Custom Tab Title" value={customTitle} onChange={(e) => { setCustomTitle(e.target.value); localStorage.setItem('capy-custom-title', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none" />
-                  <input type="text" placeholder="Custom Favicon URL" value={customIcon} onChange={(e) => { setCustomIcon(e.target.value); localStorage.setItem('capy-custom-icon', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none" />
+                  <div className="flex gap-2">
+                    <input type="text" placeholder="Custom Favicon URL" value={customIcon} onChange={(e) => { setCustomIcon(e.target.value); localStorage.setItem('capy-custom-icon', e.target.value); }} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none" />
+                    <label className="p-3 bg-zinc-800 border border-white/10 rounded-xl hover:border-[var(--theme)]/50 transition-all cursor-pointer">
+                      <Upload className="w-4 h-4 text-[var(--theme)]" />
+                      <input type="file" accept="image/*" onChange={handleFaviconUpload} className="hidden" />
+                    </label>
+                  </div>
                 </div>
               </section>
 
