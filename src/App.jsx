@@ -126,8 +126,8 @@ function App() {
         </div>
       </header>
 
-      {/* COMPACT CATEGORY NAV - Extra vertical space added here */}
-      <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-4 pb-2">
+      {/* COMPACT CATEGORY NAV - Reverted to tight py-1.5 */}
+      <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 py-1.5">
         <div className="max-w-7xl mx-auto"> 
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
             {categoriesWithCounts.map(cat => (
@@ -146,8 +146,8 @@ function App() {
         </div>
       </div>
 
-      {/* GAME GRID */}
-      <main className="max-w-7xl mx-auto px-4 mt-12">
+      {/* GAME GRID - Reverted to mt-6 */}
+      <main className="max-w-7xl mx-auto px-4 mt-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {filteredGames.map(game => (
             <GameCard 
