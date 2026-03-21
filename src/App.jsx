@@ -28,6 +28,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
   
   const [time, setTime] = useState(new Date());
   const [battery, setBattery] = useState({ level: 100, charging: false });
@@ -53,6 +54,14 @@ function App() {
     }
     return () => clearInterval(timer);
   }, []);
+
+  // Auto-cancel reset confirmation after 3 seconds
+  useEffect(() => {
+    if (confirmReset) {
+      const timeout = setTimeout(() => setConfirmReset(false), 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [confirmReset]);
 
   const toggleFavorite = (id, e) => {
     e.stopPropagation();
@@ -110,6 +119,15 @@ function App() {
         if (win.document.title !== "DO NOT REFRESH") win.document.title = "DO NOT REFRESH";
       }, 500);
       win.onbeforeunload = () => clearInterval(titleInterval);
+    }
+  };
+
+  const handleReset = () => {
+    if (confirmReset) {
+      localStorage.clear();
+      window.location.reload();
+    } else {
+      setConfirmReset(true);
     }
   };
 
@@ -196,7 +214,7 @@ function App() {
           <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-white/5 pb-4">
               <h2 className="text-xl font-bold flex items-center gap-2 text-[var(--theme)]"><ShieldAlert className="w-5 h-5" /> System Config</h2>
-              <X onClick={() => setShowSettings(false)} className="cursor-pointer text-zinc-400 hover:text-white" />
+              <X onClick={() => { setShowSettings(false); setConfirmReset(false); }} className="cursor-pointer text-zinc-400 hover:text-white" />
             </div>
             
             <div className="space-y-6">
@@ -232,8 +250,16 @@ function App() {
                 </div>
               </section>
 
-              <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="w-full p-4 rounded-2xl border border-red-500/20 bg-red-500/5 text-[10px] font-black uppercase text-red-500 hover:bg-red-500/10 transition-all flex items-center justify-center gap-2">
-                <RotateCcw className="w-4 h-4" /> Reset Data
+              <button 
+                onClick={handleReset} 
+                className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-center gap-2 text-[10px] font-black uppercase ${
+                  confirmReset 
+                  ? 'bg-red-600 border-red-400 text-white animate-pulse' 
+                  : 'border-red-500/20 bg-red-500/5 text-red-500 hover:bg-red-500/10'
+                }`}
+              >
+                <RotateCcw className={`w-4 h-4 ${confirmReset ? 'animate-spin' : ''}`} /> 
+                {confirmReset ? 'Are you sure?' : 'Reset Data'}
               </button>
             </div>
           </div>
