@@ -196,13 +196,6 @@
     "category": "Arcade"
   },
   {
-    "id": "idlebreakout",
-    "title": "Idle Breakout",
-    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/idle-breakout/",
-    "thumbnail": "https://img.itch.zone/aW1nLzE4MDAyMjQucG5n/original/ZP612q.png",
-    "category": "Idle"
-  },
-  {
     "id": "rooftopsnipers",
     "title": "Rooftop Snipers",
     "url": "https://play.coolmathgames.eu.org/storage/ag/originals/rooftopsnipers/",
@@ -1006,6 +999,76 @@
     "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/bobble/",
     "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/2d5e417ea0fc1ef06d746b2cef691c07/bubble-shooter-lak.png",
     "category": "Easy"
+  },
+  {
+    "id": "mergetycoon",
+    "title": "Merge Tycoon",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/merge-tycoon/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThskXZc-3p4TOysVLyVXQlEicyhjs_w2Ckjw&s",
+    "category": "Tycoon"
+  },
+  {
+    "id": "driftboss",
+    "title": "Drift Boss",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/drift-boss/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSo0yoxFM9s9XzzcbOGMeo8qJ7ByGHLhBmMWQ&s",
+    "category": "Driving"
+  },
+  {
+    "id": "idlegang",
+    "title": "Idle Gang",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/idle-gang/",
+    "thumbnail": "https://cdn-1.webcatalog.io/catalog/poki-idle-gang/poki-idle-gang-icon-filled-256.png?v=1714778346617",
+    "category": "Idle"
+  },
+  {
+    "id": "idlefarmingbusiness",
+    "title": "Idle Farming Business",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/idle-farming-business/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFG_Zt6Zpq_TjzstN55wk6JGu0LYa-5udeuQ&s",
+    "category": "Idle"
+  },
+  {
+    "id": "idlelightcity",
+    "title": "Idle Light City",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/idle-light-city/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8vzZRcQnxOs1UJCdTHck_--DG76vFjUQzqg&s",
+    "category": "Idle"
+  },
+  {
+    "id": "idleminingempire",
+    "title": "Idle Mining Empire",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/idle-mining-empire/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqUJ29PiR42F8osjaXMwnQCUGU-oKAuATMYw&s",
+    "category": "Idle"
+  },
+  {
+    "id": "idlestartuptycoon",
+    "title": "Idle Startup Tycoon",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/idle-startup-tycoon/",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKpnbB3Od8e_pjdGCS7s4xoc-xRnxvDt2taQ&s",
+    "category": "Idle"
+  },
+  {
+    "id": "idlebreakout",
+    "title": "Idle Breakout",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/idle-breakout/",
+    "thumbnail": "https://img.itch.zone/aW1nLzE4MDAyMjQucG5n/original/ZP612q.png",
+    "category": "Idle"
+  },
+  {
+    "id": "idledice",
+    "title": "Idle Dice",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/gn/294.html",
+    "thumbnail": "https://img02.symbaloo.com/Ep2MkKLpWJNmBrtsVXc1qNbEyxw=/fit-in/162x162/filters:no_upscale()/smarkImages%2Fv1%2F54%2Fe9%2Fc4c7b0f6a5a604a3b9f86ab8c18a834b0fbdc7e2d78756d1ccad54ea7c1e.png",
+    "category": "Idle"
+  },
+  {
+    "id": "idlelumberinc.",
+    "title": "Idle Lumber Inc."
+    "url": "https://play.coolmathgames.eu.org/storage/ag/gn/363.html",
+    "thumbnail": "https://img.website.xin/contents/sitefiles3604/18022902/images/4371986.png",
+    "category": "Idle"
   }
 ]
     
