@@ -55,7 +55,6 @@ function App() {
     return () => clearInterval(timer);
   }, []);
 
-  // Auto-cancel reset confirmation after 3 seconds
   useEffect(() => {
     if (confirmReset) {
       const timeout = setTimeout(() => setConfirmReset(false), 3000);
@@ -279,13 +278,13 @@ function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite }) {
         {!isUtility && (
           <button 
             onClick={onToggleFavorite} 
-            className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full border border-black/5 hover:scale-110 transition-transform shadow-lg"
+            className="absolute top-4 right-4 z-10 p-2 bg-zinc-900/80 backdrop-blur-sm rounded-full border border-white/10 hover:scale-110 transition-transform shadow-lg"
           >
             <Heart 
               className={`w-4 h-4 transition-colors`} 
-              stroke="#000"
+              stroke={isFavorite ? "var(--theme)" : "#71717a"}
               strokeWidth={2.5}
-              fill={isFavorite ? '#000' : 'none'}
+              fill={isFavorite ? 'var(--theme)' : 'none'}
             />
           </button>
         )}
