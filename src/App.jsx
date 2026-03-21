@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
@@ -24,6 +24,13 @@ const DISGUISE_CONFIG = {
   drive: { title: "My Drive - Google Drive", icon: "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" },
   classroom: { title: "Home - Classroom", icon: "https://www.gstatic.com/classroom/favicon.png" },
   canvas: { title: "Dashboard", icon: "https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico" }
+};
+
+// HELPER: Direct DOM update to prevent React state freezing
+const updateThemeVariables = (color, glow) => {
+  const root = document.documentElement;
+  root.style.setProperty('--theme', color);
+  root.style.setProperty('--glow', `${glow}px`);
 };
 
 function App() {
@@ -57,6 +64,11 @@ function App() {
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
+  // Logic: Sync theme to DOM on initial mount
+  useEffect(() => {
+    updateThemeVariables(theme, glowIntensity);
+  }, []);
+
   // Logic: Panic Shortcut Listener
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -82,6 +94,14 @@ function App() {
     return () => clearInterval(timer);
   }, []);
 
+  // Logic: Auto-hide reset confirmation
+  useEffect(() => {
+    if (confirmReset) {
+      const timeout = setTimeout(() => setConfirmReset(false), 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [confirmReset]);
+
   const toggleFavorite = (id, e) => {
     e.stopPropagation();
     const isRemoving = favorites.includes(id);
@@ -98,12 +118,16 @@ function App() {
   };
 
   const applyTheme = (t) => {
+    // 1. Update State (for memory)
     setTheme(t.color);
     setGlowIntensity(t.glow);
+    
+    // 2. Persist to Storage
     localStorage.setItem('capy-theme', t.color);
     localStorage.setItem('capy-glow', t.glow);
-    document.documentElement.style.setProperty('--theme', t.color);
-    document.documentElement.style.setProperty('--glow', `${t.glow}px`);
+
+    // 3. FORCE DIRECT UPDATE (This stops the freezing)
+    updateThemeVariables(t.color, t.glow);
   };
 
   const handleReset = () => {
@@ -131,14 +155,17 @@ function App() {
     link.href = currentIdentity.icon;
   }, [currentIdentity]);
 
-  const filteredGames = useMemo(() => {
-    const q = searchQuery.toLowerCase();
-    return gamesData.filter(g => {
-      const matchesSearch = g?.title?.toLowerCase().includes(q);
-      const matchesCategory = activeCategory === 'Favorites' ? favorites.includes(g.id) : (activeCategory === 'All' || g?.category === activeCategory);
-      return matchesSearch && matchesCategory;
+  const validFavoritesCount = useMemo(() => gamesData.filter(g => favorites.includes(g.id)).length, [gamesData, favorites]);
+
+  const categoriesWithCounts = useMemo(() => {
+    const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
+    const final = [{ name: 'All', count: gamesData.length }];
+    if (validFavoritesCount > 0) final.unshift({ name: 'Favorites', count: validFavoritesCount });
+    uniqueCats.forEach(cat => {
+      final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
     });
-  }, [searchQuery, activeCategory, gamesData, favorites]);
+    return final;
+  }, [gamesData, validFavoritesCount]);
 
   const launchContent = (item) => {
     if (!item?.url) return;
@@ -157,180 +184,138 @@ function App() {
     }
   };
 
+  const filteredGames = useMemo(() => {
+    const q = searchQuery.toLowerCase();
+    return gamesData.filter(g => {
+      const matchesSearch = g?.title?.toLowerCase().includes(q);
+      const matchesCategory = activeCategory === 'Favorites' ? favorites.includes(g.id) : (activeCategory === 'All' || g?.category === activeCategory);
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchQuery, activeCategory, gamesData, favorites]);
+
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased" style={{ '--theme': theme, '--glow': `${glowIntensity}px` }}>
       
-      <header className="sticky top-0 z-50 border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
-          <div className="flex items-center gap-2">
-            <img src={DEFAULT_ICON} alt="Logo" className="w-7 h-7" />
-            <div className="flex flex-col leading-none">
-              <span className="text-xl font-black hidden lg:block tracking-tighter uppercase italic">Capybara <span className="text-[var(--theme)]">Science</span></span>
+      <div className="sticky top-0 z-50">
+        <header className="border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
+          <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
+            <div className="flex items-center gap-2">
+              <img src={DEFAULT_ICON} alt="Logo" className="w-7 h-7 object-contain" />
+              <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
+            </div>
+
+            <div className="flex items-center gap-2 w-full max-w-sm justify-self-center">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 transition-colors" />
+              </div>
+              <button onClick={() => {
+                const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
+                if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
+              }} className="p-2 bg-white/5 border border-white/10 rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all shrink-0">
+                <Dices className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-end gap-4">
+              <div className="hidden sm:flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-[var(--theme)] bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                <div className="flex items-center gap-1 border-l border-white/10 pl-3">
+                  <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500' : ''}`} />
+                  <span>{battery.level}%</span>
+                </div>
+              </div>
+              <button onClick={() => setShowSettings(true)} className="p-2 text-[var(--theme)] hover:opacity-70 transition-all"><Settings className="w-6 h-6" /></button>
             </div>
           </div>
+        </header>
 
-          <div className="flex items-center gap-2 w-full max-w-sm justify-self-center">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-              <input 
-                type="text" 
-                placeholder="Search games..." 
-                value={searchQuery} 
-                onChange={(e) => setSearchQuery(e.target.value)} 
-                className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50" 
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end items-center gap-4">
-            <div className="hidden md:flex items-center gap-4 text-[10px] font-black uppercase text-zinc-500 tracking-widest border-r border-white/10 pr-4">
-              <div className="flex items-center gap-1.5"><Clock className="w-3 h-3 text-[var(--theme)]" /> {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-              <div className="flex items-center gap-1.5"><Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500' : 'text-[var(--theme)]'}`} /> {battery.level}%</div>
-            </div>
-            <button onClick={() => setShowSettings(true)} className="p-2 text-[var(--theme)] hover:opacity-70 transition-all"><Settings className="w-6 h-6" /></button>
+        <div className="bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 overflow-hidden">
+          <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+            {categoriesWithCounts.map(cat => (
+              <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'}`}>
+                {cat.name} <span className="opacity-40 ml-1">{cat.count}</span>
+              </button>
+            ))}
           </div>
         </div>
-      </header>
-
-      {/* Categories Bar */}
-      <nav className="max-w-7xl mx-auto px-4 mt-6 overflow-x-auto no-scrollbar flex items-center gap-2">
-        {['All', 'Favorites', 'Action', 'Casual', 'Puzzle', 'Retro', 'Other'].map(cat => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            className={`px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all whitespace-nowrap ${
-              activeCategory === cat 
-                ? 'bg-[var(--theme)] border-[var(--theme)] text-black shadow-[0_0_15px_var(--theme)]' 
-                : 'bg-white/5 border-white/10 text-zinc-500 hover:border-white/20'
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </nav>
+      </div>
 
       <main className="max-w-7xl mx-auto px-4 mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {filteredGames.map(game => (
-          <div 
+          <GameCard 
             key={game.id} 
-            onClick={() => launchContent(game)}
-            className="group bg-zinc-900/40 rounded-[2.5rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg active:scale-95"
-          >
-            <div className="relative w-full aspect-[4/3] bg-black/20 overflow-hidden">
-              <img src={game.thumbnail} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="" />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all group-hover:backdrop-blur-[2px]">
-                <div className="w-14 h-14 bg-[var(--theme)] rounded-full flex items-center justify-center shadow-[0_0_20px_var(--theme)]">
-                  <Play className="w-7 h-7 text-black fill-current ml-1" />
-                </div>
-              </div>
-              <button 
-                onClick={(e) => toggleFavorite(game.id, e)}
-                className={`absolute top-4 right-4 p-3 rounded-2xl backdrop-blur-md transition-all ${
-                  favorites.includes(game.id) ? 'bg-[var(--theme)] text-black' : 'bg-black/20 text-white hover:bg-black/40'
-                }`}
-              >
-                <Heart className={`w-4 h-4 ${favorites.includes(game.id) ? 'fill-current' : ''}`} />
-              </button>
-            </div>
-            <div className="p-6">
-              <h3 className="font-black text-sm truncate tracking-tight group-hover:text-[var(--theme)] transition-colors">{game.title}</h3>
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-[9px] text-zinc-500 uppercase font-black tracking-[0.2em]">{game.category}</span>
-                {playtimes[game.id] && (
-                  <span className="text-[9px] text-[var(--theme)] font-black uppercase flex items-center gap-1">
-                    <Zap className="w-2 h-2" /> Played
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
+            game={game} 
+            onLaunch={launchContent} 
+            playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
+            isFavorite={favorites.includes(game.id)}
+            onToggleFavorite={(e) => toggleFavorite(game.id, e)}
+          />
         ))}
       </main>
 
       {showSettings && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300">
-          <div className="bg-zinc-900 border border-white/10 p-8 rounded-[3rem] max-w-lg w-full relative space-y-8 max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/5 pb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-[var(--theme)]/10 rounded-xl">
-                  <ShieldAlert className="w-6 h-6 text-[var(--theme)]" />
-                </div>
-                <h2 className="text-2xl font-black uppercase tracking-tighter italic">System <span className="text-[var(--theme)]">Core</span></h2>
-              </div>
-              <button onClick={() => setShowSettings(false)} className="p-2 hover:bg-white/5 rounded-full transition-colors"><X className="text-zinc-400" /></button>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-white/5 pb-4">
+              <h2 className="text-xl font-bold flex items-center gap-2 text-[var(--theme)]"><ShieldAlert className="w-5 h-5" /> System Config</h2>
+              <X onClick={() => setShowSettings(false)} className="cursor-pointer text-zinc-400 hover:text-white" />
             </div>
-
-            {/* Panic Mode Section */}
-            <section className="space-y-4">
-              <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2 px-1"><Ghost className="w-3 h-3 text-[var(--theme)]" /> Panic Protocol</label>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <span className="text-[9px] text-zinc-600 font-bold uppercase ml-1">Panic Key</span>
-                  <input type="text" value={panicKey} onChange={(e) => {setPanicKey(e.target.value); localStorage.setItem('capy-panic-key', e.target.value);}} className="w-full bg-zinc-800 border border-white/5 rounded-2xl p-4 text-xs font-bold outline-none focus:border-[var(--theme)]/50" />
+            
+            <div className="space-y-6">
+              <section className="space-y-4 bg-red-500/5 p-4 rounded-2xl border border-red-500/10">
+                <div className="flex justify-between items-center">
+                   <label className="text-[10px] uppercase font-black text-red-500 tracking-widest flex items-center gap-2">
+                    <Ghost className="w-3 h-3" /> Panic Mode
+                  </label>
+                  <span className="text-[9px] font-bold bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full uppercase">
+                    {panicKey ? `Active: ${panicKey}` : 'Disabled'}
+                  </span>
                 </div>
-                <div className="space-y-1">
-                  <span className="text-[9px] text-zinc-600 font-bold uppercase ml-1">Redirect URL</span>
-                  <input type="text" value={panicUrl} onChange={(e) => {setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value);}} className="w-full bg-zinc-800 border border-white/5 rounded-2xl p-4 text-xs font-bold outline-none focus:border-[var(--theme)]/50" />
-                </div>
-              </div>
-            </section>
 
-            {/* Tab Customizer Section */}
-            <section className="space-y-4">
-              <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2 px-1"><Type className="w-3 h-3 text-[var(--theme)]" /> Tab Identity</label>
-              <div className="space-y-3">
-                <input type="text" placeholder="Custom Page Title" value={customTitle} onChange={(e) => {setCustomTitle(e.target.value); localStorage.setItem('capy-custom-title', e.target.value);}} className="w-full bg-zinc-800 border border-white/5 rounded-2xl p-4 text-xs font-bold outline-none focus:border-[var(--theme)]/50" />
-                <input type="text" placeholder="Custom Icon URL" value={customIcon} onChange={(e) => {setCustomIcon(e.target.value); localStorage.setItem('capy-custom-icon', e.target.value);}} className="w-full bg-zinc-800 border border-white/5 rounded-2xl p-4 text-xs font-bold outline-none focus:border-[var(--theme)]/50" />
-              </div>
-            </section>
-
-            {/* Stealth Presets */}
-            <section className="space-y-4">
-              <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest px-1">Stealth Disguises</label>
-              <div className="grid grid-cols-2 gap-3">
-                {Object.entries(DISGUISE_CONFIG).map(([id, config]) => (
-                  <button
-                    key={id}
-                    onClick={() => {setDisguise(id); localStorage.setItem('capy-stealth-type', id);}}
-                    className={`p-4 rounded-2xl border text-left transition-all ${
-                      disguise === id ? 'bg-[var(--theme)]/10 border-[var(--theme)]' : 'bg-white/5 border-white/5 hover:bg-white/10'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <img src={config.icon} className="w-5 h-5" alt="" />
-                      <span className="text-[10px] font-black uppercase tracking-tighter truncate">{id}</span>
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-end">
+                      <span className="text-[9px] text-zinc-500 font-bold uppercase ml-1">Redirect URL</span>
+                      <button onClick={() => { setPanicUrl(''); localStorage.removeItem('capy-panic-url'); }} className="text-[9px] text-red-400 hover:text-red-300 font-black uppercase transition-colors">Clear URL</button>
                     </div>
-                  </button>
-                ))}
-              </div>
-            </section>
+                    <input type="text" placeholder="e.g. google.com" value={panicUrl} onChange={(e) => { setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50" />
+                  </div>
 
-            {/* Themes Section */}
-            <section className="space-y-4">
-              <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2 px-1"><Palette className="w-3 h-3 text-[var(--theme)]" /> Visual Profiles</label>
-              <div className="grid grid-cols-2 gap-3">
-                {Object.entries(THEMES).map(([id, t]) => (
-                  <button
-                    key={id}
-                    onClick={() => applyTheme(t)}
-                    className="group p-4 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all text-left flex items-center justify-between"
-                  >
-                    <span className="text-[10px] font-black uppercase tracking-tighter">{t.name}</span>
-                    <div className="w-3 h-3 rounded-full shadow-[0_0_10px_var(--theme)]" style={{ backgroundColor: t.color }} />
-                  </button>
-                ))}
-              </div>
-            </section>
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-end">
+                      <span className="text-[9px] text-zinc-500 font-bold uppercase ml-1">Activation Key</span>
+                      <button onClick={() => { setPanicKey(''); localStorage.removeItem('capy-panic-key'); }} className="text-[9px] text-red-400 hover:text-red-300 font-black uppercase transition-colors">Clear Key</button>
+                    </div>
+                    <input type="text" placeholder="Click and press a key" value={panicKey} onKeyDown={(e) => { e.preventDefault(); e.stopPropagation(); setPanicKey(e.key); localStorage.setItem('capy-panic-key', e.key); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50 text-center font-mono font-bold cursor-pointer" readOnly />
+                  </div>
+                </div>
+              </section>
 
-            <div className="pt-4 border-t border-white/5 space-y-3">
-              <button 
-                onClick={handleReset}
-                className={`w-full p-5 rounded-[1.5rem] font-black uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-2 ${
-                  confirmReset ? 'bg-red-500 text-black animate-pulse' : 'bg-red-500/10 text-red-500 hover:bg-red-500/20'
-                }`}
-              >
-                <RotateCcw className="w-4 h-4" />
-                {confirmReset ? 'SURE? WIPE EVERYTHING' : 'Restore Factory Settings'}
+              <section className="space-y-3">
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Palette className="w-3 h-3" /> Capy-Themes</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(THEMES).map(([id, t]) => (
+                    <button key={id} onClick={() => applyTheme(t)} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:border-[var(--theme)] flex items-center gap-2 transition-all">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: t.color }} /> {t.name}
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Zap className="w-3 h-3" /> Stealth Presets</label>
+                <div className="flex flex-wrap gap-2">
+                  {Object.keys(DISGUISE_CONFIG).map(type => (
+                    <button key={type} onClick={() => { setDisguise(type); localStorage.setItem('capy-stealth-type', type); }} className={`px-3 py-2 rounded-lg text-[9px] font-bold uppercase border transition-all ${disguise === type ? 'bg-[var(--theme)] text-black' : 'bg-zinc-800 border-white/5'}`}>{type}</button>
+                  ))}
+                </div>
+              </section>
+
+              <button onClick={handleReset} className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-center gap-2 text-[10px] font-black uppercase ${confirmReset ? 'bg-red-600 border-red-400 text-white animate-pulse' : 'border-red-500/20 bg-red-500/5 text-red-500 hover:bg-red-500/10'}`}>
+                <RotateCcw className={`w-4 h-4 ${confirmReset ? 'animate-spin' : ''}`} />
+                {confirmReset ? 'Confirm Full Reset?' : 'Wipe System Data'}
               </button>
             </div>
           </div>
@@ -340,9 +325,32 @@ function App() {
   );
 }
 
-function GameCard({ game }) {
-  // Not used in main render but kept for component integrity
-  return null;
+function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite }) {
+  const isUtility = ['request', 'report'].includes(game.id);
+  return (
+    <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg" onClick={() => onLaunch(game)}>
+      <div className="relative w-full aspect-[4/3] bg-black/20 overflow-hidden group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)] transition-all duration-500">
+        <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-40' : 'w-full h-full object-cover'}`} alt="" />
+        {!isUtility && (
+          <button onClick={onToggleFavorite} className="absolute top-4 right-4 z-10 p-2 bg-zinc-900/80 backdrop-blur-sm rounded-full border border-white/10 hover:scale-110 transition-transform shadow-lg">
+            <Heart className={`w-4 h-4 transition-colors`} stroke={isFavorite ? "var(--theme)" : "#71717a"} strokeWidth={2.5} fill={isFavorite ? 'var(--theme)' : 'none'} />
+          </button>
+        )}
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="w-12 h-12 bg-[var(--theme)] rounded-full flex items-center justify-center shadow-[0_0_20px_var(--theme)]">
+            <Play className="w-6 h-6 text-black fill-current ml-1" />
+          </div>
+        </div>
+      </div>
+      <div className="p-5">
+        <div className="flex justify-between items-start gap-2">
+          <h3 className="font-bold text-sm truncate group-hover:text-[var(--theme)] transition-colors">{game.title}</h3>
+          {!isUtility && <span className="text-[8px] text-zinc-600 font-bold bg-white/5 px-1.5 py-0.5 rounded shrink-0">{playtime}</span>}
+        </div>
+        <p className="text-[9px] text-zinc-500 uppercase font-black tracking-widest mt-1">{game.category}</p>
+      </div>
+    </div>
+  );
 }
 
 export default App;
