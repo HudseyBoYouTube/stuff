@@ -11,7 +11,7 @@ import gamesDataRaw from './games.json';
 const DISGUISE_CONFIG = {
   none: { title: "Capybara Science", icon: '/vite.svg' }, // Fallback icon
   drive: { title: "My Drive - Google Drive", icon: "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" },
-  classroom: { title: "Classes", icon: "https://www.gstatic.com/classroom/favicon.png" },
+  classroom: { title: "Home - Classroom", icon: "https://www.gstatic.com/classroom/favicon.png" },
   canvas: { title: "Dashboard", icon: "https://du11hjcvhe620.cloudfront.net/favicon.ico" }
 };
 
