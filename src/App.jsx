@@ -126,9 +126,9 @@ function App() {
         </div>
       </header>
 
-      {/* COMPACT CATEGORY NAV */}
-      <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4">
-        <div className="max-w-7xl mx-auto py-1.5"> 
+      {/* COMPACT CATEGORY NAV - Moved down with mt-2 */}
+      <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-2 pb-1.5">
+        <div className="max-w-7xl mx-auto"> 
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
             {categoriesWithCounts.map(cat => (
               <button 
@@ -147,7 +147,7 @@ function App() {
       </div>
 
       {/* GAME GRID */}
-      <main className="max-w-7xl mx-auto px-4 mt-6">
+      <main className="max-w-7xl mx-auto px-4 mt-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {filteredGames.map(game => (
             <GameCard 
@@ -170,7 +170,6 @@ function App() {
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-[var(--theme)]" /> System Config</h2>
             
             <div className="space-y-4">
-               {/* Tab Disguise Switch */}
                <div className="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between">
                   <div className="text-sm flex items-center gap-2">{stealthMode ? <EyeOff className="w-4 h-4 text-[var(--theme)]" /> : <Eye className="w-4 h-4" />} Tab Disguise</div>
                   <button onClick={() => setStealthMode(!stealthMode)} className={`w-10 h-5 rounded-full relative transition-all ${stealthMode ? 'bg-[var(--theme)]' : 'bg-zinc-700'}`}>
@@ -178,7 +177,6 @@ function App() {
                   </button>
                </div>
 
-               {/* Theme Color Picker */}
                <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
                   <div className="text-sm mb-3 font-bold flex items-center gap-2"><Palette className="w-4 h-4" /> Theme Color</div>
                   <div className="flex gap-3">
@@ -188,7 +186,6 @@ function App() {
                   </div>
                </div>
 
-               {/* Clear Data */}
                <button onClick={() => { if(confirmClear) { localStorage.clear(); window.location.reload(); } else setConfirmClear(true); }} className="w-full p-4 rounded-2xl border border-red-500/20 text-red-500 text-xs font-bold hover:bg-red-500/10 transition-colors">
                  <Trash2 className="w-4 h-4 inline mr-2" /> {confirmClear ? "Wipe All Data?" : "Clear App Data"}
                </button>
