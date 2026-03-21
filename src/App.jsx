@@ -26,7 +26,6 @@ const DISGUISE_CONFIG = {
   canvas: { title: "Dashboard", icon: "https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico" }
 };
 
-// HELPER: Direct DOM update to prevent React state freezing
 const updateThemeVariables = (color, glow) => {
   const root = document.documentElement;
   root.style.setProperty('--theme', color);
@@ -39,37 +38,34 @@ function App() {
     return gamesDataRaw;
   }, []);
 
-  // UI & Category States
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
 
-  // System & Time States
   const [time, setTime] = useState(new Date());
   const [battery, setBattery] = useState({ level: 100, charging: false });
 
-  // Customization States
   const [theme, setTheme] = useState(() => localStorage.getItem('capy-theme') || DEFAULT_COLOR);
   const [glowIntensity, setGlowIntensity] = useState(() => Number(localStorage.getItem('capy-glow')) || DEFAULT_GLOW);
   const [disguise, setDisguise] = useState(() => localStorage.getItem('capy-stealth-type') || 'none');
   const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
   const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
 
-  // Panic Mode States
+  // Background States
+  const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
+  const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
+
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
   const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || 'Escape');
 
-  // Favorites & Analytics
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
-  // Logic: Sync theme to DOM on initial mount
   useEffect(() => {
     updateThemeVariables(theme, glowIntensity);
   }, []);
 
-  // Logic: Panic Shortcut Listener
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (panicKey && e.key === panicKey) {
@@ -80,7 +76,6 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [panicUrl, panicKey]);
 
-  // Logic: Clock & Battery Updates
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     if ('getBattery' in navigator) {
@@ -94,13 +89,26 @@ function App() {
     return () => clearInterval(timer);
   }, []);
 
-  // Logic: Auto-hide reset confirmation
   useEffect(() => {
     if (confirmReset) {
       const timeout = setTimeout(() => setConfirmReset(false), 3000);
       return () => clearTimeout(timeout);
     }
   }, [confirmReset]);
+
+  // Handle Background Upload (supports GIF and Image)
+  const handleBackgroundUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setBackgroundImage(base64String);
+        localStorage.setItem('capy-bg-image', base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const toggleFavorite = (id, e) => {
     e.stopPropagation();
@@ -118,15 +126,10 @@ function App() {
   };
 
   const applyTheme = (t) => {
-    // 1. Update State (for memory)
     setTheme(t.color);
     setGlowIntensity(t.glow);
-    
-    // 2. Persist to Storage
     localStorage.setItem('capy-theme', t.color);
     localStorage.setItem('capy-glow', t.glow);
-
-    // 3. FORCE DIRECT UPDATE (This stops the freezing)
     updateThemeVariables(t.color, t.glow);
   };
 
@@ -194,66 +197,81 @@ function App() {
   }, [searchQuery, activeCategory, gamesData, favorites]);
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased" style={{ '--theme': theme, '--glow': `${glowIntensity}px` }}>
+    <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased relative" style={{ '--theme': theme, '--glow': `${glowIntensity}px` }}>
       
-      <div className="sticky top-0 z-50">
-        <header className="border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
-          <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
-            <div className="flex items-center gap-2">
-              <img src={DEFAULT_ICON} alt="Logo" className="w-7 h-7 object-contain" />
-              <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
-            </div>
+      {/* Background Layer */}
+      {backgroundImage && (
+        <div 
+          className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-500"
+          style={{ 
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: bgOpacity / 100
+          }}
+        />
+      )}
 
-            <div className="flex items-center gap-2 w-full max-w-sm justify-self-center">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-                <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 transition-colors" />
+      <div className="relative z-10">
+        <div className="sticky top-0 z-50">
+          <header className="border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
+            <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
+              <div className="flex items-center gap-2">
+                <img src={DEFAULT_ICON} alt="Logo" className="w-7 h-7 object-contain" />
+                <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
               </div>
-              <button onClick={() => {
-                const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
-                if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
-              }} className="p-2 bg-white/5 border border-white/10 rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all shrink-0">
-                <Dices className="w-5 h-5" />
-              </button>
-            </div>
 
-            <div className="flex items-center justify-end gap-4">
-              <div className="hidden sm:flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-[var(--theme)] bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-                <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-                <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                <div className="flex items-center gap-1 border-l border-white/10 pl-3">
-                  <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500' : ''}`} />
-                  <span>{battery.level}%</span>
+              <div className="flex items-center gap-2 w-full max-w-sm justify-self-center">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                  <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 transition-colors" />
                 </div>
+                <button onClick={() => {
+                  const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
+                  if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
+                }} className="p-2 bg-white/5 border border-white/10 rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all shrink-0">
+                  <Dices className="w-5 h-5" />
+                </button>
               </div>
-              <button onClick={() => setShowSettings(true)} className="p-2 text-[var(--theme)] hover:opacity-70 transition-all"><Settings className="w-6 h-6" /></button>
-            </div>
-          </div>
-        </header>
 
-        <div className="bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 overflow-hidden">
-          <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
-            {categoriesWithCounts.map(cat => (
-              <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'}`}>
-                {cat.name} <span className="opacity-40 ml-1">{cat.count}</span>
-              </button>
-            ))}
+              <div className="flex items-center justify-end gap-4">
+                <div className="hidden sm:flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-[var(--theme)] bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                  <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                  <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  <div className="flex items-center gap-1 border-l border-white/10 pl-3">
+                    <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500' : ''}`} />
+                    <span>{battery.level}%</span>
+                  </div>
+                </div>
+                <button onClick={() => setShowSettings(true)} className="p-2 text-[var(--theme)] hover:opacity-70 transition-all"><Settings className="w-6 h-6" /></button>
+              </div>
+            </div>
+          </header>
+
+          <div className="bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 overflow-hidden">
+            <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+              {categoriesWithCounts.map(cat => (
+                <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'}`}>
+                  {cat.name} <span className="opacity-40 ml-1">{cat.count}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      <main className="max-w-7xl mx-auto px-4 mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {filteredGames.map(game => (
-          <GameCard 
-            key={game.id} 
-            game={game} 
-            onLaunch={launchContent} 
-            playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
-            isFavorite={favorites.includes(game.id)}
-            onToggleFavorite={(e) => toggleFavorite(game.id, e)}
-          />
-        ))}
-      </main>
+        <main className="max-w-7xl mx-auto px-4 mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {filteredGames.map(game => (
+            <GameCard 
+              key={game.id} 
+              game={game} 
+              onLaunch={launchContent} 
+              playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
+              isFavorite={favorites.includes(game.id)}
+              onToggleFavorite={(e) => toggleFavorite(game.id, e)}
+            />
+          ))}
+        </main>
+      </div>
 
       {showSettings && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
@@ -264,6 +282,34 @@ function App() {
             </div>
             
             <div className="space-y-6">
+              {/* Background Section */}
+              <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><ImageIcon className="w-3 h-3 text-[var(--theme)]" /> Background (Image/GIF)</label>
+                <div className="flex gap-2">
+                  <label className="flex-1 p-3 bg-zinc-800 border border-white/10 rounded-xl text-[10px] font-black uppercase hover:border-[var(--theme)]/50 transition-all text-center cursor-pointer">
+                    <div className="flex items-center justify-center gap-2">
+                      <Upload className="w-3 h-3 text-[var(--theme)]" />
+                      Upload File
+                    </div>
+                    <input type="file" accept="image/*,image/gif" onChange={handleBackgroundUpload} className="hidden" />
+                  </label>
+                  {backgroundImage && (
+                    <button onClick={() => { setBackgroundImage(''); localStorage.removeItem('capy-bg-image'); }} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-all">
+                      <Trash2 className="w-3 h-3 text-red-500" />
+                    </button>
+                  )}
+                </div>
+                {backgroundImage && (
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-[8px] font-black uppercase text-zinc-500">
+                      <span>Opacity</span>
+                      <span>{bgOpacity}%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value={bgOpacity} onChange={(e) => { setBgOpacity(e.target.value); localStorage.setItem('capy-bg-opacity', e.target.value); }} className="w-full accent-[var(--theme)]" />
+                  </div>
+                )}
+              </section>
+
               <section className="space-y-4 bg-red-500/5 p-4 rounded-2xl border border-red-500/10">
                 <div className="flex justify-between items-center">
                    <label className="text-[10px] uppercase font-black text-red-500 tracking-widest flex items-center gap-2">
@@ -273,7 +319,6 @@ function App() {
                     {panicKey ? `Active: ${panicKey}` : 'Disabled'}
                   </span>
                 </div>
-
                 <div className="space-y-3">
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-end">
@@ -282,7 +327,6 @@ function App() {
                     </div>
                     <input type="text" placeholder="e.g. google.com" value={panicUrl} onChange={(e) => { setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50" />
                   </div>
-
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-end">
                       <span className="text-[9px] text-zinc-500 font-bold uppercase ml-1">Activation Key</span>
