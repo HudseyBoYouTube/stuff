@@ -33,7 +33,6 @@ function App() {
   const [confirmClear, setConfirmClear] = useState(false);
 
   const [currentTime, setCurrentTime] = useState(new Date());
-  // Default to 100 to prevent NaN% on Desktop/Unsupported browsers
   const [batteryLevel, setBatteryLevel] = useState(100);
   const [isCharging, setIsCharging] = useState(false);
 
@@ -53,7 +52,6 @@ function App() {
           setIsCharging(battery.charging);
         });
       }).catch(() => {
-        // Fallback if promise fails
         setBatteryLevel(100);
       });
     }
@@ -144,13 +142,11 @@ function App() {
       <header className="sticky top-0 z-50 border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
           
-          {/* LEFT: LOGO */}
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
             <div className="w-8 h-8 bg-[var(--theme)] rounded-lg flex items-center justify-center shadow-lg shadow-[var(--theme)]/20"><Gamepad2 className="w-5 h-5 text-black" /></div>
             <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
           </div>
 
-          {/* CENTER: SEARCH & RANDOMIZER */}
           <div className="flex items-center gap-2 w-full max-w-sm mx-auto">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
@@ -161,11 +157,19 @@ function App() {
                 onChange={(e) => setSearchQuery(e.target.value)} 
                 className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 text-center" 
               />
+              {/* CLEAR BUTTON */}
+              {searchQuery.length > 0 && (
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
             <button onClick={launchRandom} title="Random Game" className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all shrink-0"><Dices className="w-5 h-5" /></button>
           </div>
 
-          {/* RIGHT: STATUS & SETTINGS */}
           <div className="flex items-center justify-end gap-3">
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-zinc-400 whitespace-nowrap">
               <span>{formatDate(currentTime)}</span>
@@ -177,13 +181,11 @@ function App() {
                 <span>{batteryLevel}%</span>
               </div>
             </div>
-
              <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-500 hover:text-[var(--theme)] shrink-0"><Settings className="w-6 h-6" /></button>
           </div>
         </div>
       </header>
 
-      {/* COMPACT CATEGORY NAV */}
       <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 mb-[-1rem]">
         <div className="max-w-7xl mx-auto"> 
           <div className="flex items-center gap-2 overflow-x-auto pb-4">
@@ -203,7 +205,6 @@ function App() {
         </div>
       </div>
 
-      {/* GAME GRID */}
       <main className="max-w-7xl mx-auto px-4 mt-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {filteredGames.map(game => (
@@ -218,7 +219,6 @@ function App() {
         </div>
       </main>
 
-      {/* SETTINGS MODAL */}
       {showSettings && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSettings(false)} />
