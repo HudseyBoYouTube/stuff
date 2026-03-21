@@ -254,7 +254,6 @@ function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite }) {
       <div className="relative w-full aspect-[4/3] bg-black/20 overflow-hidden group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)] transition-all duration-500">
         <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24' : 'w-full h-full object-cover'}`} alt="" />
         
-        {/* Favorite Icon with Black Stroke for Visibility */}
         {!isUtility && (
           <button 
             onClick={onToggleFavorite} 
@@ -262,10 +261,10 @@ function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite }) {
           >
             <Heart 
               className={`w-4 h-4 transition-colors`} 
-              stroke="rgba(0,0,0,0.8)"
-              strokeWidth={3}
-              fill={isFavorite ? 'var(--theme)' : 'rgba(255,255,255,0.4)'}
-              style={{ color: isFavorite ? 'var(--theme)' : 'rgba(255,255,255,0.4)' }}
+              stroke="#000"
+              strokeWidth={2}
+              fill={isFavorite ? '#000' : 'rgba(0,0,0,0.3)'}
+              style={{ color: isFavorite ? '#000' : 'rgba(0,0,0,0.3)' }}
             />
           </button>
         )}
