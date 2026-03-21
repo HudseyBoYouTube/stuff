@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Star, Trash2, Palette, EyeOff, Eye, Clock, Trophy,
-  Dices, AlertTriangle, Battery, Zap, ChevronDown, Upload, Keyboard
+  Dices, AlertTriangle, Battery, Zap, ChevronDown, Upload, Keyboard, MousePointer2
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -36,21 +36,22 @@ function App() {
   const [customFavicon, setCustomFavicon] = useState(() => localStorage.getItem('capy-custom-icon') || null);
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   
-  // PLAYTIME & LEADERBOARD STATE
   const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
   const sessionRef = useRef(null);
 
-  const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || 'p');
+  // PANIC STATES (Panic Key can now be empty)
+  const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') ?? 'p');
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
 
   const [currentTime, setCurrentTime] = useState(new Date());
   const [batteryLevel, setBatteryLevel] = useState(100);
   const [isCharging, setIsCharging] = useState(false);
 
-  // PANIC LISTENER
+  // UPDATED PANIC LISTENER
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key.toLowerCase() === panicKey.toLowerCase()) {
+      // Only trigger if a key is actually set
+      if (panicKey && panicKey.trim() !== "" && e.key.toLowerCase() === panicKey.toLowerCase()) {
         setDisguise('drive'); 
         window.location.href = panicUrl.startsWith('http') ? panicUrl : `https://${panicUrl}`;
       }
@@ -132,17 +133,12 @@ function App() {
     return `${mins}m`;
   };
 
-  // --- LEADERBOARD LOGIC ---
   const leaderboardGames = useMemo(() => {
-    // Filter out utility cards (request/report) and only include played games
     const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
-    
-    // Create an array of games that have playtime, sorted by playtime descending
     const sorted = playable
-      .filter(game => playtimes[game.id] && playtimes[game.id] > 60) // Must have > 1m playtime
+      .filter(game => playtimes[game.id] && playtimes[game.id] > 60)
       .sort((a, b) => (playtimes[b.id] || 0) - (playtimes[a.id] || 0))
-      .slice(0, 3); // Get top 3
-
+      .slice(0, 3);
     return sorted;
   }, [gamesData, playtimes]);
 
@@ -166,15 +162,11 @@ function App() {
   const categoriesWithCounts = useMemo(() => {
     const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
     const final = [{ name: 'All', count: gamesData.length }, ...uniqueCats.map(cat => ({ name: cat, count: gamesData.filter(g => g.category === cat).length }))];
-    
-    // Add dynamic categories
     if (favorites.length > 0) final.unshift({ name: 'Favorites', count: favorites.length });
-    if (leaderboardGames.length > 0) final.unshift({ name: 'Leaderboard', count: leaderboardGames.length }); // Custom name
-
+    if (leaderboardGames.length > 0) final.unshift({ name: 'Leaderboard', count: leaderboardGames.length });
     return final;
   }, [gamesData, favorites, leaderboardGames]);
 
-  // Determine which icon to use for the active category button
   const getCategoryIcon = (catName) => {
     if (catName === 'Favorites') return <Star className="w-3.5 h-3.5 fill-current" />;
     if (catName === 'Leaderboard') return <Trophy className="w-3.5 h-3.5 text-amber-400" />;
@@ -222,14 +214,7 @@ function App() {
       <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 mb-[-1rem]">
         <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4">
           {categoriesWithCounts.map(cat => (
-            <button 
-              key={cat.name} 
-              onClick={() => setActiveCategory(cat.name)} 
-              className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all flex items-center gap-1.5
-                ${activeCategory === cat.name 
-                  ? 'bg-[var(--theme)] border-[var(--theme)] text-black' 
-                  : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'}`}
-            >
+            <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all flex items-center gap-1.5 ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'}`}>
               {getCategoryIcon(cat.name)}
               {cat.name}
             </button>
@@ -238,41 +223,23 @@ function App() {
       </div>
 
       <main className="max-w-7xl mx-auto px-4 mt-6">
-        
-        {/* LEADERBOARD INLINE SECTION (Always display at the top if games exist) */}
         {leaderboardGames.length > 0 && activeCategory === 'All' && (
           <div className="mb-10">
             <h2 className="text-xl font-bold mb-5 flex items-center gap-3 tracking-tight"><Trophy className="w-6 h-6 text-amber-400" /> Game Leaderboard</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {leaderboardGames.map((game, index) => (
-                <GameCard 
-                  key={game.id} 
-                  game={game} 
-                  isFav={favorites.includes(game.id)} 
-                  onLaunch={launchGame} 
-                  onFav={setFavorites}
-                  playtime={formatPlaytime(playtimes[game.id])}
-                  rank={index + 1} // Pass the rank (1, 2, or 3)
-                />
+                <GameCard key={game.id} game={game} isFav={favorites.includes(game.id)} onLaunch={launchGame} onFav={setFavorites} playtime={formatPlaytime(playtimes[game.id])} rank={index + 1} />
               ))}
             </div>
           </div>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Prevent utility requests showing in dynamic categories */}
           {filteredGames.filter(g => {
              if(activeCategory === 'Favorites' || activeCategory === 'Leaderboard') return !['request', 'report'].includes(g.id);
              return true;
           }).map(game => (
-            <GameCard 
-              key={game.id} 
-              game={game} 
-              isFav={favorites.includes(game.id)} 
-              onLaunch={launchGame} 
-              onFav={setFavorites}
-              playtime={formatPlaytime(playtimes[game.id])}
-            />
+            <GameCard key={game.id} game={game} isFav={favorites.includes(game.id)} onLaunch={launchGame} onFav={setFavorites} playtime={formatPlaytime(playtimes[game.id])} />
           ))}
         </div>
       </main>
@@ -286,6 +253,7 @@ function App() {
             <h2 className="text-xl font-bold flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-[var(--theme)]" /> System Config</h2>
             
             <div className="space-y-4 pb-4">
+              {/* DISGUISE SELECT */}
               <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
                 <label className="text-sm block mb-2 font-bold flex items-center gap-2"><EyeOff className="w-4 h-4 text-[var(--theme)]" /> Tab Disguise</label>
                 <div className="relative">
@@ -299,18 +267,43 @@ function App() {
                 </div>
               </div>
 
+              {/* UPDATED PANIC CONFIG */}
               <div className="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-3">
                 <label className="text-sm block font-bold flex items-center gap-2 text-red-400"><AlertTriangle className="w-4 h-4" /> Panic Mode</label>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <span className="text-[10px] text-zinc-500 uppercase font-black mb-1 block">Trigger Key</span>
-                    <input type="text" maxLength="1" value={panicKey} onChange={(e) => {setPanicKey(e.target.value); localStorage.setItem('capy-panic-key', e.target.value);}} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-center text-xs font-mono uppercase focus:border-red-500 outline-none" />
+                    <input 
+                      type="text" 
+                      maxLength="1" 
+                      placeholder="None"
+                      value={panicKey} 
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setPanicKey(val); 
+                        localStorage.setItem('capy-panic-key', val);
+                      }} 
+                      className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-center text-xs font-mono uppercase focus:border-red-500 outline-none" 
+                    />
                   </div>
                   <div>
                     <span className="text-[10px] text-zinc-500 uppercase font-black mb-1 block">Redirect URL</span>
                     <input type="text" placeholder="google.com" value={panicUrl} onChange={(e) => {setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value);}} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs focus:border-red-500 outline-none" />
                   </div>
                 </div>
+                <p className="text-[9px] text-zinc-500 text-center">Leave Trigger Key empty to disable shortcut.</p>
+              </div>
+
+              {/* FAVICON UPLOAD */}
+              <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                <label className="text-sm block mb-2 font-bold">Custom Favicon (Default Mode)</label>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => fileInputRef.current.click()} className="flex-1 p-3 bg-zinc-800 rounded-xl text-[10px] flex items-center justify-center gap-2 border border-dashed border-white/20 hover:border-[var(--theme)] transition-colors">
+                    <Upload className="w-3 h-3" /> Upload Icon
+                  </button>
+                  {customFavicon && <button onClick={() => { setCustomFavicon(null); localStorage.removeItem('capy-custom-icon'); }} className="p-3 text-red-500 text-[10px] font-bold">Reset</button>}
+                </div>
+                <input type="file" ref={fileInputRef} onChange={handleFaviconUpload} accept="image/*" className="hidden" />
               </div>
 
               <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
@@ -334,18 +327,14 @@ function App() {
   );
 }
 
-// Updated GameCard to handle Leaderboard Ranks
 function GameCard({ game, isFav, onLaunch, onFav, playtime, rank }) {
   const isUtility = ['request', 'report'].includes(game.id);
-  
-  // Leaderboard styling based on rank
   const getLeaderboardAccent = () => {
     if (rank === 1) return 'border-amber-400 shadow-[0_0_15px_-3px_rgba(251,191,36,0.3)]';
     if (rank === 2) return 'border-zinc-400 shadow-[0_0_15px_-3px_rgba(161,161,170,0.3)]';
     if (rank === 3) return 'border-orange-700 shadow-[0_0_15px_-3px_rgba(194,65,12,0.3)]';
     return 'border-white/5 hover:border-[var(--theme)]/30';
   };
-
   const getRankBadge = () => {
      if (rank === 1) return <div className="absolute top-4 left-4 z-20 bg-amber-400 text-black px-3 py-1 text-xs font-black rounded-xl">#1 Gold</div>;
      if (rank === 2) return <div className="absolute top-4 left-4 z-20 bg-zinc-400 text-black px-3 py-1 text-xs font-black rounded-xl">#2 Silver</div>;
@@ -356,11 +345,8 @@ function GameCard({ game, isFav, onLaunch, onFav, playtime, rank }) {
   return (
     <div className={`group bg-zinc-900/40 rounded-[2rem] overflow-hidden border transition-all flex flex-col cursor-pointer ${getLeaderboardAccent()}`} onClick={() => onLaunch(game)}>
       <div className="relative aspect-[4/3] bg-black/20">
-        
-        {getRankBadge()} {/* Displays Gold, Silver, Bronze badging */}
-
+        {getRankBadge()}
         <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24 object-contain' : 'w-full h-full object-cover'}`} alt="" />
-        
         {!isUtility && (
           <button onClick={(e) => { e.stopPropagation(); const saved = JSON.parse(localStorage.getItem('capy-favorites') || '[]'); const next = saved.includes(game.id) ? saved.filter(id => id !== game.id) : [...saved, game.id]; localStorage.setItem('capy-favorites', JSON.stringify(next)); onFav(next); }} className={`absolute top-4 right-4 p-2 rounded-xl backdrop-blur-md z-10 ${isFav ? 'bg-[var(--theme)] text-black' : 'bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity'}`}>
             <Star className={`w-3.5 h-3.5 ${isFav ? 'fill-current' : ''}`} />
