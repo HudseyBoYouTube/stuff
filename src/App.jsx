@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
-  Link as LinkIcon, Upload
+  Link as LinkIcon, Upload, Battery, Calendar
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -29,6 +29,10 @@ function App() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
   
+  // Status Bar States
+  const [time, setTime] = useState(new Date());
+  const [battery, setBattery] = useState({ level: 100, charging: false });
+
   const [theme, setTheme] = useState(() => localStorage.getItem('capy-theme') || DEFAULT_COLOR);
   const [glowIntensity, setGlowIntensity] = useState(() => Number(localStorage.getItem('capy-glow')) || DEFAULT_GLOW);
   const [disguise, setDisguise] = useState(() => localStorage.getItem('capy-stealth-type') || 'none');
@@ -38,16 +42,26 @@ function App() {
   const [favorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
-  // Calculate Identity
+  // Update Time & Battery
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    
+    if ('getBattery' in navigator) {
+      navigator.getBattery().then(bat => {
+        const updateBat = () => setBattery({ level: Math.round(bat.level * 100), charging: bat.charging });
+        bat.addEventListener('levelchange', updateBat);
+        bat.addEventListener('chargingchange', updateBat);
+        updateBat();
+      });
+    }
+    return () => clearInterval(timer);
+  }, []);
+
   const currentIdentity = useMemo(() => {
     if (disguise !== 'none') return DISGUISE_CONFIG[disguise] || DISGUISE_CONFIG.none;
-    return {
-      title: customTitle || DEFAULT_TITLE,
-      icon: customIcon || DEFAULT_ICON
-    };
+    return { title: customTitle || DEFAULT_TITLE, icon: customIcon || DEFAULT_ICON };
   }, [disguise, customTitle, customIcon]);
 
-  // Update Tab
   useEffect(() => {
     document.title = currentIdentity.title;
     let link = document.querySelector("link[rel*='icon']");
@@ -68,23 +82,6 @@ function App() {
     if (favorites.length > 0) final.unshift({ name: 'Favorites', count: favorites.length });
     return final;
   }, [gamesData, favorites]);
-
-  const handleIconUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCustomIcon(reader.result);
-        localStorage.setItem('capy-custom-icon', reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleResetSettings = () => {
-    localStorage.clear();
-    window.location.reload();
-  };
 
   const launchContent = (item) => {
     if (!item?.url) return;
@@ -111,28 +108,52 @@ function App() {
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased" style={{ '--theme': theme, '--glow': `${glowIntensity}px` }}>
       
+      {/* STATUS BAR */}
+      <div className="bg-black/40 border-b border-white/5 px-4 py-1 flex justify-between items-center text-[9px] font-black uppercase tracking-widest text-zinc-500">
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString()}</span>
+          <span className="flex items-center gap-1 text-[var(--theme)]"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500' : ''}`} />
+          <span>{battery.level}%</span>
+        </div>
+      </div>
+
       <header className="sticky top-0 z-50 border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[var(--theme)] rounded-lg flex items-center justify-center shadow-lg shadow-[var(--theme)]/20"><Gamepad2 className="w-5 h-5 text-black" /></div>
-            <span className="text-xl font-black tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
+            <div className="w-8 h-8 bg-[var(--theme)] rounded-lg flex items-center justify-center shadow-lg shadow-[var(--theme)]/20 transition-all"><Gamepad2 className="w-5 h-5 text-black" /></div>
+            <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
           </div>
 
-          <div className="flex items-center gap-4 flex-1 max-w-md mx-8">
-            <div className="relative w-full">
+          <div className="flex items-center gap-2 flex-1 max-w-md mx-4">
+            <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-              <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-xs outline-none focus:border-[var(--theme)]/50" />
+              <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 transition-colors" />
+              {searchQuery && (
+                <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:text-white transition-colors">
+                  <X className="w-3 h-3" />
+                </button>
+              )}
             </div>
+            {/* RANDOM GAME BUTTON */}
+            <button onClick={() => {
+              const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
+              if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
+            }} className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all shrink-0">
+              <Dices className="w-5 h-5" />
+            </button>
           </div>
 
           <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-500 hover:text-[var(--theme)] transition-colors"><Settings className="w-6 h-6" /></button>
         </div>
       </header>
 
-      <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 mb-8">
+      <div className="sticky top-[4.5rem] z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 mb-8">
         <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
           {categoriesWithCounts.map(cat => (
-            <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500'}`}>
+            <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'}`}>
               {cat.name} <span className="opacity-40 ml-1">{cat.count}</span>
             </button>
           ))}
@@ -149,40 +170,46 @@ function App() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
           <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-white/5 pb-4">
-              <h2 className="text-xl font-bold flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-[var(--theme)]" /> Settings</h2>
+              <h2 className="text-xl font-bold flex items-center gap-2 text-[var(--theme)]"><ShieldAlert className="w-5 h-5" /> System Config</h2>
               <X onClick={() => setShowSettings(false)} className="cursor-pointer text-zinc-400 hover:text-white" />
             </div>
             
             <div className="space-y-6">
               <div className="bg-black/40 border border-white/5 rounded-2xl p-3 flex flex-col gap-2">
-                <span className="text-[8px] uppercase font-black text-zinc-600 tracking-widest">Tab Preview</span>
-                <div className="bg-[#18181b] rounded-lg p-2 flex items-center gap-3 border border-white/10">
-                  <img src={currentIdentity.icon} className="w-4 h-4 object-contain" alt="" />
+                <span className="text-[8px] uppercase font-black text-zinc-600 tracking-widest text-center">Live Disguise Preview</span>
+                <div className="bg-[#18181b] rounded-lg p-2 flex items-center gap-3 border border-white/10 shadow-inner">
+                  <img src={currentIdentity.icon} className="w-4 h-4 object-contain" alt="" onError={(e) => e.target.src = DEFAULT_ICON} />
                   <span className="text-[11px] font-medium text-zinc-300 truncate">{currentIdentity.title}</span>
                 </div>
               </div>
 
-              <section className="space-y-4">
-                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Palette className="w-3 h-3" /> Branding</label>
-                <input type="text" placeholder="Custom Name" value={customTitle} onChange={(e) => { setCustomTitle(e.target.value); localStorage.setItem('capy-custom-title', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)]/50" />
-                
+              <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Palette className="w-3 h-3" /> Custom Branding</label>
+                <input type="text" placeholder="Custom Tab Title" value={customTitle} onChange={(e) => { setCustomTitle(e.target.value); localStorage.setItem('capy-custom-title', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)]/50" />
                 <div className="flex gap-2">
-                  <input type="file" accept="image/*" onChange={handleIconUpload} className="hidden" id="icon-up" />
-                  <label htmlFor="icon-up" className="w-12 h-12 bg-zinc-800 border border-white/10 rounded-xl flex items-center justify-center cursor-pointer hover:border-[var(--theme)] transition-all"><Upload className="w-5 h-5 text-zinc-500" /></label>
-                  <input type="text" placeholder="Icon URL" value={customIcon.startsWith('data:') ? 'Local Image' : customIcon} onChange={(e) => { setCustomIcon(e.target.value); localStorage.setItem('capy-custom-icon', e.target.value); }} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none" />
+                  <input type="file" accept="image/*" onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      const r = new FileReader();
+                      r.onloadend = () => { setCustomIcon(r.result); localStorage.setItem('capy-custom-icon', r.result); };
+                      r.readAsDataURL(file);
+                    }
+                  }} className="hidden" id="icon-up-status" />
+                  <label htmlFor="icon-up-status" className="w-12 h-12 bg-zinc-800 border border-white/10 rounded-xl flex items-center justify-center cursor-pointer hover:border-[var(--theme)] transition-all"><Upload className="w-5 h-5 text-zinc-500" /></label>
+                  <input type="text" placeholder="Icon URL" value={customIcon.startsWith('data:') ? 'Local File' : customIcon} onChange={(e) => { setCustomIcon(e.target.value); localStorage.setItem('capy-custom-icon', e.target.value); }} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none" />
                 </div>
               </section>
 
-              <section className="space-y-4">
-                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2">Theme Color</label>
+              <section className="space-y-3">
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest">Theme Settings</label>
                 <div className="flex gap-3">
                   <input type="color" value={theme} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="w-12 h-12 rounded-xl bg-transparent border-none cursor-pointer" />
-                  <input type="text" value={theme} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl px-4 text-xs outline-none" />
+                  <input type="range" min="0" max="100" value={glowIntensity} onChange={(e) => { setGlowIntensity(Number(e.target.value)); localStorage.setItem('capy-glow', e.target.value); }} className="flex-1 accent-[var(--theme)] h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer self-center" />
                 </div>
               </section>
 
-              <button onClick={handleResetSettings} className="w-full p-4 rounded-2xl border border-red-500/20 bg-red-500/5 text-[10px] font-black uppercase text-red-500 hover:bg-red-500/10 transition-all flex items-center justify-center gap-2">
-                <RotateCcw className="w-4 h-4" /> Wipe All Data
+              <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="w-full p-4 rounded-2xl border border-red-500/20 bg-red-500/5 text-[10px] font-black uppercase text-red-500 hover:bg-red-500/10 transition-all flex items-center justify-center gap-2">
+                <RotateCcw className="w-4 h-4" /> Factory Reset
               </button>
             </div>
           </div>
@@ -196,10 +223,10 @@ function GameCard({ game, onLaunch, playtime }) {
   const isUtility = ['request', 'report'].includes(game.id);
   return (
     <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg" onClick={() => onLaunch(game)}>
-      <div className="relative w-full aspect-[4/3] bg-black/20 overflow-hidden group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)] transition-all">
+      <div className="relative w-full aspect-[4/3] bg-black/20 overflow-hidden group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)] transition-all duration-500">
         <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24' : 'w-full h-full object-cover'}`} alt="" />
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="w-12 h-12 bg-[var(--theme)] rounded-full flex items-center justify-center shadow-[0_0_20px_var(--theme)]">
+          <div className="w-12 h-12 bg-[var(--theme)] rounded-full flex items-center justify-center shadow-[0_0_20px_var(--theme)] transition-all">
             <Play className="w-6 h-6 text-black fill-current ml-1" />
           </div>
         </div>
