@@ -1,33 +1,22 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
-  Star, Trash2, Palette, EyeOff, Eye, Clock, Trophy,
-  Dices, AlertTriangle, Battery, Zap, ChevronDown, Upload, RotateCcw, Check, Undo2, Sun
+  Clock, Dices, AlertTriangle, RotateCcw, Check, Undo2, Sun,
+  Type, ImageIcon, Link as LinkIcon, Upload, Globe
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
 
 const DEFAULT_COLOR = '#10A5F5';
 const DEFAULT_GLOW = 50;
+const DEFAULT_TITLE = "Capybara Science";
+const DEFAULT_ICON = "https://img.icons8.com/color/32/capybara.png";
 
-// FIXED: Added a reliable default icon URL for the 'none' state
 const DISGUISE_CONFIG = {
-  none: { 
-    title: "Capybara Science", 
-    icon: "https://img.icons8.com/color/32/capybara.png" // Reliable default Capy icon
-  },
-  drive: { 
-    title: "My Drive - Google Drive", 
-    icon: "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" 
-  },
-  classroom: { 
-    title: "Home - Classroom", 
-    icon: "https://www.gstatic.com/classroom/favicon.png" 
-  },
-  canvas: { 
-    title: "Dashboard", 
-    icon: "https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico" 
-  }
+  none: { title: DEFAULT_TITLE, icon: DEFAULT_ICON },
+  drive: { title: "My Drive - Google Drive", icon: "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" },
+  classroom: { title: "Home", icon: "https://www.gstatic.com/classroom/favicon.png" },
+  canvas: { title: "Dashboard", icon: "https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico" }
 };
 
 function App() {
@@ -44,112 +33,53 @@ function App() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
   
-  const [resetConfirm, setResetConfirm] = useState(false);
-  const [resetSuccess, setResetSuccess] = useState(false);
-  const [wipeConfirm, setWipeConfirm] = useState(false);
-  const [wipeSuccess, setWipeSuccess] = useState(false);
-  
   const [theme, setTheme] = useState(() => localStorage.getItem('capy-theme') || DEFAULT_COLOR);
   const [glowIntensity, setGlowIntensity] = useState(() => Number(localStorage.getItem('capy-glow')) || DEFAULT_GLOW);
   const [disguise, setDisguise] = useState(() => localStorage.getItem('capy-stealth-type') || 'none');
   const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || '');
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
 
+  const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
+  const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
+
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
-  const sessionRef = useRef(null);
+  // Derived Identity for the Preview & Logic
+  const currentIdentity = useMemo(() => {
+    if (disguise !== 'none') return DISGUISE_CONFIG[disguise];
+    return {
+      title: customTitle || DEFAULT_TITLE,
+      icon: customIcon || DEFAULT_ICON
+    };
+  }, [disguise, customTitle, customIcon]);
 
-  // FIXED: Improved Favicon Switcher Logic
   useEffect(() => {
-    const config = DISGUISE_CONFIG[disguise] || DISGUISE_CONFIG.none;
-    
-    // Update Title
-    document.title = config.title;
-    
-    // Update Favicon
+    document.title = currentIdentity.title;
     let link = document.querySelector("link[rel*='icon']");
-    
-    // If no link tag exists, create it
     if (!link) {
       link = document.createElement('link');
       link.rel = 'icon';
       document.getElementsByTagName('head')[0].appendChild(link);
     }
-    
-    // Force the new href
-    link.href = config.icon;
-  }, [disguise]);
+    link.href = currentIdentity.icon;
+  }, [currentIdentity]);
 
-  // Panic Key Logic
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (panicKey && panicKey.trim() !== "" && e.key.toLowerCase() === panicKey.toLowerCase()) {
-        window.location.href = panicUrl.startsWith('http') ? panicUrl : `https://${panicUrl}`;
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [panicKey, panicUrl]);
+  const handleIconUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCustomIcon(reader.result);
+        localStorage.setItem('capy-custom-icon', reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleResetSettings = () => {
-    if (resetSuccess) return;
-    if (!resetConfirm) {
-      setResetConfirm(true);
-      setTimeout(() => setResetConfirm(false), 3000);
-      return;
-    }
-    setTheme(DEFAULT_COLOR);
-    setGlowIntensity(DEFAULT_GLOW);
-    setDisguise('none');
-    setPanicKey('');
-    setPanicUrl('https://google.com');
-    localStorage.setItem('capy-theme', DEFAULT_COLOR);
-    localStorage.setItem('capy-glow', DEFAULT_GLOW);
-    localStorage.setItem('capy-stealth-type', 'none');
-    localStorage.setItem('capy-panic-key', '');
-    localStorage.setItem('capy-panic-url', 'https://google.com');
-    setResetConfirm(false);
-    setResetSuccess(true);
-    setTimeout(() => setResetSuccess(false), 2000);
-  };
-
-  const handleWipeEverything = () => {
-    if (wipeSuccess) return;
-    if (!wipeConfirm) {
-      setWipeConfirm(true);
-      setTimeout(() => setWipeConfirm(false), 3000);
-      return;
-    }
-    setWipeConfirm(false);
-    setWipeSuccess(true);
     localStorage.clear();
-    setTimeout(() => window.location.reload(), 1000);
-  };
-
-  const categoriesWithCounts = useMemo(() => {
-    const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
-    const final = [{ name: 'All', count: gamesData.length }, ...uniqueCats.map(cat => ({ name: cat, count: gamesData.filter(g => g.category === cat).length }))];
-    if (favorites.length > 0) final.unshift({ name: 'Favorites', count: favorites.length });
-    return final;
-  }, [gamesData, favorites]);
-
-  const launchContent = (item) => {
-    if (!item?.url) return;
-    const win = window.open('about:blank', '_blank');
-    if (win) {
-      win.document.title = "DO NOT REFRESH";
-      win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
-      const iframe = win.document.createElement('iframe');
-      iframe.src = item.url;
-      iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
-      iframe.allow = "fullscreen";
-      win.document.body.appendChild(iframe);
-      const titleInterval = setInterval(() => {
-        if (win.closed) clearInterval(titleInterval);
-        else if (win.document.title !== "DO NOT REFRESH") win.document.title = "DO NOT REFRESH";
-      }, 500);
-    }
+    window.location.reload();
   };
 
   const filteredGames = useMemo(() => {
@@ -166,7 +96,7 @@ function App() {
       
       <header className="sticky top-0 z-50 border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
-          <div className="flex items-center gap-2 cursor-pointer">
+          <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-[var(--theme)] rounded-lg flex items-center justify-center shadow-lg shadow-[var(--theme)]/20 transition-all"><Gamepad2 className="w-5 h-5 text-black" /></div>
             <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
           </div>
@@ -174,33 +104,19 @@ function App() {
           <div className="flex items-center gap-2 w-full">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-              <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-xs outline-none focus:border-[var(--theme)]/50" />
+              <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-xs outline-none focus:border-[var(--theme)]/50 transition-colors" />
             </div>
-            <button onClick={() => {
-              const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
-              if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
-            }} className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all shrink-0"><Dices className="w-5 h-5" /></button>
           </div>
 
           <div className="flex items-center justify-end gap-3">
-             <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-500 hover:text-[var(--theme)] shrink-0 transition-colors"><Settings className="w-6 h-6" /></button>
+             <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-500 hover:text-[var(--theme)] transition-colors"><Settings className="w-6 h-6" /></button>
           </div>
         </div>
       </header>
 
-      <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 mb-[-1rem]">
-        <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4">
-          {categoriesWithCounts.map(cat => (
-            <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'}`}>
-              {cat.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <main className="max-w-7xl mx-auto px-4 mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {filteredGames.map(game => (
-          <GameCard key={game.id} game={game} isFav={favorites.includes(game.id)} onLaunch={launchContent} onFav={setFavorites} playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'} />
+          <GameCard key={game.id} game={game} playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'} />
         ))}
       </main>
 
@@ -214,66 +130,67 @@ function App() {
             </div>
             
             <div className="space-y-5">
+              {/* LIVE PREVIEW BOX */}
+              <div className="bg-black/40 border border-white/5 rounded-2xl p-3 flex flex-col gap-2">
+                <span className="text-[8px] uppercase font-black text-zinc-600 tracking-widest">Live Tab Preview</span>
+                <div className="bg-[#18181b] rounded-lg p-2 flex items-center gap-3 border border-white/10">
+                  <img src={currentIdentity.icon} className="w-4 h-4 object-contain" alt="" onError={(e) => e.target.src = DEFAULT_ICON} />
+                  <span className="text-[11px] font-medium text-zinc-300 truncate max-w-[180px]">{currentIdentity.title}</span>
+                </div>
+              </div>
+
+              {/* BRANDING SECTION */}
+              <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Palette className="w-3 h-3" /> Custom Branding</label>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[9px] text-zinc-400 uppercase font-bold flex items-center gap-1"><Type className="w-2.5 h-2.5" /> Tab Name</span>
+                    {customTitle && <button onClick={() => { setCustomTitle(''); localStorage.removeItem('capy-custom-title'); }} className="text-[9px] font-black text-[var(--theme)] uppercase hover:underline">Reset</button>}
+                  </div>
+                  <input type="text" placeholder="Enter custom name..." value={customTitle} onChange={(e) => { setCustomTitle(e.target.value); localStorage.setItem('capy-custom-title', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)]/50 transition-colors" />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[9px] text-zinc-400 uppercase font-bold flex items-center gap-1"><ImageIcon className="w-2.5 h-2.5" /> Tab Icon</span>
+                    {customIcon && <button onClick={() => { setCustomIcon(''); localStorage.removeItem('capy-custom-icon'); }} className="text-[9px] font-black text-[var(--theme)] uppercase hover:underline">Reset</button>}
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <div className="relative">
+                      <input type="file" accept="image/*" onChange={handleIconUpload} className="hidden" id="icon-upload" />
+                      <label htmlFor="icon-upload" className="w-10 h-10 bg-zinc-800 border border-white/10 rounded-xl flex items-center justify-center cursor-pointer hover:border-[var(--theme)] transition-all">
+                        <Upload className="w-4 h-4 text-zinc-500" />
+                      </label>
+                    </div>
+                    <div className="relative flex-1 flex items-center gap-2 bg-zinc-800 border border-white/10 rounded-xl pr-3">
+                      <div className="pl-3 shrink-0"><LinkIcon className="w-3.5 h-3.5 text-zinc-600" /></div>
+                      <input type="text" placeholder="Paste Image URL..." value={customIcon.startsWith('data:') ? 'Local File Selected' : customIcon} onChange={(e) => { setCustomIcon(e.target.value); localStorage.setItem('capy-custom-icon', e.target.value); }} className="w-full bg-transparent py-3 text-xs outline-none" />
+                      {/* PREVIEW IMAGE ICON */}
+                      {customIcon && (
+                        <div className="w-6 h-6 rounded bg-black/40 flex items-center justify-center overflow-hidden shrink-0 border border-white/5">
+                          <img src={customIcon} className="w-full h-full object-contain" alt="" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </section>
+
               <section className="space-y-2">
-                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest">Tab Disguise</label>
-                <select 
-                  value={disguise} 
-                  onChange={(e) => { setDisguise(e.target.value); localStorage.setItem('capy-stealth-type', e.target.value); }} 
-                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)] transition-all cursor-pointer appearance-none"
-                  style={{ color: disguise !== 'none' ? 'var(--theme)' : 'inherit' }}
-                >
-                  <option value="none" className="bg-zinc-900 text-white">Default (Capybara)</option>
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest">Quick Presets</label>
+                <select value={disguise} onChange={(e) => { setDisguise(e.target.value); localStorage.setItem('capy-stealth-type', e.target.value); }} className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)] transition-all cursor-pointer appearance-none">
+                  <option value="none" className="bg-zinc-900 text-white">Use My Custom Branding</option>
                   <option value="drive" className="bg-zinc-900 text-white">Google Drive</option>
                   <option value="classroom" className="bg-zinc-900 text-white">Google Classroom</option>
                   <option value="canvas" className="bg-zinc-900 text-white">Canvas LMS</option>
                 </select>
               </section>
 
-              <section className="space-y-3 bg-white/5 p-4 rounded-2xl border border-white/5">
-                <label className="text-[10px] uppercase font-black text-red-400 tracking-widest flex items-center gap-2"><AlertTriangle className="w-3 h-3" /> Panic Mode</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <input type="text" maxLength="1" placeholder="Key" value={panicKey} onChange={(e) => { setPanicKey(e.target.value); localStorage.setItem('capy-panic-key', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-center text-xs outline-none focus:border-red-500/50 transition-colors" />
-                  <input type="text" placeholder="URL" value={panicUrl} onChange={(e) => { setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50 transition-colors" />
-                </div>
-              </section>
-
-              <section className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest">Theme & Effects</label>
-                  {theme.toUpperCase() !== DEFAULT_COLOR.toUpperCase() && (
-                    <button onClick={() => { setTheme(DEFAULT_COLOR); localStorage.setItem('capy-theme', DEFAULT_COLOR); }} className="text-[9px] font-black uppercase text-[var(--theme)] hover:underline flex items-center gap-1 transition-all"><Undo2 className="w-2.5 h-2.5" /> Reset Color</button>
-                  )}
-                </div>
-                
-                <div className="flex gap-2">
-                   <div className="relative w-12 h-12 shrink-0 rounded-xl overflow-hidden border border-white/10 shadow-lg">
-                      <input type="color" value={theme} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="absolute inset-[-10px] w-[200%] h-[200%] cursor-pointer bg-transparent border-none" />
-                   </div>
-                   <input type="text" value={theme} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 text-xs outline-none focus:border-[var(--theme)] font-mono uppercase transition-all" />
-                </div>
-
-                <div className="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] font-black uppercase text-zinc-500 flex items-center gap-2"><Sun className="w-3 h-3" /> Glow Intensity</span>
-                    {glowIntensity !== DEFAULT_GLOW && (
-                      <button onClick={() => { setGlowIntensity(DEFAULT_GLOW); localStorage.setItem('capy-glow', DEFAULT_GLOW); }} className="text-[9px] font-black uppercase text-[var(--theme)] hover:underline flex items-center gap-1 transition-all"><Undo2 className="w-2.5 h-2.5" /> Reset</button>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <input type="range" min="0" max="100" value={glowIntensity} onChange={(e) => { setGlowIntensity(Number(e.target.value)); localStorage.setItem('capy-glow', e.target.value); }} className="flex-1 accent-[var(--theme)] h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer" />
-                    <span className="text-[10px] font-mono text-[var(--theme)] w-8 text-right">{glowIntensity}%</span>
-                  </div>
-                </div>
-              </section>
-
-              <div className="pt-4 flex flex-col gap-2">
-                <button onClick={handleResetSettings} disabled={resetSuccess} className={`w-full p-3 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${resetSuccess ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-500' : resetConfirm ? 'bg-amber-500/10 border-amber-500/40 text-amber-500' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'}`}>
-                  {resetSuccess ? <Check className="w-3 h-3" /> : resetConfirm ? <AlertTriangle className="w-3 h-3" /> : <RotateCcw className="w-3 h-3" />}
-                  {resetSuccess ? "Settings Reset!" : resetConfirm ? "Are you sure?" : "Reset Settings Only"}
-                </button>
-                <button onClick={handleWipeEverything} disabled={wipeSuccess} className={`w-full p-3 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${wipeSuccess ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-500' : wipeConfirm ? 'bg-red-500/20 border-red-500/50 text-red-500' : 'border-red-500/20 text-red-500 hover:bg-red-500/10'}`}>
-                  {wipeSuccess ? <Check className="w-3 h-3" /> : wipeConfirm ? <AlertTriangle className="w-3 h-3" /> : <Trash2 className="w-3 h-3" />}
-                  {wipeSuccess ? "Data Wiped!" : wipeConfirm ? "Confirm Full Wipe?" : "Wipe Everything"}
+              <div className="pt-4">
+                <button onClick={handleResetSettings} className="w-full p-3 rounded-2xl border border-white/5 bg-white/5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-red-500/10 hover:border-red-500/20 transition-all flex items-center justify-center gap-2">
+                   <RotateCcw className="w-3 h-3" /> Factory Reset Site
                 </button>
               </div>
             </div>
@@ -284,18 +201,12 @@ function App() {
   );
 }
 
-// FIXED: Updated GameCard component
-function GameCard({ game, isFav, onLaunch, onFav, playtime }) {
+function GameCard({ game, playtime }) {
   const isUtility = ['request', 'report'].includes(game.id);
   return (
-    <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg" onClick={() => onLaunch(game)}>
-      {/* Container with overflow-hidden and the glow effect */}
+    <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg">
       <div className="relative w-full aspect-[4/3] bg-black/20 overflow-hidden group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)] transition-all duration-500">
-        <img 
-          src={game.thumbnail} 
-          className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24' : 'w-full h-full object-cover'}`} 
-          alt="" 
-        />
+        <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24' : 'w-full h-full object-cover'}`} alt="" />
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <div className="w-12 h-12 bg-[var(--theme)] rounded-full flex items-center justify-center shadow-[0_0_20px_var(--theme)] transition-all">
             <Play className="w-6 h-6 text-black fill-current ml-1" />
