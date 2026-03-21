@@ -2,17 +2,10 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Star, Trash2, Palette, EyeOff, Eye, Clock, Trophy,
-  Dices, AlertTriangle, Battery, Zap, ChevronDown, Upload
+  Dices, AlertTriangle, Battery, Zap, ChevronDown, Upload, RotateCcw, Check
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
-
-const DISGUISE_CONFIG = {
-  none: { title: "Capybara Science", icon: '/vite.svg' },
-  drive: { title: "My Drive - Google Drive", icon: "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" },
-  classroom: { title: "Home - Classroom", icon: "https://www.gstatic.com/classroom/favicon.png" },
-  canvas: { title: "Dashboard", icon: "https://du11hjcvhe620.cloudfront.net/favicon.ico" }
-};
 
 function App() {
   const gamesData = useMemo(() => {
@@ -27,12 +20,19 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
+  
+  const [resetConfirm, setResetConfirm] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState(false);
+  const [wipeConfirm, setWipeConfirm] = useState(false);
+  const [wipeSuccess, setWipeSuccess] = useState(false);
+  
   const [theme, setTheme] = useState(() => localStorage.getItem('capy-theme') || '#10A5F5');
   const [disguise, setDisguise] = useState(() => localStorage.getItem('capy-stealth-type') || 'none');
-  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
-  const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
   const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || '');
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
+
+  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
+  const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
   const sessionRef = useRef(null);
 
@@ -53,44 +53,59 @@ function App() {
     return final;
   }, [gamesData, favorites]);
 
-  // UPDATED LAUNCHER: Sets tab title to "DO NOT REFRESH" for everything
   const launchContent = (item) => {
     if (!item?.url) return;
-    
-    // If it's a game, track playtime
     if (!['request', 'report'].includes(item.id)) {
       sessionRef.current = { id: item.id, start: Date.now() };
     }
-
     const win = window.open('about:blank', '_blank');
     if (win) {
-      // Set the title immediately
       win.document.title = "DO NOT REFRESH";
       win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
-      
       const iframe = win.document.createElement('iframe');
       iframe.src = item.url;
       iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
       iframe.allow = "fullscreen";
       win.document.body.appendChild(iframe);
-
-      // Interval check to force the title if the iframe tries to change it
       const titleInterval = setInterval(() => {
-        if (win.closed) {
-          clearInterval(titleInterval);
-        } else if (win.document.title !== "DO NOT REFRESH") {
-          win.document.title = "DO NOT REFRESH";
-        }
+        if (win.closed) clearInterval(titleInterval);
+        else if (win.document.title !== "DO NOT REFRESH") win.document.title = "DO NOT REFRESH";
       }, 500);
     }
   };
 
-  const launchRandom = () => {
-    const playableGames = gamesData.filter(g => !['request', 'report'].includes(g.id));
-    if (playableGames.length > 0) {
-      const randomGame = playableGames[Math.floor(Math.random() * playableGames.length)];
-      launchContent(randomGame);
+  const handleResetSettings = () => {
+    if (resetSuccess) return;
+    if (!resetConfirm) {
+      setResetConfirm(true);
+      setTimeout(() => setResetConfirm(false), 3000);
+      return;
     }
+    const defaultTheme = '#10A5F5';
+    setTheme(defaultTheme);
+    setDisguise('none');
+    setPanicKey('');
+    setPanicUrl('https://google.com');
+    localStorage.setItem('capy-theme', defaultTheme);
+    localStorage.setItem('capy-stealth-type', 'none');
+    localStorage.setItem('capy-panic-key', '');
+    localStorage.setItem('capy-panic-url', 'https://google.com');
+    setResetConfirm(false);
+    setResetSuccess(true);
+    setTimeout(() => setResetSuccess(false), 2000);
+  };
+
+  const handleWipeEverything = () => {
+    if (wipeSuccess) return;
+    if (!wipeConfirm) {
+      setWipeConfirm(true);
+      setTimeout(() => setWipeConfirm(false), 3000);
+      return;
+    }
+    setWipeConfirm(false);
+    setWipeSuccess(true);
+    localStorage.clear();
+    setTimeout(() => window.location.reload(), 1000);
   };
 
   const filteredGames = useMemo(() => {
@@ -117,7 +132,10 @@ function App() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
               <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-xs outline-none focus:border-[var(--theme)]/50" />
             </div>
-            <button onClick={launchRandom} title="Random Game" className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all shrink-0"><Dices className="w-5 h-5" /></button>
+            <button onClick={() => {
+              const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
+              if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
+            }} className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all shrink-0"><Dices className="w-5 h-5" /></button>
           </div>
 
           <div className="flex items-center justify-end gap-3">
@@ -138,18 +156,10 @@ function App() {
 
       <main className="max-w-7xl mx-auto px-4 mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {filteredGames.map(game => (
-          <GameCard 
-            key={game.id} 
-            game={game} 
-            isFav={favorites.includes(game.id)} 
-            onLaunch={launchContent} 
-            onFav={setFavorites}
-            playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'} 
-          />
+          <GameCard key={game.id} game={game} isFav={favorites.includes(game.id)} onLaunch={launchContent} onFav={setFavorites} playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'} />
         ))}
       </main>
 
-      {/* SETTINGS MODAL */}
       {showSettings && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowSettings(false)} />
@@ -165,7 +175,6 @@ function App() {
                 <select value={disguise} onChange={(e) => setDisguise(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs">
                   <option value="none" className="bg-zinc-900">Default</option>
                   <option value="drive" className="bg-zinc-900">Google Drive</option>
-                  <option value="classroom" className="bg-zinc-900">Classroom</option>
                 </select>
               </section>
 
@@ -177,10 +186,39 @@ function App() {
                 </div>
               </section>
 
+              {/* UPDATED: COLOR PICKER + HEX INPUT */}
               <section className="space-y-2">
                 <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest">Accent Color</label>
-                <input type="text" value={theme} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs outline-none" />
+                <div className="flex gap-2">
+                   <div className="relative w-12 h-12 shrink-0 rounded-xl overflow-hidden border border-white/10 shadow-lg">
+                      <input 
+                        type="color" 
+                        value={theme} 
+                        onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} 
+                        className="absolute inset-[-10px] w-[200%] h-[200%] cursor-pointer bg-transparent border-none" 
+                      />
+                   </div>
+                   <input 
+                    type="text" 
+                    value={theme} 
+                    onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} 
+                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 text-xs outline-none focus:border-[var(--theme)] transition-colors font-mono" 
+                    placeholder="#000000"
+                  />
+                </div>
               </section>
+
+              <div className="pt-4 flex flex-col gap-2">
+                <button onClick={handleResetSettings} disabled={resetSuccess} className={`w-full p-3 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${resetSuccess ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-500' : resetConfirm ? 'bg-amber-500/10 border-amber-500/40 text-amber-500' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'}`}>
+                  {resetSuccess ? <Check className="w-3 h-3" /> : resetConfirm ? <AlertTriangle className="w-3 h-3" /> : <RotateCcw className="w-3 h-3" />}
+                  {resetSuccess ? "Settings Reset!" : resetConfirm ? "Are you sure?" : "Reset Settings Only"}
+                </button>
+                
+                <button onClick={handleWipeEverything} disabled={wipeSuccess} className={`w-full p-3 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${wipeSuccess ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-500' : wipeConfirm ? 'bg-red-500/20 border-red-500/50 text-red-500' : 'border-red-500/20 text-red-500 hover:bg-red-500/10'}`}>
+                  {wipeSuccess ? <Check className="w-3 h-3" /> : wipeConfirm ? <AlertTriangle className="w-3 h-3" /> : <Trash2 className="w-3 h-3" />}
+                  {wipeSuccess ? "Data Wiped!" : wipeConfirm ? "Confirm Full Wipe?" : "Wipe Everything"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
