@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
-  Link as LinkIcon, Upload, Battery, Calendar, Heart
+  Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -29,6 +29,7 @@ function App() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [confirmClearFavs, setConfirmClearFavs] = useState(false);
   
   const [time, setTime] = useState(new Date());
   const [battery, setBattery] = useState({ level: 100, charging: false });
@@ -62,6 +63,13 @@ function App() {
     }
   }, [confirmReset]);
 
+  useEffect(() => {
+    if (confirmClearFavs) {
+      const timeout = setTimeout(() => setConfirmClearFavs(false), 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [confirmClearFavs]);
+
   const toggleFavorite = (id, e) => {
     e.stopPropagation();
     const newFavs = favorites.includes(id) 
@@ -69,6 +77,17 @@ function App() {
       : [...favorites, id];
     setFavorites(newFavs);
     localStorage.setItem('capy-favorites', JSON.stringify(newFavs));
+  };
+
+  const handleClearFavorites = () => {
+    if (confirmClearFavs) {
+      setFavorites([]);
+      localStorage.setItem('capy-favorites', '[]');
+      setConfirmClearFavs(false);
+      if (activeCategory === 'Favorites') setActiveCategory('All');
+    } else {
+      setConfirmClearFavs(true);
+    }
   };
 
   const currentIdentity = useMemo(() => {
@@ -87,15 +106,23 @@ function App() {
     link.href = currentIdentity.icon;
   }, [currentIdentity]);
 
+  const validFavoritesCount = useMemo(() => {
+    return gamesData.filter(g => favorites.includes(g.id)).length;
+  }, [gamesData, favorites]);
+
   const categoriesWithCounts = useMemo(() => {
     const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
     const final = [{ name: 'All', count: gamesData.length }];
-    if (favorites.length > 0) final.unshift({ name: 'Favorites', count: favorites.length });
+    
+    if (validFavoritesCount > 0) {
+      final.unshift({ name: 'Favorites', count: validFavoritesCount });
+    }
+    
     uniqueCats.forEach(cat => {
       final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
     });
     return final;
-  }, [gamesData, favorites]);
+  }, [gamesData, validFavoritesCount]);
 
   const launchContent = (item) => {
     if (!item?.url) return;
@@ -213,7 +240,7 @@ function App() {
           <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-white/5 pb-4">
               <h2 className="text-xl font-bold flex items-center gap-2 text-[var(--theme)]"><ShieldAlert className="w-5 h-5" /> System Config</h2>
-              <X onClick={() => { setShowSettings(false); setConfirmReset(false); }} className="cursor-pointer text-zinc-400 hover:text-white" />
+              <X onClick={() => { setShowSettings(false); setConfirmReset(false); setConfirmClearFavs(false); }} className="cursor-pointer text-zinc-400 hover:text-white" />
             </div>
             
             <div className="space-y-6">
@@ -249,17 +276,31 @@ function App() {
                 </div>
               </section>
 
-              <button 
-                onClick={handleReset} 
-                className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-center gap-2 text-[10px] font-black uppercase ${
-                  confirmReset 
-                  ? 'bg-red-600 border-red-400 text-white animate-pulse' 
-                  : 'border-red-500/20 bg-red-500/5 text-red-500 hover:bg-red-500/10'
-                }`}
-              >
-                <RotateCcw className={`w-4 h-4 ${confirmReset ? 'animate-spin' : ''}`} /> 
-                {confirmReset ? 'Are you sure?' : 'Reset Data'}
-              </button>
+              <div className="grid grid-cols-2 gap-3">
+                <button 
+                  onClick={handleClearFavorites} 
+                  className={`p-4 rounded-2xl border transition-all flex flex-col items-center justify-center gap-1 text-[10px] font-black uppercase ${
+                    confirmClearFavs 
+                    ? 'bg-amber-600 border-amber-400 text-white animate-pulse' 
+                    : 'border-white/5 bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <Trash2 className="w-4 h-4" /> 
+                  {confirmClearFavs ? 'Sure?' : 'Clear Favs'}
+                </button>
+
+                <button 
+                  onClick={handleReset} 
+                  className={`p-4 rounded-2xl border transition-all flex flex-col items-center justify-center gap-1 text-[10px] font-black uppercase ${
+                    confirmReset 
+                    ? 'bg-red-600 border-red-400 text-white animate-pulse' 
+                    : 'border-red-500/20 bg-red-500/5 text-red-500 hover:bg-red-500/10'
+                  }`}
+                >
+                  <RotateCcw className={`w-4 h-4 ${confirmReset ? 'animate-spin' : ''}`} /> 
+                  {confirmReset ? 'Sure?' : 'Full Reset'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
