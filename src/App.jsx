@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
-  Link as LinkIcon, Upload, Battery, Calendar
+  Link as LinkIcon, Upload, Battery, Calendar, Heart
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -38,7 +38,7 @@ function App() {
   const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
   const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
 
-  const [favorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
+  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
   useEffect(() => {
@@ -53,6 +53,15 @@ function App() {
     }
     return () => clearInterval(timer);
   }, []);
+
+  const toggleFavorite = (id, e) => {
+    e.stopPropagation();
+    const newFavs = favorites.includes(id) 
+      ? favorites.filter(favId => favId !== id) 
+      : [...favorites, id];
+    setFavorites(newFavs);
+    localStorage.setItem('capy-favorites', JSON.stringify(newFavs));
+  };
 
   const currentIdentity = useMemo(() => {
     if (disguise !== 'none') return DISGUISE_CONFIG[disguise] || DISGUISE_CONFIG.none;
@@ -73,10 +82,10 @@ function App() {
   const categoriesWithCounts = useMemo(() => {
     const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
     const final = [{ name: 'All', count: gamesData.length }];
+    if (favorites.length > 0) final.unshift({ name: 'Favorites', count: favorites.length });
     uniqueCats.forEach(cat => {
       final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
     });
-    if (favorites.length > 0) final.unshift({ name: 'Favorites', count: favorites.length });
     return final;
   }, [gamesData, favorites]);
 
@@ -175,7 +184,14 @@ function App() {
 
       <main className="max-w-7xl mx-auto px-4 mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {filteredGames.map(game => (
-          <GameCard key={game.id} game={game} onLaunch={launchContent} playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'} />
+          <GameCard 
+            key={game.id} 
+            game={game} 
+            onLaunch={launchContent} 
+            playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
+            isFavorite={favorites.includes(game.id)}
+            onToggleFavorite={(e) => toggleFavorite(game.id, e)}
+          />
         ))}
       </main>
 
@@ -231,12 +247,25 @@ function App() {
   );
 }
 
-function GameCard({ game, onLaunch, playtime }) {
+function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite }) {
   const isUtility = ['request', 'report'].includes(game.id);
   return (
     <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg" onClick={() => onLaunch(game)}>
       <div className="relative w-full aspect-[4/3] bg-black/20 overflow-hidden group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)] transition-all duration-500">
         <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24' : 'w-full h-full object-cover'}`} alt="" />
+        
+        {/* Favorite Icon */}
+        {!isUtility && (
+          <button 
+            onClick={onToggleFavorite} 
+            className="absolute top-4 right-4 z-10 p-2 bg-black/20 backdrop-blur-md rounded-full border border-white/10 hover:scale-110 transition-transform"
+          >
+            <Heart 
+              className={`w-4 h-4 transition-colors ${isFavorite ? 'text-[var(--theme)] fill-[var(--theme)]' : 'text-white/40 hover:text-[var(--theme)]'}`} 
+            />
+          </button>
+        )}
+
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <div className="w-12 h-12 bg-[var(--theme)] rounded-full flex items-center justify-center shadow-[0_0_20px_var(--theme)] transition-all">
             <Play className="w-6 h-6 text-black fill-current ml-1" />
