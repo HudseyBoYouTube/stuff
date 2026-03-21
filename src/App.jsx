@@ -36,7 +36,6 @@ function App() {
 
   const sessionRef = useRef(null);
 
-  // PANIC LISTENER
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (panicKey && panicKey.trim() !== "" && e.key.toLowerCase() === panicKey.toLowerCase()) {
@@ -47,7 +46,6 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [panicKey, panicUrl]);
 
-  // CATEGORY LIST
   const categoriesWithCounts = useMemo(() => {
     const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
     const final = [{ name: 'All', count: gamesData.length }, ...uniqueCats.map(cat => ({ name: cat, count: gamesData.filter(g => g.category === cat).length }))];
@@ -55,17 +53,35 @@ function App() {
     return final;
   }, [gamesData, favorites]);
 
-  const launchGame = (game) => {
-    if (!game?.url) return;
-    sessionRef.current = { id: game.id, start: Date.now() };
+  // UPDATED LAUNCHER: Sets tab title to "DO NOT REFRESH" for everything
+  const launchContent = (item) => {
+    if (!item?.url) return;
+    
+    // If it's a game, track playtime
+    if (!['request', 'report'].includes(item.id)) {
+      sessionRef.current = { id: item.id, start: Date.now() };
+    }
+
     const win = window.open('about:blank', '_blank');
     if (win) {
+      // Set the title immediately
+      win.document.title = "DO NOT REFRESH";
       win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
+      
       const iframe = win.document.createElement('iframe');
-      iframe.src = game.url;
+      iframe.src = item.url;
       iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
       iframe.allow = "fullscreen";
       win.document.body.appendChild(iframe);
+
+      // Interval check to force the title if the iframe tries to change it
+      const titleInterval = setInterval(() => {
+        if (win.closed) {
+          clearInterval(titleInterval);
+        } else if (win.document.title !== "DO NOT REFRESH") {
+          win.document.title = "DO NOT REFRESH";
+        }
+      }, 500);
     }
   };
 
@@ -73,7 +89,7 @@ function App() {
     const playableGames = gamesData.filter(g => !['request', 'report'].includes(g.id));
     if (playableGames.length > 0) {
       const randomGame = playableGames[Math.floor(Math.random() * playableGames.length)];
-      launchGame(randomGame);
+      launchContent(randomGame);
     }
   };
 
@@ -89,7 +105,6 @@ function App() {
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased" style={{ '--theme': theme }}>
       
-      {/* HEADER */}
       <header className="sticky top-0 z-50 border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
           <div className="flex items-center gap-2 cursor-pointer">
@@ -102,7 +117,6 @@ function App() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
               <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-xs outline-none focus:border-[var(--theme)]/50" />
             </div>
-            {/* RESTORED RANDOM BUTTON */}
             <button onClick={launchRandom} title="Random Game" className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all shrink-0"><Dices className="w-5 h-5" /></button>
           </div>
 
@@ -112,7 +126,6 @@ function App() {
         </div>
       </header>
 
-      {/* RESTORED CATEGORY BAR */}
       <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 mb-[-1rem]">
         <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4">
           {categoriesWithCounts.map(cat => (
@@ -129,7 +142,7 @@ function App() {
             key={game.id} 
             game={game} 
             isFav={favorites.includes(game.id)} 
-            onLaunch={launchGame} 
+            onLaunch={launchContent} 
             onFav={setFavorites}
             playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'} 
           />
@@ -152,20 +165,21 @@ function App() {
                 <select value={disguise} onChange={(e) => setDisguise(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs">
                   <option value="none" className="bg-zinc-900">Default</option>
                   <option value="drive" className="bg-zinc-900">Google Drive</option>
+                  <option value="classroom" className="bg-zinc-900">Classroom</option>
                 </select>
               </section>
 
               <section className="space-y-3 bg-white/5 p-4 rounded-2xl border border-white/5">
                 <label className="text-[10px] uppercase font-black text-red-400 tracking-widest flex items-center gap-2"><AlertTriangle className="w-3 h-3" /> Panic Mode</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <input type="text" maxLength="1" placeholder="Key" value={panicKey} onChange={(e) => { setPanicKey(e.target.value); localStorage.setItem('capy-panic-key', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-center text-xs" />
-                  <input type="text" placeholder="URL" value={panicUrl} onChange={(e) => { setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs" />
+                  <input type="text" maxLength="1" placeholder="Key" value={panicKey} onChange={(e) => { setPanicKey(e.target.value); localStorage.setItem('capy-panic-key', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-center text-xs outline-none" />
+                  <input type="text" placeholder="URL" value={panicUrl} onChange={(e) => { setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none" />
                 </div>
               </section>
 
               <section className="space-y-2">
                 <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest">Accent Color</label>
-                <input type="text" value={theme} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs" />
+                <input type="text" value={theme} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs outline-none" />
               </section>
             </div>
           </div>
@@ -188,7 +202,6 @@ function GameCard({ game, isFav, onLaunch, onFav, playtime }) {
           <h3 className="font-bold text-sm truncate group-hover:text-[var(--theme)] transition-colors">{game.title}</h3>
           {!isUtility && <span className="text-[8px] text-zinc-600 font-bold bg-white/5 px-1.5 py-0.5 rounded flex items-center gap-1 shrink-0"><Clock className="w-2 h-2" /> {playtime}</span>}
         </div>
-        {/* RESTORED CATEGORY LABEL */}
         <p className="text-[9px] text-zinc-500 uppercase font-black tracking-widest mt-1">{game.category}</p>
       </div>
     </div>
