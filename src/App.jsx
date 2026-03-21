@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react'; // Added useRef
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
@@ -24,6 +24,13 @@ const DISGUISE_CONFIG = {
   drive: { title: "My Drive - Google Drive", icon: "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" },
   classroom: { title: "Home - Classroom", icon: "https://www.gstatic.com/classroom/favicon.png" },
   canvas: { title: "Dashboard", icon: "https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico" }
+};
+
+// HELPER: Direct DOM update to prevent React state freezing
+const updateThemeVariables = (color, glow) => {
+  const root = document.documentElement;
+  root.style.setProperty('--theme', color);
+  root.style.setProperty('--glow', `${glow}px`);
 };
 
 function App() {
@@ -57,8 +64,10 @@ function App() {
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
-  // REFRESH-PROOFING: A ref to track click speed for themes
-  const lastThemeChange = useRef(0);
+  // Logic: Sync theme to DOM on initial mount
+  useEffect(() => {
+    updateThemeVariables(theme, glowIntensity);
+  }, []);
 
   // Logic: Panic Shortcut Listener
   useEffect(() => {
@@ -109,15 +118,16 @@ function App() {
   };
 
   const applyTheme = (t) => {
-    // FIX: prevent "freezing" by ignoring clicks that happen too fast (within 50ms)
-    const now = Date.now();
-    if (now - lastThemeChange.current < 50) return;
-    lastThemeChange.current = now;
-
+    // 1. Update State (for memory)
     setTheme(t.color);
     setGlowIntensity(t.glow);
+    
+    // 2. Persist to Storage
     localStorage.setItem('capy-theme', t.color);
     localStorage.setItem('capy-glow', t.glow);
+
+    // 3. FORCE DIRECT UPDATE (This stops the freezing)
+    updateThemeVariables(t.color, t.glow);
   };
 
   const handleReset = () => {
