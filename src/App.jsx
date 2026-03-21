@@ -207,7 +207,14 @@ function App() {
                     }
                   }} className="hidden" id="icon-up-centered" />
                   <label htmlFor="icon-up-centered" className="w-12 h-12 bg-zinc-800 border border-white/10 rounded-xl flex items-center justify-center cursor-pointer hover:border-[var(--theme)] transition-all"><Upload className="w-4 h-4 text-zinc-500" /></label>
-                  <input type="text" placeholder="Icon URL" value={customIcon.startsWith('data:') ? 'Local File' : customIcon} onChange={(e) => { setCustomIcon(e.target.value); localStorage.setItem('capy-custom-icon', e.target.value); }} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none" />
+                  <div className="relative flex-1">
+                    <input type="text" placeholder="Icon URL" value={customIcon.startsWith('data:') ? 'Local File' : customIcon} onChange={(e) => { setCustomIcon(e.target.value); localStorage.setItem('capy-custom-icon', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 pr-10 text-xs outline-none focus:border-[var(--theme)]/50" />
+                    {customIcon && (
+                      <button onClick={() => { setCustomIcon(''); localStorage.removeItem('capy-custom-icon'); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-[var(--theme)] transition-colors">
+                        <RotateCcw className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </section>
 
