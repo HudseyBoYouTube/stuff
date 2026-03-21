@@ -126,10 +126,11 @@ function App() {
         </div>
       </header>
 
-      {/* COMPACT CATEGORY NAV - Reverted to tight py-1.5 */}
-      <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 py-1.5">
+      {/* COMPACT CATEGORY NAV */}
+      <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 mb-[-1rem]">
         <div className="max-w-7xl mx-auto"> 
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+          {/* pb-4 pushes the physical scrollbar track down away from the buttons */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-4">
             {categoriesWithCounts.map(cat => (
               <button 
                 key={cat.name} 
@@ -146,7 +147,7 @@ function App() {
         </div>
       </div>
 
-      {/* GAME GRID - Reverted to mt-6 */}
+      {/* GAME GRID */}
       <main className="max-w-7xl mx-auto px-4 mt-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {filteredGames.map(game => (
