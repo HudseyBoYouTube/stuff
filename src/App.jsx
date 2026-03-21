@@ -128,7 +128,6 @@ function App() {
       <div className="sticky top-0 z-50">
         <header className="border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
           <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
-            {/* LEFT: LOGO */}
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 flex items-center justify-center transition-all">
                 <img src={DEFAULT_ICON} alt="Logo" className="w-7 h-7 object-contain" />
@@ -136,7 +135,6 @@ function App() {
               <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
             </div>
 
-            {/* CENTER: SEARCH BAR */}
             <div className="flex items-center gap-2 w-full max-w-sm justify-self-center">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
@@ -155,7 +153,6 @@ function App() {
               </button>
             </div>
 
-            {/* RIGHT: DATE, TIME, BATTERY & SETTINGS */}
             <div className="flex items-center justify-end gap-4">
               <div className="hidden sm:flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-[var(--theme)] bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
                 <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString()}</span>
@@ -170,7 +167,6 @@ function App() {
           </div>
         </header>
 
-        {/* STICKY CATEGORY BAR */}
         <div className="bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 overflow-hidden">
           <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
             {categoriesWithCounts.map(cat => (
@@ -252,7 +248,7 @@ function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite }) {
   return (
     <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg" onClick={() => onLaunch(game)}>
       <div className="relative w-full aspect-[4/3] bg-black/20 overflow-hidden group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)] transition-all duration-500">
-        <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24' : 'w-full h-full object-cover'}`} alt="" />
+        <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-40' : 'w-full h-full object-cover'}`} alt="" />
         
         {!isUtility && (
           <button 
