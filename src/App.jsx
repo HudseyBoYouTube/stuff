@@ -92,11 +92,18 @@ function App() {
 
   const toggleFavorite = (id, e) => {
     e.stopPropagation();
-    const newFavs = favorites.includes(id) 
+    const isRemoving = favorites.includes(id);
+    const newFavs = isRemoving 
       ? favorites.filter(favId => favId !== id) 
       : [...favorites, id];
+    
     setFavorites(newFavs);
     localStorage.setItem('capy-favorites', JSON.stringify(newFavs));
+
+    // Fix: If we just removed the last favorite while viewing the favorite tab, go back to main
+    if (isRemoving && newFavs.length === 0 && activeCategory === 'Favorites') {
+        setActiveCategory('All');
+    }
   };
 
   const applyTheme = (t) => {
@@ -115,7 +122,6 @@ function App() {
     }
   };
 
-  // Logic: Tab Disguise Management
   const currentIdentity = useMemo(() => {
     if (disguise !== 'none') return DISGUISE_CONFIG[disguise] || DISGUISE_CONFIG.none;
     return { title: customTitle || DEFAULT_TITLE, icon: customIcon || DEFAULT_ICON };
@@ -132,7 +138,6 @@ function App() {
     link.href = currentIdentity.icon;
   }, [currentIdentity]);
 
-  // Logic: Category Counts
   const validFavoritesCount = useMemo(() => gamesData.filter(g => favorites.includes(g.id)).length, [gamesData, favorites]);
 
   const categoriesWithCounts = useMemo(() => {
@@ -174,7 +179,6 @@ function App() {
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased" style={{ '--theme': theme, '--glow': `${glowIntensity}px` }}>
       
-      {/* NAVIGATION & STATUS HEADER */}
       <div className="sticky top-0 z-50">
         <header className="border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
           <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
@@ -221,7 +225,6 @@ function App() {
         </div>
       </div>
 
-      {/* GAME DISPLAY GRID */}
       <main className="max-w-7xl mx-auto px-4 mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {filteredGames.map(game => (
           <GameCard 
@@ -235,7 +238,6 @@ function App() {
         ))}
       </main>
 
-      {/* SETTINGS MENU */}
       {showSettings && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
           <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
@@ -245,7 +247,6 @@ function App() {
             </div>
             
             <div className="space-y-6">
-              {/* PANIC MODE SETTINGS */}
               <section className="space-y-4 bg-red-500/5 p-4 rounded-2xl border border-red-500/10">
                 <div className="flex justify-between items-center">
                    <label className="text-[10px] uppercase font-black text-red-500 tracking-widest flex items-center gap-2">
@@ -270,12 +271,12 @@ function App() {
                       <span className="text-[9px] text-zinc-500 font-bold uppercase ml-1">Activation Key</span>
                       <button onClick={() => { setPanicKey(''); localStorage.removeItem('capy-panic-key'); }} className="text-[9px] text-red-400 hover:text-red-300 font-black uppercase transition-colors">Clear Key</button>
                     </div>
-                    <input type="text" placeholder="Click and press a key" value={panicKey} onKeyDown={(e) => { e.preventDefault(); setPanicKey(e.key); localStorage.setItem('capy-panic-key', e.key); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50 text-center font-mono font-bold cursor-pointer" readOnly />
+                    {/* Fix: Added stopPropagation so setting the key doesn't trigger the panic redirect */}
+                    <input type="text" placeholder="Click and press a key" value={panicKey} onKeyDown={(e) => { e.preventDefault(); e.stopPropagation(); setPanicKey(e.key); localStorage.setItem('capy-panic-key', e.key); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50 text-center font-mono font-bold cursor-pointer" readOnly />
                   </div>
                 </div>
               </section>
 
-              {/* THEME PRESETS */}
               <section className="space-y-3">
                 <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Palette className="w-3 h-3" /> Capy-Themes</label>
                 <div className="grid grid-cols-2 gap-2">
@@ -287,7 +288,6 @@ function App() {
                 </div>
               </section>
 
-              {/* STEALH / TAB PRESETS */}
               <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
                 <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Zap className="w-3 h-3" /> Stealth Presets</label>
                 <div className="flex flex-wrap gap-2">
@@ -297,7 +297,6 @@ function App() {
                 </div>
               </section>
 
-              {/* DANGER ZONE RESET */}
               <button onClick={handleReset} className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-center gap-2 text-[10px] font-black uppercase ${confirmReset ? 'bg-red-600 border-red-400 text-white animate-pulse' : 'border-red-500/20 bg-red-500/5 text-red-500 hover:bg-red-500/10'}`}>
                 <RotateCcw className={`w-4 h-4 ${confirmReset ? 'animate-spin' : ''}`} />
                 {confirmReset ? 'Confirm Full Reset?' : 'Wipe System Data'}
@@ -310,7 +309,6 @@ function App() {
   );
 }
 
-// GAME CARD COMPONENT
 function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite }) {
   const isUtility = ['request', 'report'].includes(game.id);
   return (
