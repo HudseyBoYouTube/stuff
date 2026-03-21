@@ -21,7 +21,7 @@ const DISGUISE_CONFIG = {
     icon: "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" 
   },
   classroom: { 
-    title: "Home", 
+    title: "Home - Classroom", 
     icon: "https://www.gstatic.com/classroom/favicon.png" 
   },
   canvas: { 
