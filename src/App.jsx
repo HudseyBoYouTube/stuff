@@ -208,9 +208,12 @@ function App() {
   const filteredGames = useMemo(() => {
     const q = searchQuery.toLowerCase();
     return gamesData.filter(g => {
+      const isUtility = g.id === 'request' || g.id === 'report';
       const matchesSearch = g?.title?.toLowerCase().includes(q);
       const matchesCategory = activeCategory === 'Favorites' ? favorites.includes(g.id) : (activeCategory === 'All' || g?.category === activeCategory);
-      return matchesSearch && matchesCategory;
+      
+      // Always show Utility items regardless of Category if searching, or if they match the category
+      return (matchesSearch && matchesCategory) || (isUtility && matchesSearch);
     });
   }, [searchQuery, activeCategory, gamesData, favorites]);
 
@@ -388,7 +391,7 @@ function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite }) {
   return (
     <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg" onClick={() => onLaunch(game)}>
       <div className="relative w-full aspect-[4/3] bg-black/20 overflow-hidden group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)] transition-all duration-500">
-        <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-40' : 'w-full h-full object-cover'}`} alt="" />
+        <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24 h-24 object-contain' : 'w-full h-full object-cover'}`} alt="" />
         {!isUtility && (
           <button onClick={onToggleFavorite} className="absolute top-4 right-4 z-10 p-2 bg-zinc-900/80 backdrop-blur-sm rounded-full border border-white/10 hover:scale-110 transition-transform shadow-lg">
             <Heart className={`w-4 h-4 transition-colors`} stroke={isFavorite ? "var(--theme)" : "#71717a"} strokeWidth={2.5} fill={isFavorite ? 'var(--theme)' : 'none'} />
