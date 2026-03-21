@@ -156,7 +156,8 @@ function App() {
                   <span>{battery.level}%</span>
                 </div>
               </div>
-              <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-500 hover:text-[var(--theme)] transition-colors"><Settings className="w-6 h-6" /></button>
+              {/* Updated settings icon color to match the info bar */}
+              <button onClick={() => setShowSettings(true)} className="p-2 text-[var(--theme)] hover:opacity-70 transition-all"><Settings className="w-6 h-6" /></button>
             </div>
           </div>
         </header>
