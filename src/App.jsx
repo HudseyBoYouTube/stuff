@@ -2,10 +2,20 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Star, Trash2, Palette, EyeOff, Eye, Clock, Trophy,
-  Dices, AlertTriangle, Battery, Zap, ChevronDown, Upload, RotateCcw, Check
+  Dices, AlertTriangle, Battery, Zap, ChevronDown, Upload, RotateCcw, Check, Undo2, Sun
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
+
+const DEFAULT_COLOR = '#10A5F5';
+const DEFAULT_GLOW = 50;
+
+const DISGUISE_CONFIG = {
+  none: { title: "Capybara Science", icon: "/favicon.ico" },
+  drive: { title: "My Drive - Google Drive", icon: "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" },
+  classroom: { title: "Home", icon: "https://www.gstatic.com/classroom/favicon.png" },
+  canvas: { title: "Dashboard", icon: "https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico" }
+};
 
 function App() {
   const gamesData = useMemo(() => {
@@ -26,7 +36,8 @@ function App() {
   const [wipeConfirm, setWipeConfirm] = useState(false);
   const [wipeSuccess, setWipeSuccess] = useState(false);
   
-  const [theme, setTheme] = useState(() => localStorage.getItem('capy-theme') || '#10A5F5');
+  const [theme, setTheme] = useState(() => localStorage.getItem('capy-theme') || DEFAULT_COLOR);
+  const [glowIntensity, setGlowIntensity] = useState(() => Number(localStorage.getItem('capy-glow')) || DEFAULT_GLOW);
   const [disguise, setDisguise] = useState(() => localStorage.getItem('capy-stealth-type') || 'none');
   const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || '');
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
@@ -35,6 +46,18 @@ function App() {
   const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
   const sessionRef = useRef(null);
+
+  useEffect(() => {
+    const config = DISGUISE_CONFIG[disguise] || DISGUISE_CONFIG.none;
+    document.title = config.title;
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.getElementsByTagName('head')[0].appendChild(link);
+    }
+    link.href = config.icon;
+  }, [disguise]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -46,34 +69,6 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [panicKey, panicUrl]);
 
-  const categoriesWithCounts = useMemo(() => {
-    const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
-    const final = [{ name: 'All', count: gamesData.length }, ...uniqueCats.map(cat => ({ name: cat, count: gamesData.filter(g => g.category === cat).length }))];
-    if (favorites.length > 0) final.unshift({ name: 'Favorites', count: favorites.length });
-    return final;
-  }, [gamesData, favorites]);
-
-  const launchContent = (item) => {
-    if (!item?.url) return;
-    if (!['request', 'report'].includes(item.id)) {
-      sessionRef.current = { id: item.id, start: Date.now() };
-    }
-    const win = window.open('about:blank', '_blank');
-    if (win) {
-      win.document.title = "DO NOT REFRESH";
-      win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
-      const iframe = win.document.createElement('iframe');
-      iframe.src = item.url;
-      iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
-      iframe.allow = "fullscreen";
-      win.document.body.appendChild(iframe);
-      const titleInterval = setInterval(() => {
-        if (win.closed) clearInterval(titleInterval);
-        else if (win.document.title !== "DO NOT REFRESH") win.document.title = "DO NOT REFRESH";
-      }, 500);
-    }
-  };
-
   const handleResetSettings = () => {
     if (resetSuccess) return;
     if (!resetConfirm) {
@@ -81,12 +76,13 @@ function App() {
       setTimeout(() => setResetConfirm(false), 3000);
       return;
     }
-    const defaultTheme = '#10A5F5';
-    setTheme(defaultTheme);
+    setTheme(DEFAULT_COLOR);
+    setGlowIntensity(DEFAULT_GLOW);
     setDisguise('none');
     setPanicKey('');
     setPanicUrl('https://google.com');
-    localStorage.setItem('capy-theme', defaultTheme);
+    localStorage.setItem('capy-theme', DEFAULT_COLOR);
+    localStorage.setItem('capy-glow', DEFAULT_GLOW);
     localStorage.setItem('capy-stealth-type', 'none');
     localStorage.setItem('capy-panic-key', '');
     localStorage.setItem('capy-panic-url', 'https://google.com');
@@ -108,6 +104,31 @@ function App() {
     setTimeout(() => window.location.reload(), 1000);
   };
 
+  const categoriesWithCounts = useMemo(() => {
+    const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
+    const final = [{ name: 'All', count: gamesData.length }, ...uniqueCats.map(cat => ({ name: cat, count: gamesData.filter(g => g.category === cat).length }))];
+    if (favorites.length > 0) final.unshift({ name: 'Favorites', count: favorites.length });
+    return final;
+  }, [gamesData, favorites]);
+
+  const launchContent = (item) => {
+    if (!item?.url) return;
+    const win = window.open('about:blank', '_blank');
+    if (win) {
+      win.document.title = "DO NOT REFRESH";
+      win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
+      const iframe = win.document.createElement('iframe');
+      iframe.src = item.url;
+      iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
+      iframe.allow = "fullscreen";
+      win.document.body.appendChild(iframe);
+      const titleInterval = setInterval(() => {
+        if (win.closed) clearInterval(titleInterval);
+        else if (win.document.title !== "DO NOT REFRESH") win.document.title = "DO NOT REFRESH";
+      }, 500);
+    }
+  };
+
   const filteredGames = useMemo(() => {
     const q = searchQuery.toLowerCase();
     return gamesData.filter(g => {
@@ -118,12 +139,12 @@ function App() {
   }, [searchQuery, activeCategory, gamesData, favorites]);
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased" style={{ '--theme': theme }}>
+    <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased" style={{ '--theme': theme, '--glow': `${glowIntensity}px` }}>
       
       <header className="sticky top-0 z-50 border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
           <div className="flex items-center gap-2 cursor-pointer">
-            <div className="w-8 h-8 bg-[var(--theme)] rounded-lg flex items-center justify-center shadow-lg shadow-[var(--theme)]/20"><Gamepad2 className="w-5 h-5 text-black" /></div>
+            <div className="w-8 h-8 bg-[var(--theme)] rounded-lg flex items-center justify-center shadow-lg shadow-[var(--theme)]/20 transition-all"><Gamepad2 className="w-5 h-5 text-black" /></div>
             <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
           </div>
 
@@ -172,39 +193,53 @@ function App() {
             <div className="space-y-5">
               <section className="space-y-2">
                 <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest">Tab Disguise</label>
-                <select value={disguise} onChange={(e) => setDisguise(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs">
-                  <option value="none" className="bg-zinc-900">Default</option>
-                  <option value="drive" className="bg-zinc-900">Google Drive</option>
+                <select 
+                  value={disguise} 
+                  onChange={(e) => { setDisguise(e.target.value); localStorage.setItem('capy-stealth-type', e.target.value); }} 
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)] transition-all cursor-pointer appearance-none"
+                  style={{ color: disguise !== 'none' ? 'var(--theme)' : 'inherit' }}
+                >
+                  <option value="none" className="bg-zinc-900 text-white">Default (Capybara)</option>
+                  <option value="drive" className="bg-zinc-900 text-white">Google Drive</option>
+                  <option value="classroom" className="bg-zinc-900 text-white">Google Classroom</option>
+                  <option value="canvas" className="bg-zinc-900 text-white">Canvas LMS</option>
                 </select>
               </section>
 
               <section className="space-y-3 bg-white/5 p-4 rounded-2xl border border-white/5">
                 <label className="text-[10px] uppercase font-black text-red-400 tracking-widest flex items-center gap-2"><AlertTriangle className="w-3 h-3" /> Panic Mode</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <input type="text" maxLength="1" placeholder="Key" value={panicKey} onChange={(e) => { setPanicKey(e.target.value); localStorage.setItem('capy-panic-key', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-center text-xs outline-none" />
-                  <input type="text" placeholder="URL" value={panicUrl} onChange={(e) => { setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none" />
+                  <input type="text" maxLength="1" placeholder="Key" value={panicKey} onChange={(e) => { setPanicKey(e.target.value); localStorage.setItem('capy-panic-key', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-center text-xs outline-none focus:border-red-500/50" />
+                  <input type="text" placeholder="URL" value={panicUrl} onChange={(e) => { setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50" />
                 </div>
               </section>
 
-              {/* UPDATED: COLOR PICKER + HEX INPUT */}
-              <section className="space-y-2">
-                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest">Accent Color</label>
+              <section className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest">Theme & Effects</label>
+                  {theme.toUpperCase() !== DEFAULT_COLOR.toUpperCase() && (
+                    <button onClick={() => { setTheme(DEFAULT_COLOR); localStorage.setItem('capy-theme', DEFAULT_COLOR); }} className="text-[9px] font-black uppercase text-[var(--theme)] hover:underline flex items-center gap-1 transition-all"><Undo2 className="w-2.5 h-2.5" /> Reset Color</button>
+                  )}
+                </div>
+                
                 <div className="flex gap-2">
                    <div className="relative w-12 h-12 shrink-0 rounded-xl overflow-hidden border border-white/10 shadow-lg">
-                      <input 
-                        type="color" 
-                        value={theme} 
-                        onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} 
-                        className="absolute inset-[-10px] w-[200%] h-[200%] cursor-pointer bg-transparent border-none" 
-                      />
+                      <input type="color" value={theme} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="absolute inset-[-10px] w-[200%] h-[200%] cursor-pointer bg-transparent border-none" />
                    </div>
-                   <input 
-                    type="text" 
-                    value={theme} 
-                    onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} 
-                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 text-xs outline-none focus:border-[var(--theme)] transition-colors font-mono" 
-                    placeholder="#000000"
-                  />
+                   <input type="text" value={theme} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 text-xs outline-none focus:border-[var(--theme)] font-mono uppercase transition-all" />
+                </div>
+
+                <div className="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[9px] font-black uppercase text-zinc-500 flex items-center gap-2"><Sun className="w-3 h-3" /> Glow Intensity</span>
+                    {glowIntensity !== DEFAULT_GLOW && (
+                      <button onClick={() => { setGlowIntensity(DEFAULT_GLOW); localStorage.setItem('capy-glow', DEFAULT_GLOW); }} className="text-[9px] font-black uppercase text-[var(--theme)] hover:underline flex items-center gap-1 transition-all"><Undo2 className="w-2.5 h-2.5" /> Reset</button>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <input type="range" min="0" max="100" value={glowIntensity} onChange={(e) => { setGlowIntensity(Number(e.target.value)); localStorage.setItem('capy-glow', e.target.value); }} className="flex-1 accent-[var(--theme)] h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer" />
+                    <span className="text-[10px] font-mono text-[var(--theme)] w-8 text-right">{glowIntensity}%</span>
+                  </div>
                 </div>
               </section>
 
@@ -213,7 +248,6 @@ function App() {
                   {resetSuccess ? <Check className="w-3 h-3" /> : resetConfirm ? <AlertTriangle className="w-3 h-3" /> : <RotateCcw className="w-3 h-3" />}
                   {resetSuccess ? "Settings Reset!" : resetConfirm ? "Are you sure?" : "Reset Settings Only"}
                 </button>
-                
                 <button onClick={handleWipeEverything} disabled={wipeSuccess} className={`w-full p-3 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${wipeSuccess ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-500' : wipeConfirm ? 'bg-red-500/20 border-red-500/50 text-red-500' : 'border-red-500/20 text-red-500 hover:bg-red-500/10'}`}>
                   {wipeSuccess ? <Check className="w-3 h-3" /> : wipeConfirm ? <AlertTriangle className="w-3 h-3" /> : <Trash2 className="w-3 h-3" />}
                   {wipeSuccess ? "Data Wiped!" : wipeConfirm ? "Confirm Full Wipe?" : "Wipe Everything"}
@@ -230,10 +264,14 @@ function App() {
 function GameCard({ game, isFav, onLaunch, onFav, playtime }) {
   const isUtility = ['request', 'report'].includes(game.id);
   return (
-    <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer" onClick={() => onLaunch(game)}>
-      <div className="relative aspect-[4/3] bg-black/20">
+    <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg" onClick={() => onLaunch(game)}>
+      <div className="relative aspect-[4/3] bg-black/20 group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)] transition-all duration-500">
         <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24' : 'w-full h-full object-cover'}`} alt="" />
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><Play className="w-10 h-10 text-[var(--theme)] fill-current" /></div>
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="w-12 h-12 bg-[var(--theme)] rounded-full flex items-center justify-center shadow-[0_0_20px_var(--theme)] transition-all">
+            <Play className="w-6 h-6 text-black fill-current ml-1" />
+          </div>
+        </div>
       </div>
       <div className="p-5">
         <div className="flex justify-between items-start gap-2">
