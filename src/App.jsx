@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Star, Trash2, Palette, EyeOff, Eye, Clock, Trophy,
-  Dices, AlertTriangle, Battery, Zap, ChevronDown, Upload, Keyboard, MousePointer2
+  Dices, AlertTriangle, Battery, Zap, ChevronDown, Upload, Keyboard
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -31,26 +31,25 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
+  
+  // FIXED: Safer state initialization
   const [theme, setTheme] = useState(() => localStorage.getItem('capy-theme') || '#10A5F5');
   const [disguise, setDisguise] = useState(() => localStorage.getItem('capy-stealth-type') || 'none');
   const [customFavicon, setCustomFavicon] = useState(() => localStorage.getItem('capy-custom-icon') || null);
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
-  
   const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
-  const sessionRef = useRef(null);
-
-  // PANIC STATES (Panic Key can now be empty)
-  const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') ?? 'p');
+  
+  // FIXED: Panic states with fallback to empty string
+  const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || '');
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
 
+  const sessionRef = useRef(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [batteryLevel, setBatteryLevel] = useState(100);
   const [isCharging, setIsCharging] = useState(false);
 
-  // UPDATED PANIC LISTENER
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Only trigger if a key is actually set
       if (panicKey && panicKey.trim() !== "" && e.key.toLowerCase() === panicKey.toLowerCase()) {
         setDisguise('drive'); 
         window.location.href = panicUrl.startsWith('http') ? panicUrl : `https://${panicUrl}`;
@@ -60,7 +59,6 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [panicKey, panicUrl]);
 
-  // SESSION TRACKER
   useEffect(() => {
     const handleFocus = () => {
       if (sessionRef.current) {
@@ -86,8 +84,6 @@ function App() {
       navigator.getBattery().then(battery => {
         setBatteryLevel(Math.floor(battery.level * 100));
         setIsCharging(battery.charging);
-        battery.addEventListener('levelchange', () => setBatteryLevel(Math.floor(battery.level * 100)));
-        battery.addEventListener('chargingchange', () => setIsCharging(battery.charging));
       });
     }
     return () => clearInterval(timer);
@@ -115,7 +111,6 @@ function App() {
     sessionRef.current = { id: game.id, start: Date.now() };
     const win = window.open('about:blank', '_blank');
     if (win) {
-      win.document.title = "DO NOT REFRESH";
       win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
       const iframe = win.document.createElement('iframe');
       iframe.src = game.url;
@@ -129,26 +124,16 @@ function App() {
     if (!seconds) return '0m';
     const mins = Math.floor(seconds / 60);
     const hrs = Math.floor(mins / 60);
-    if (hrs > 0) return `${hrs}h ${mins % 60}m`;
-    return `${mins}m`;
+    return hrs > 0 ? `${hrs}h ${mins % 60}m` : `${mins}m`;
   };
 
   const leaderboardGames = useMemo(() => {
     const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
-    const sorted = playable
+    return playable
       .filter(game => playtimes[game.id] && playtimes[game.id] > 60)
       .sort((a, b) => (playtimes[b.id] || 0) - (playtimes[a.id] || 0))
       .slice(0, 3);
-    return sorted;
   }, [gamesData, playtimes]);
-
-  const launchRandom = () => {
-    const playableGames = gamesData.filter(g => !['request', 'report'].includes(g.id));
-    if (playableGames.length > 0) {
-      const randomGame = playableGames[Math.floor(Math.random() * playableGames.length)];
-      launchGame(randomGame);
-    }
-  };
 
   const filteredGames = useMemo(() => {
     const q = searchQuery.toLowerCase();
@@ -159,27 +144,11 @@ function App() {
     });
   }, [searchQuery, activeCategory, gamesData, favorites]);
 
-  const categoriesWithCounts = useMemo(() => {
-    const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
-    const final = [{ name: 'All', count: gamesData.length }, ...uniqueCats.map(cat => ({ name: cat, count: gamesData.filter(g => g.category === cat).length }))];
-    if (favorites.length > 0) final.unshift({ name: 'Favorites', count: favorites.length });
-    if (leaderboardGames.length > 0) final.unshift({ name: 'Leaderboard', count: leaderboardGames.length });
-    return final;
-  }, [gamesData, favorites, leaderboardGames]);
-
-  const getCategoryIcon = (catName) => {
-    if (catName === 'Favorites') return <Star className="w-3.5 h-3.5 fill-current" />;
-    if (catName === 'Leaderboard') return <Trophy className="w-3.5 h-3.5 text-amber-400" />;
-    return null;
-  };
-
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased" style={{ '--theme': theme }}>
       
-      {/* HEADER */}
       <header className="sticky top-0 z-50 border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
-          
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
             <div className="w-8 h-8 bg-[var(--theme)] rounded-lg flex items-center justify-center shadow-lg shadow-[var(--theme)]/20"><Gamepad2 className="w-5 h-5 text-black" /></div>
             <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
@@ -189,38 +158,14 @@ function App() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
               <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 text-center" />
-              {searchQuery.length > 0 && <X className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 cursor-pointer" onClick={() => setSearchQuery('')} />}
             </div>
-            <button onClick={launchRandom} title="Random Game" className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all shrink-0"><Dices className="w-5 h-5" /></button>
           </div>
 
           <div className="flex items-center justify-end gap-3">
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-zinc-400 whitespace-nowrap">
-              <span>{currentTime.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-              <span className="w-px h-3 bg-white/10" />
-              <span>{currentTime.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}</span>
-              <span className="w-px h-3 bg-white/10" />
-              <div className="flex items-center gap-1">
-                {isCharging ? <Zap className="w-2.5 h-2.5 text-yellow-400 animate-pulse" /> : <Battery className="w-2.5 h-2.5 text-[var(--theme)]" />}
-                <span>{batteryLevel}%</span>
-              </div>
-            </div>
-             <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-500 hover:text-[var(--theme)] shrink-0"><Settings className="w-6 h-6" /></button>
+             <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-500 hover:text-[var(--theme)] shrink-0 transition-colors"><Settings className="w-6 h-6" /></button>
           </div>
         </div>
       </header>
-
-      {/* CATEGORIES */}
-      <div className="sticky top-16 z-40 bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 mb-[-1rem]">
-        <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4">
-          {categoriesWithCounts.map(cat => (
-            <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all flex items-center gap-1.5 ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'}`}>
-              {getCategoryIcon(cat.name)}
-              {cat.name}
-            </button>
-          ))}
-        </div>
-      </div>
 
       <main className="max-w-7xl mx-auto px-4 mt-6">
         {leaderboardGames.length > 0 && activeCategory === 'All' && (
@@ -235,89 +180,57 @@ function App() {
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {filteredGames.filter(g => {
-             if(activeCategory === 'Favorites' || activeCategory === 'Leaderboard') return !['request', 'report'].includes(g.id);
-             return true;
-          }).map(game => (
+          {filteredGames.map(game => (
             <GameCard key={game.id} game={game} isFav={favorites.includes(game.id)} onLaunch={launchGame} onFav={setFavorites} playtime={formatPlaytime(playtimes[game.id])} />
           ))}
         </div>
       </main>
 
-      {/* SETTINGS MODAL */}
+      {/* FIXED SETTINGS MODAL */}
       {showSettings && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSettings(false)} />
-          <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative z-10 shadow-2xl space-y-4 overflow-y-auto max-h-[90vh]">
-            <X onClick={() => setShowSettings(false)} className="absolute top-4 right-4 cursor-pointer text-zinc-400 hover:text-red-500" />
-            <h2 className="text-xl font-bold flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-[var(--theme)]" /> System Config</h2>
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowSettings(false)} />
+          <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative z-10 shadow-2xl space-y-6 overflow-y-auto max-h-[90vh]">
+            <div className="flex items-center justify-between border-b border-white/5 pb-4">
+              <h2 className="text-xl font-bold flex items-center gap-2"><ShieldAlert className="w-5 h-5 text-[var(--theme)]" /> System Config</h2>
+              <X onClick={() => setShowSettings(false)} className="cursor-pointer text-zinc-400 hover:text-white transition-colors" />
+            </div>
             
-            <div className="space-y-4 pb-4">
-              {/* DISGUISE SELECT */}
-              <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                <label className="text-sm block mb-2 font-bold flex items-center gap-2"><EyeOff className="w-4 h-4 text-[var(--theme)]" /> Tab Disguise</label>
-                <div className="relative">
-                  <select value={disguise} onChange={(e) => setDisguise(e.target.value)} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs appearance-none focus:outline-none focus:border-[var(--theme)] cursor-pointer">
-                    <option value="none">Default (Capybara Science)</option>
-                    <option value="drive">Google Drive</option>
-                    <option value="classroom">Google Classroom</option>
-                    <option value="canvas">Canvas Dashboard</option>
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none text-zinc-500" />
-                </div>
-              </div>
+            <div className="space-y-5">
+              <section className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><EyeOff className="w-3 h-3" /> Tab Disguise</label>
+                <select value={disguise} onChange={(e) => setDisguise(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs focus:outline-none focus:border-[var(--theme)] cursor-pointer">
+                  <option value="none" className="bg-zinc-900 text-white">Default (Capybara Science)</option>
+                  <option value="drive" className="bg-zinc-900 text-white">Google Drive</option>
+                  <option value="classroom" className="bg-zinc-900 text-white">Google Classroom</option>
+                  <option value="canvas" className="bg-zinc-900 text-white">Canvas Dashboard</option>
+                </select>
+              </section>
 
-              {/* UPDATED PANIC CONFIG */}
-              <div className="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-3">
-                <label className="text-sm block font-bold flex items-center gap-2 text-red-400"><AlertTriangle className="w-4 h-4" /> Panic Mode</label>
+              <section className="space-y-3 bg-white/5 p-4 rounded-2xl border border-white/5">
+                <label className="text-[10px] uppercase font-black text-red-400 tracking-widest flex items-center gap-2"><AlertTriangle className="w-3 h-3" /> Panic Mode</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <span className="text-[10px] text-zinc-500 uppercase font-black mb-1 block">Trigger Key</span>
-                    <input 
-                      type="text" 
-                      maxLength="1" 
-                      placeholder="None"
-                      value={panicKey} 
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setPanicKey(val); 
-                        localStorage.setItem('capy-panic-key', val);
-                      }} 
-                      className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-center text-xs font-mono uppercase focus:border-red-500 outline-none" 
-                    />
+                  <div className="space-y-1">
+                    <span className="text-[9px] text-zinc-500 font-bold">Key</span>
+                    <input type="text" maxLength="1" placeholder="None" value={panicKey} onChange={(e) => { setPanicKey(e.target.value); localStorage.setItem('capy-panic-key', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-center text-xs font-mono uppercase focus:border-red-500 outline-none" />
                   </div>
-                  <div>
-                    <span className="text-[10px] text-zinc-500 uppercase font-black mb-1 block">Redirect URL</span>
-                    <input type="text" placeholder="google.com" value={panicUrl} onChange={(e) => {setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value);}} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs focus:border-red-500 outline-none" />
+                  <div className="space-y-1">
+                    <span className="text-[9px] text-zinc-500 font-bold">Redirect URL</span>
+                    <input type="text" placeholder="google.com" value={panicUrl} onChange={(e) => { setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs focus:border-red-500 outline-none" />
                   </div>
                 </div>
-                <p className="text-[9px] text-zinc-500 text-center">Leave Trigger Key empty to disable shortcut.</p>
-              </div>
+              </section>
 
-              {/* FAVICON UPLOAD */}
-              <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                <label className="text-sm block mb-2 font-bold">Custom Favicon (Default Mode)</label>
-                <div className="flex items-center gap-3">
-                  <button onClick={() => fileInputRef.current.click()} className="flex-1 p-3 bg-zinc-800 rounded-xl text-[10px] flex items-center justify-center gap-2 border border-dashed border-white/20 hover:border-[var(--theme)] transition-colors">
-                    <Upload className="w-3 h-3" /> Upload Icon
-                  </button>
-                  {customFavicon && <button onClick={() => { setCustomFavicon(null); localStorage.removeItem('capy-custom-icon'); }} className="p-3 text-red-500 text-[10px] font-bold">Reset</button>}
-                </div>
-                <input type="file" ref={fileInputRef} onChange={handleFaviconUpload} accept="image/*" className="hidden" />
-              </div>
-
-              <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                <label className="text-sm block mb-2 font-bold flex items-center gap-2"><Palette className="w-4 h-4" /> Hex Accent</label>
+              <section className="space-y-2">
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Palette className="w-3 h-3" /> Accent Color</label>
                 <div className="flex gap-2">
-                  <input type="text" value={theme} onChange={(e) => {setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value);}} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs font-mono outline-none focus:border-[var(--theme)]" />
-                  <div className="w-10 h-10 rounded-xl border border-white/10 relative shrink-0" style={{background: theme}}>
-                    <input type="color" value={theme.startsWith('#') && theme.length === 7 ? theme : '#10A5F5'} onChange={(e) => {setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value);}} className="absolute inset-0 opacity-0 cursor-pointer" />
-                  </div>
+                  <input type="text" value={theme} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 text-xs font-mono outline-none focus:border-[var(--theme)]" />
+                  <input type="color" value={theme.startsWith('#') && theme.length === 7 ? theme : '#10A5F5'} onChange={(e) => { setTheme(e.target.value); localStorage.setItem('capy-theme', e.target.value); }} className="w-12 h-12 rounded-xl border-none cursor-pointer bg-transparent" />
                 </div>
-              </div>
+              </section>
 
-              <button onClick={() => { if(confirm("Wipe all site data, playtimes, and favorites?")) { localStorage.clear(); window.location.reload(); } }} className="w-full p-4 rounded-2xl border border-red-500/20 text-red-500 text-xs font-bold hover:bg-red-500/10 transition-colors">
-                <Trash2 className="w-4 h-4 inline mr-2" /> Reset Everything
+              <button onClick={() => { if(confirm("Are you sure? This clears ALL data.")) { localStorage.clear(); window.location.reload(); } }} className="w-full p-4 rounded-2xl border border-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-widest hover:bg-red-500/10 transition-colors">
+                <Trash2 className="w-3 h-3 inline mr-2" /> Wipe Application Data
               </button>
             </div>
           </div>
@@ -335,23 +248,11 @@ function GameCard({ game, isFav, onLaunch, onFav, playtime, rank }) {
     if (rank === 3) return 'border-orange-700 shadow-[0_0_15px_-3px_rgba(194,65,12,0.3)]';
     return 'border-white/5 hover:border-[var(--theme)]/30';
   };
-  const getRankBadge = () => {
-     if (rank === 1) return <div className="absolute top-4 left-4 z-20 bg-amber-400 text-black px-3 py-1 text-xs font-black rounded-xl">#1 Gold</div>;
-     if (rank === 2) return <div className="absolute top-4 left-4 z-20 bg-zinc-400 text-black px-3 py-1 text-xs font-black rounded-xl">#2 Silver</div>;
-     if (rank === 3) return <div className="absolute top-4 left-4 z-20 bg-orange-700 text-white px-3 py-1 text-xs font-black rounded-xl">#3 Bronze</div>;
-     return null;
-  };
 
   return (
     <div className={`group bg-zinc-900/40 rounded-[2rem] overflow-hidden border transition-all flex flex-col cursor-pointer ${getLeaderboardAccent()}`} onClick={() => onLaunch(game)}>
       <div className="relative aspect-[4/3] bg-black/20">
-        {getRankBadge()}
-        <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24 object-contain' : 'w-full h-full object-cover'}`} alt="" />
-        {!isUtility && (
-          <button onClick={(e) => { e.stopPropagation(); const saved = JSON.parse(localStorage.getItem('capy-favorites') || '[]'); const next = saved.includes(game.id) ? saved.filter(id => id !== game.id) : [...saved, game.id]; localStorage.setItem('capy-favorites', JSON.stringify(next)); onFav(next); }} className={`absolute top-4 right-4 p-2 rounded-xl backdrop-blur-md z-10 ${isFav ? 'bg-[var(--theme)] text-black' : 'bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity'}`}>
-            <Star className={`w-3.5 h-3.5 ${isFav ? 'fill-current' : ''}`} />
-          </button>
-        )}
+        <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24' : 'w-full h-full object-cover'}`} alt="" />
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><Play className="w-10 h-10 text-[var(--theme)] fill-current" /></div>
       </div>
       <div className="p-5">
@@ -359,7 +260,6 @@ function GameCard({ game, isFav, onLaunch, onFav, playtime, rank }) {
           <h3 className="font-bold text-sm truncate group-hover:text-[var(--theme)] transition-colors">{game.title}</h3>
           {!isUtility && <span className="text-[8px] text-zinc-600 font-bold bg-white/5 px-1.5 py-0.5 rounded flex items-center gap-1 shrink-0"><Clock className="w-2 h-2" /> {playtime}</span>}
         </div>
-        <p className="text-[9px] text-zinc-500 uppercase font-black tracking-widest mt-1">{game.category}</p>
       </div>
     </div>
   );
