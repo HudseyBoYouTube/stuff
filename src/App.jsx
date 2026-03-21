@@ -33,7 +33,8 @@ function App() {
   const [confirmClear, setConfirmClear] = useState(false);
 
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [batteryLevel, setBatteryLevel] = useState(null);
+  // Default to 100 to prevent NaN% on Desktop/Unsupported browsers
+  const [batteryLevel, setBatteryLevel] = useState(100);
   const [isCharging, setIsCharging] = useState(false);
 
   useEffect(() => {
@@ -51,6 +52,9 @@ function App() {
         battery.addEventListener('chargingchange', () => {
           setIsCharging(battery.charging);
         });
+      }).catch(() => {
+        // Fallback if promise fails
+        setBatteryLevel(100);
       });
     }
 
@@ -146,36 +150,32 @@ function App() {
             <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
           </div>
 
-          {/* CENTER: SEARCH BAR */}
-          <div className="relative w-full max-w-sm mx-auto">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-            <input 
-              type="text" 
-              placeholder="Search..." 
-              value={searchQuery} 
-              onChange={(e) => setSearchQuery(e.target.value)} 
-              className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 text-center" 
-            />
+          {/* CENTER: SEARCH & RANDOMIZER */}
+          <div className="flex items-center gap-2 w-full max-w-sm mx-auto">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+              <input 
+                type="text" 
+                placeholder="Search..." 
+                value={searchQuery} 
+                onChange={(e) => setSearchQuery(e.target.value)} 
+                className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 text-center" 
+              />
+            </div>
+            <button onClick={launchRandom} title="Random Game" className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all shrink-0"><Dices className="w-5 h-5" /></button>
           </div>
 
-          {/* RIGHT: UTILITIES */}
+          {/* RIGHT: STATUS & SETTINGS */}
           <div className="flex items-center justify-end gap-3">
-            <button onClick={launchRandom} title="Random Game" className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-[var(--theme)] hover:text-black transition-all shrink-0"><Dices className="w-5 h-5" /></button>
-
-            {/* STATUS INFO MOVED HERE */}
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-zinc-400 whitespace-nowrap">
               <span>{formatDate(currentTime)}</span>
               <span className="w-px h-3 bg-white/10" />
               <span>{formatTime(currentTime)}</span>
-              {batteryLevel !== null && (
-                <>
-                  <span className="w-px h-3 bg-white/10" />
-                  <div className="flex items-center gap-1">
-                    {isCharging ? <Zap className="w-2.5 h-2.5 text-yellow-400 animate-pulse" /> : <Battery className="w-2.5 h-2.5 text-[var(--theme)]" />}
-                    <span>{batteryLevel}%</span>
-                  </div>
-                </>
-              )}
+              <span className="w-px h-3 bg-white/10" />
+              <div className="flex items-center gap-1">
+                {isCharging ? <Zap className="w-2.5 h-2.5 text-yellow-400 animate-pulse" /> : <Battery className="w-2.5 h-2.5 text-[var(--theme)]" />}
+                <span>{batteryLevel}%</span>
+              </div>
             </div>
 
              <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-500 hover:text-[var(--theme)] shrink-0"><Settings className="w-6 h-6" /></button>
