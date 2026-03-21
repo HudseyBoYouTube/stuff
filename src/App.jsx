@@ -52,7 +52,6 @@ function App() {
   const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
   const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
 
-  // Background States
   const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
   const [backgroundVideo, setBackgroundVideo] = useState(() => localStorage.getItem('capy-bg-video') || '');
   const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
@@ -65,7 +64,7 @@ function App() {
 
   useEffect(() => {
     updateThemeVariables(theme, glowIntensity);
-  }, []);
+  }, [theme, glowIntensity]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -205,14 +204,18 @@ function App() {
     }
   };
 
+  // UPDATED FILTER LOGIC: Fixes Utility items appearing in Favorites
   const filteredGames = useMemo(() => {
     const q = searchQuery.toLowerCase();
     return gamesData.filter(g => {
       const isUtility = g.id === 'request' || g.id === 'report';
       const matchesSearch = g?.title?.toLowerCase().includes(q);
-      const matchesCategory = activeCategory === 'Favorites' ? favorites.includes(g.id) : (activeCategory === 'All' || g?.category === activeCategory);
       
-      // Always show Utility items regardless of Category if searching, or if they match the category
+      if (activeCategory === 'Favorites') {
+        return favorites.includes(g.id) && matchesSearch;
+      }
+
+      const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
       return (matchesSearch && matchesCategory) || (isUtility && matchesSearch);
     });
   }, [searchQuery, activeCategory, gamesData, favorites]);
@@ -301,7 +304,6 @@ function App() {
             </div>
             
             <div className="space-y-6">
-              {/* Background Section */}
               <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
                 <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><ImageIcon className="w-3 h-3 text-[var(--theme)]" /> Media Background</label>
                 <div className="flex gap-2">
