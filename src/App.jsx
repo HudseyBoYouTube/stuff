@@ -148,7 +148,7 @@ function App() {
             <div className="flex items-center justify-end gap-4">
               <div className="hidden sm:flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-[var(--theme)] bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
                 <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString()}</span>
-                <span className="flex items-center gap-1 border-l border-white/10 pl-3"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                 <div className="flex items-center gap-1 border-l border-white/10 pl-3">
                   <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500' : ''}`} />
                   <span>{battery.level}%</span>
