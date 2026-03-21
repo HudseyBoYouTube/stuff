@@ -58,6 +58,8 @@ function App() {
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
+  const sessionRef = useRef(null);
+
   // FIXED: Improved Favicon Switcher Logic
   useEffect(() => {
     const config = DISGUISE_CONFIG[disguise] || DISGUISE_CONFIG.none;
@@ -217,7 +219,7 @@ function App() {
                 <select 
                   value={disguise} 
                   onChange={(e) => { setDisguise(e.target.value); localStorage.setItem('capy-stealth-type', e.target.value); }} 
-                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)] transition-all cursor-pointer"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)] transition-all cursor-pointer appearance-none"
                   style={{ color: disguise !== 'none' ? 'var(--theme)' : 'inherit' }}
                 >
                   <option value="none" className="bg-zinc-900 text-white">Default (Capybara)</option>
@@ -230,8 +232,8 @@ function App() {
               <section className="space-y-3 bg-white/5 p-4 rounded-2xl border border-white/5">
                 <label className="text-[10px] uppercase font-black text-red-400 tracking-widest flex items-center gap-2"><AlertTriangle className="w-3 h-3" /> Panic Mode</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <input type="text" maxLength="1" placeholder="Key" value={panicKey} onChange={(e) => { setPanicKey(e.target.value); localStorage.setItem('capy-panic-key', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-center text-xs outline-none focus:border-red-500/50" />
-                  <input type="text" placeholder="URL" value={panicUrl} onChange={(e) => { setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50" />
+                  <input type="text" maxLength="1" placeholder="Key" value={panicKey} onChange={(e) => { setPanicKey(e.target.value); localStorage.setItem('capy-panic-key', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-center text-xs outline-none focus:border-red-500/50 transition-colors" />
+                  <input type="text" placeholder="URL" value={panicUrl} onChange={(e) => { setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50 transition-colors" />
                 </div>
               </section>
 
@@ -282,12 +284,18 @@ function App() {
   );
 }
 
+// FIXED: Updated GameCard component
 function GameCard({ game, isFav, onLaunch, onFav, playtime }) {
   const isUtility = ['request', 'report'].includes(game.id);
   return (
     <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg" onClick={() => onLaunch(game)}>
-      <div className="relative aspect-[4/3] bg-black/20 group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)] transition-all duration-500">
-        <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24' : 'w-full h-full object-cover'}`} alt="" />
+      {/* Container with overflow-hidden and the glow effect */}
+      <div className="relative w-full aspect-[4/3] bg-black/20 overflow-hidden group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)] transition-all duration-500">
+        <img 
+          src={game.thumbnail} 
+          className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24' : 'w-full h-full object-cover'}`} 
+          alt="" 
+        />
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <div className="w-12 h-12 bg-[var(--theme)] rounded-full flex items-center justify-center shadow-[0_0_20px_var(--theme)] transition-all">
             <Play className="w-6 h-6 text-black fill-current ml-1" />
