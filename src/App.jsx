@@ -10,11 +10,24 @@ import gamesDataRaw from './games.json';
 const DEFAULT_COLOR = '#10A5F5';
 const DEFAULT_GLOW = 50;
 
+// FIXED: Added a reliable default icon URL for the 'none' state
 const DISGUISE_CONFIG = {
-  none: { title: "Capybara Science", icon: "/favicon.ico" },
-  drive: { title: "My Drive - Google Drive", icon: "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" },
-  classroom: { title: "Home", icon: "https://www.gstatic.com/classroom/favicon.png" },
-  canvas: { title: "Dashboard", icon: "https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico" }
+  none: { 
+    title: "Capybara Science", 
+    icon: "https://img.icons8.com/color/32/capybara.png" // Reliable default Capy icon
+  },
+  drive: { 
+    title: "My Drive - Google Drive", 
+    icon: "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" 
+  },
+  classroom: { 
+    title: "Home", 
+    icon: "https://www.gstatic.com/classroom/favicon.png" 
+  },
+  canvas: { 
+    title: "Dashboard", 
+    icon: "https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico" 
+  }
 };
 
 function App() {
@@ -45,20 +58,28 @@ function App() {
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
-  const sessionRef = useRef(null);
-
+  // FIXED: Improved Favicon Switcher Logic
   useEffect(() => {
     const config = DISGUISE_CONFIG[disguise] || DISGUISE_CONFIG.none;
+    
+    // Update Title
     document.title = config.title;
-    let link = document.querySelector("link[rel~='icon']");
+    
+    // Update Favicon
+    let link = document.querySelector("link[rel*='icon']");
+    
+    // If no link tag exists, create it
     if (!link) {
       link = document.createElement('link');
       link.rel = 'icon';
       document.getElementsByTagName('head')[0].appendChild(link);
     }
+    
+    // Force the new href
     link.href = config.icon;
   }, [disguise]);
 
+  // Panic Key Logic
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (panicKey && panicKey.trim() !== "" && e.key.toLowerCase() === panicKey.toLowerCase()) {
@@ -196,7 +217,7 @@ function App() {
                 <select 
                   value={disguise} 
                   onChange={(e) => { setDisguise(e.target.value); localStorage.setItem('capy-stealth-type', e.target.value); }} 
-                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)] transition-all cursor-pointer appearance-none"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)] transition-all cursor-pointer"
                   style={{ color: disguise !== 'none' ? 'var(--theme)' : 'inherit' }}
                 >
                   <option value="none" className="bg-zinc-900 text-white">Default (Capybara)</option>
