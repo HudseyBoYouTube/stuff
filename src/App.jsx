@@ -69,7 +69,6 @@ function App() {
   };
 
   const launchRandom = () => {
-    // Filter out utility IDs so they don't appear in the random cycle
     const playableGames = gamesData.filter(g => g.id !== 'request' && g.id !== 'report');
     if (playableGames.length > 0) {
       const randomGame = playableGames[Math.floor(Math.random() * playableGames.length)];
@@ -137,7 +136,7 @@ function App() {
         </div>
       </header>
 
-      {/* COMPACT CATEGORY NAV */}
+      {/* CATEGORY NAV */}
       <div className={`sticky top-16 z-40 border-b px-4 transition-all ${isDarkMode ? 'bg-[#09090b]/90 border-white/5' : 'bg-white/95 border-zinc-100 shadow-sm'}`}>
         <div className="max-w-7xl mx-auto py-1.5"> 
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
@@ -175,7 +174,7 @@ function App() {
         </div>
       </main>
 
-      {/* SETTINGS */}
+      {/* SETTINGS MODAL */}
       {showSettings && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSettings(false)} />
@@ -212,6 +211,9 @@ function App() {
 }
 
 function GameCard({ game, isFav, onLaunch, onFav, isDarkMode }) {
+  // Check if this is a utility item to apply smaller image sizing
+  const isUtility = ['request', 'report'].includes(game.id);
+
   return (
     <div 
       className={`group rounded-[2rem] overflow-hidden border transition-all flex flex-col cursor-pointer 
@@ -221,7 +223,30 @@ function GameCard({ game, isFav, onLaunch, onFav, isDarkMode }) {
       onClick={() => onLaunch(game)}
     >
       <div className={`relative aspect-[4/3] overflow-hidden ${isDarkMode ? 'bg-black/20' : 'bg-zinc-100'}`}>
-        <img src={game.thumbnail} className="absolute inset-0 m-auto w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="" />
+        <img 
+          src={game.thumbnail} 
+          className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 
+            ${isUtility ? 'w-36 h-36 object-contain opacity-70' : 'w-full h-full object-cover'}`} 
+          alt="" 
+        />
+        {!isUtility && (
+          <div className="absolute top-4 right-4 z-10">
+            <button 
+              onClick={(e) => { e.stopPropagation(); 
+                const saved = JSON.parse(localStorage.getItem('capy-favorites') || '[]');
+                const next = saved.includes(game.id) ? saved.filter(id => id !== game.id) : [...saved, game.id];
+                localStorage.setItem('capy-favorites', JSON.stringify(next));
+                onFav(next);
+              }} 
+              className={`p-2 rounded-xl backdrop-blur-md transition-all 
+                ${isFav 
+                  ? 'bg-[var(--theme)] text-black' 
+                  : 'bg-black/40 text-white opacity-0 group-hover:opacity-100'}`}
+            >
+              <Star className={`w-3.5 h-3.5 ${isFav ? 'fill-current' : ''}`} />
+            </button>
+          </div>
+        )}
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <Play className="w-10 h-10 text-[var(--theme)] fill-current" />
         </div>
