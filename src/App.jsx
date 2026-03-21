@@ -121,7 +121,9 @@ function App() {
           <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
             {/* LEFT: LOGO */}
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-[var(--theme)] rounded-lg flex items-center justify-center shadow-lg shadow-[var(--theme)]/20 transition-all"><Gamepad2 className="w-5 h-5 text-black" /></div>
+              <div className="w-8 h-8 bg-[var(--theme)] rounded-lg flex items-center justify-center shadow-lg shadow-[var(--theme)]/20 transition-all">
+                <img src={DEFAULT_ICON} alt="Logo" className="w-6 h-6 object-contain" />
+              </div>
               <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
             </div>
 
