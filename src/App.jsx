@@ -85,7 +85,6 @@ function App() {
     const win = window.open('about:blank', '_blank');
     if (win) {
       win.document.title = "DO NOT REFRESH";
-      // Copy active favicon to new tab
       const link = win.document.createElement('link');
       link.rel = 'icon';
       link.href = currentIdentity.icon;
@@ -118,15 +117,6 @@ function App() {
     <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased" style={{ '--theme': theme, '--glow': `${glowIntensity}px` }}>
       
       <div className="sticky top-0 z-50">
-        <div className="bg-black/60 border-b border-white/5 px-4 py-1 flex justify-end items-center text-[9px] font-black uppercase tracking-widest text-zinc-500 gap-4 backdrop-blur-sm">
-          <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString()}</span>
-          <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-          <div className="flex items-center gap-1 border-l border-white/10 pl-4">
-            <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500' : ''}`} />
-            <span>{battery.level}%</span>
-          </div>
-        </div>
-
         <header className="border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
           <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
             {/* LEFT: LOGO */}
@@ -154,13 +144,22 @@ function App() {
               </button>
             </div>
 
-            {/* RIGHT: SETTINGS */}
-            <div className="flex justify-end">
+            {/* RIGHT: DATE, TIME, BATTERY & SETTINGS */}
+            <div className="flex items-center justify-end gap-4">
+              <div className="hidden sm:flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-zinc-500 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString()}</span>
+                <span className="flex items-center gap-1 text-[var(--theme)]"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                <div className="flex items-center gap-1 border-l border-white/10 pl-3">
+                  <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500' : ''}`} />
+                  <span>{battery.level}%</span>
+                </div>
+              </div>
               <button onClick={() => setShowSettings(true)} className="p-2 text-zinc-500 hover:text-[var(--theme)] transition-colors"><Settings className="w-6 h-6" /></button>
             </div>
           </div>
         </header>
 
+        {/* STICKY CATEGORY BAR */}
         <div className="bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 overflow-hidden">
           <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
             {categoriesWithCounts.map(cat => (
