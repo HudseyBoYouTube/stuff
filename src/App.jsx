@@ -92,8 +92,9 @@ function App() {
   });
 
   const friendCode = useMemo(() => {
+    // We base64 the full string, but use it as-is to avoid decoding errors later
     const combined = `${displayName}#${uniqueId}`;
-    return btoa(combined).replace(/=/g, '').toUpperCase().substring(0, 12);
+    return btoa(combined).replace(/=/g, '');
   }, [displayName, uniqueId]);
 
   useEffect(() => {
@@ -512,10 +513,10 @@ function App() {
         friends={friends}
         onAddFriend={(code) => {
           try {
-            // Fix: Trim extra spaces and validate structure before decoding
             const cleanCode = code.trim();
             if (!cleanCode) return;
 
+            // Simple check: We try to decode it. If it fails, it's invalid.
             const decoded = atob(cleanCode);
             const name = decoded.split('#')[0];
             
@@ -532,7 +533,7 @@ function App() {
             const newFriends = [...friends, { name, code: cleanCode, favs: [], times: {} }];
             setFriends(newFriends);
             localStorage.setItem('capy-friends', JSON.stringify(newFriends));
-            setNotification("Friend Request Sent!");
+            setNotification("Friend Added!");
           } catch(e) { 
             alert("Invalid Friend Code!"); 
           }
