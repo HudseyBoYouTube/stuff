@@ -94,6 +94,9 @@ function App() {
   const [performanceMode, setPerformanceMode] = useState(() => localStorage.getItem('capy-perf-mode') === 'true');
 
   const [displayName, setDisplayName] = useState(() => localStorage.getItem('capy-display-name') || 'CapyUser');
+  // ADDED: Profile Picture State
+  const [profilePic, setProfilePic] = useState(() => localStorage.getItem('capy-pfp') || '');
+  
   const [friends, setFriends] = useState(() => JSON.parse(localStorage.getItem('capy-friends') || '[]'));
   const [selectedFriend, setSelectedFriend] = useState(null);
 
@@ -119,10 +122,11 @@ function App() {
       n: displayName,
       id: uniqueId,
       f: topFavs,
-      t: topTimes
+      t: topTimes,
+      p: profilePic // ADDED: Profile pic to friend code
     };
     return btoa(JSON.stringify(data)).replace(/=/g, '');
-  }, [displayName, uniqueId, favorites, playtimes]);
+  }, [displayName, uniqueId, favorites, playtimes, profilePic]);
 
   useEffect(() => {
     if (notification) {
@@ -282,6 +286,19 @@ function App() {
     }
   };
 
+  // ADDED: Handle PFP Upload
+  const handlePfpUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePic(reader.result);
+        localStorage.setItem('capy-pfp', reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const toggleFavorite = (id) => {
     const isRemoving = favorites.includes(id);
     const newFavs = isRemoving 
@@ -323,7 +340,7 @@ function App() {
         'capy-custom-title', 'capy-custom-icon', 'capy-bg-image', 
         'capy-bg-video', 'capy-bg-opacity', 'capy-bg-music', 
         'capy-volume', 'capy-panic-url', 'capy-panic-key', 'capy-perf-mode',
-        'capy-bg-enabled', 'capy-recent' // Added capy-recent here
+        'capy-bg-enabled', 'capy-recent', 'capy-pfp' // Added pfp here
       ];
       settingsKeys.forEach(key => localStorage.removeItem(key));
       window.location.reload();
@@ -534,8 +551,31 @@ function App() {
           <div className="bg-zinc-900 border border-[var(--theme)]/30 p-8 rounded-3xl max-w-sm w-full relative shadow-[0_0_50px_rgba(0,0,0,0.5)] space-y-6">
             <button onClick={() => setSelectedFriend(null)} className="absolute top-4 right-4 text-zinc-500 hover:text-white"><X /></button>
             <div className="text-center space-y-2">
-              <div className="w-20 h-20 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20">
-                <UserCircle className="w-12 h-12 text-[var(--theme)]" />
+              <div className="w-20 h-20 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20 overflow-hidden">
+                {/* UPDATED: Profile Picture Preview logic */}
+                {(() => {
+                    try {
+                        const isMe = selectedFriend.code === friendCode;
+                        let displayPfp = '';
+                        if (isMe) {
+                            displayPfp = profilePic;
+                        } else {
+                            let base64 = selectedFriend.code.trim();
+                            base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+                            while (base64.length % 4 !== 0) base64 += '=';
+                            const decoded = JSON.parse(atob(base64));
+                            displayPfp = decoded.p;
+                        }
+
+                        return displayPfp ? (
+                            <img src={displayPfp} className="w-full h-full object-cover" />
+                        ) : (
+                            <UserCircle className="w-12 h-12 text-[var(--theme)]" />
+                        );
+                    } catch(e) {
+                        return <UserCircle className="w-12 h-12 text-[var(--theme)]" />;
+                    }
+                })()}
               </div>
               <h3 className="text-2xl font-black tracking-tighter">{selectedFriend.name}</h3>
               <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Friend Profile</p>
@@ -600,6 +640,10 @@ function App() {
         handleResetBackground={handleResetBackground}
         handleAudioUpload={handleAudioUpload}
         handleResetMusic={handleResetMusic}
+        // ADDED: Profile Pic Props
+        profilePic={profilePic}
+        handlePfpUpload={handlePfpUpload}
+        handleResetPfp={() => { setProfilePic(''); localStorage.removeItem('capy-pfp'); }}
         handleClearSettings={handleClearSettings}
         handleReset={handleReset}
         confirmReset={confirmReset}
