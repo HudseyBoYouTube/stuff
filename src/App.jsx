@@ -515,14 +515,27 @@ function App() {
             const decoded = atob(code);
             const name = decoded.split('#')[0];
             
+            if (!name || !decoded.includes('#')) {
+              alert("Invalid Friend Code Format!");
+              return;
+            }
+
             if (friends.find(f => f.code === code)) {
               setNotification("Already Friends!");
               return;
             }
-            const newFriends = [...friends, { name, code, favs: [], times: {} }];
+
+            const newFriend = { 
+              name: name, 
+              code: code, 
+              favs: [], 
+              times: {} 
+            };
+
+            const newFriends = [...friends, newFriend];
             setFriends(newFriends);
             localStorage.setItem('capy-friends', JSON.stringify(newFriends));
-            setNotification("Friend Request Sent!");
+            setNotification(`Added ${name}!`);
           } catch(e) { alert("Invalid Friend Code!"); }
         }}
         onRemoveFriend={(code) => {
