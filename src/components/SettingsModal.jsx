@@ -1,14 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   X, ShieldAlert, Cpu, Palette, Ghost, Zap, Video, Music, 
   Volume2, Power, Trash2, Link as LinkIcon, Upload, 
-  ImageIcon, RotateCcw, Type
+  ImageIcon, RotateCcw, Type, Users, UserPlus, Eye, Copy, Check
 } from 'lucide-react';
 
 export function SettingsModal(props) {
+  const [friendInput, setFriendInput] = useState('');
+  const [copied, setCopied] = useState(false);
+
   if (!props.show) return null;
 
-  const DISGUISE_OPTIONS = ['None', 'Google', 'Drive', 'Classroom', 'Docs', 'Canvas'];
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(props.friendCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleAddFriend = () => {
+    if (friendInput.trim()) {
+      props.onAddFriend(friendInput.trim());
+      setFriendInput('');
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
@@ -23,6 +37,82 @@ export function SettingsModal(props) {
         </div>
 
         <div className="space-y-6">
+          {/* IDENTITY & SOCIAL */}
+          <section className="space-y-4 bg-[var(--theme)]/5 p-4 rounded-2xl border border-[var(--theme)]/10">
+            <label className="text-[10px] uppercase font-black text-[var(--theme)] tracking-widest flex items-center gap-2">
+              <Type className="w-3 h-3" /> Profile Identity
+            </label>
+            <div className="space-y-3">
+              <input 
+                type="text" 
+                placeholder="Custom Display Name..." 
+                value={props.displayName} 
+                onChange={(e) => props.setDisplayName(e.target.value)}
+                className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)]/50 font-bold"
+              />
+              <div className="flex items-center justify-between bg-black/20 p-2 rounded-xl border border-white/5">
+                <div className="pl-2">
+                  <p className="text-[8px] font-black text-zinc-500 uppercase leading-none mb-1">Your Friend Code</p>
+                  <p className="text-xs font-mono font-black text-[var(--theme)] tracking-widest leading-none">{props.friendCode}</p>
+                </div>
+                <button 
+                  onClick={handleCopyCode}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${copied ? 'bg-green-500 text-black' : 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white'}`}
+                >
+                  {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  {copied ? 'Copied' : 'Copy'}
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* FRIENDS LIST */}
+          <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+            <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2">
+              <Users className="w-3 h-3 text-[var(--theme)]" /> Friends List
+            </label>
+            
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                placeholder="Enter friend code..." 
+                value={friendInput}
+                onChange={(e) => setFriendInput(e.target.value)}
+                className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-2.5 text-xs outline-none focus:border-[var(--theme)]/50"
+              />
+              <button 
+                onClick={handleAddFriend}
+                className="p-2.5 bg-[var(--theme)] text-black rounded-xl hover:opacity-80 transition-all"
+              >
+                <UserPlus className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-2 max-h-32 overflow-y-auto custom-scrollbar pr-1">
+              {props.friends.length > 0 ? props.friends.map(friend => (
+                <div key={friend.code} className="flex items-center justify-between bg-white/5 p-2 rounded-xl border border-white/5">
+                  <span className="text-[10px] font-bold truncate max-w-[120px]">{friend.name}</span>
+                  <div className="flex gap-1">
+                    <button 
+                      onClick={() => props.onViewFriend(friend)}
+                      className="p-1.5 bg-white/5 hover:bg-[var(--theme)] hover:text-black rounded-lg transition-all"
+                    >
+                      <Eye className="w-3 h-3" />
+                    </button>
+                    <button 
+                      onClick={() => props.onRemoveFriend(friend.code)}
+                      className="p-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-all"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+              )) : (
+                <p className="text-[9px] text-zinc-600 text-center py-2 italic font-medium uppercase tracking-tighter">No friends added yet</p>
+              )}
+            </div>
+          </section>
+
           {/* PERFORMANCE MODE */}
           <section className="space-y-4 bg-yellow-500/5 p-4 rounded-2xl border border-yellow-500/10">
             <div className="flex items-center justify-between">
@@ -56,7 +146,6 @@ export function SettingsModal(props) {
                 <input type="file" accept="audio/*" onChange={props.handleAudioUpload} className="hidden" />
               </label>
               
-              {/* RESET BUTTONS */}
               <button 
                 onClick={props.handleResetBackground}
                 className="p-2 bg-red-500/5 border border-red-500/10 rounded-xl text-[9px] font-black uppercase text-red-500/70 hover:bg-red-500/10 hover:text-red-500 transition-all flex items-center justify-center gap-2"
@@ -71,7 +160,6 @@ export function SettingsModal(props) {
               </button>
             </div>
 
-            {/* VOLUME SLIDER - Only shows when music exists */}
             {props.bgMusic && (
               <div className="pt-2 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="flex items-center justify-between">
