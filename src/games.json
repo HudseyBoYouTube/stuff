@@ -1188,6 +1188,34 @@
     "url": "https://play.coolmathgames.eu.org/storage/ag/originals/bloxorz/",
     "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLH0EmQGEXMsxUZtYqJN0WTaht7mOxTmtXdQ&s",
     "category": "Strategy"
+  },
+  {
+    "id": "swingo",
+    "title": "Swingo",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/swingo/",
+    "thumbnail": "https://cdn-1.webcatalog.io/catalog/poki-swingo/poki-swingo-icon-filled-256.webp?v=1714778227971",
+    "category": "Easy"
+  },
+  {
+    "id": "hexanaut.io",
+    "title": "Hexanaut.io",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/originals/hexa/",
+    "thumbnail": "https://appleworm.io/upload/imgs/hexanaut-io.jpg",
+    "category": "Io"
+  },
+  {
+    "id": "hacker-typer",
+    "title": "Hacker Typer",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/echo/hackertype/",
+    "thumbnail": "https://cdn-1.webcatalog.io/catalog/hacker-typer/hacker-typer-icon-filled-256.png?v=1714774594665",
+    "category": "Troll"
+  },
+  {
+    "id": "toss-the-turtle",
+    "title": "Toss The Turtle",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/echo/tosstheturtle/",
+    "thumbnail": "https://img.utdstc.com/icon/484/606/4846060a53165efe3f00542543373e9ebd55335a6208195a685e945723586411:200",
+    "category": "Action"
   }
 ]
   
