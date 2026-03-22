@@ -1146,6 +1146,13 @@
     "url": "https://play.coolmathgames.eu.org/storage/ag/echo/hardware-tycoon/",
     "thumbnail": "https://ht.poggers.ltd/icon-256.png",
     "category": "Tycoon"
+  },
+  {
+    "id": "core-ball",
+    "title": "Core Ball",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/core-ball/",
+    "thumbnail": "https://coreball-online.github.io/img/class-356.png",
+    "category": "Strategy"
   }
 ]
   
