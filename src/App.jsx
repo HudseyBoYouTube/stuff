@@ -26,7 +26,7 @@ const DISGUISE_CONFIG = {
   none: { title: DEFAULT_TITLE, icon: DEFAULT_ICON },
   drive: { title: "My Drive - Google Drive", icon: "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" },
   classroom: { title: "Home - Classroom", icon: "https://www.gstatic.com/classroom/favicon.png" },
-  canvas: { title: "Dashboard", icon: "https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico" }
+  canvas: { title: "Dashboard", icon: "https://du11hjcvx0uq_cloudfront_net/dist/images/favicon-e10d657a73.ico" }
 };
 
 const updateThemeVariables = (color, glow) => {
@@ -98,10 +98,16 @@ function App() {
     return id;
   });
 
+  // UPDATED: Now includes favorites and playtimes in the code string
   const friendCode = useMemo(() => {
-    const combined = `${displayName}#${uniqueId}`;
-    return btoa(combined).replace(/=/g, '');
-  }, [displayName, uniqueId]);
+    const data = {
+      n: displayName,
+      id: uniqueId,
+      f: favorites,
+      t: playtimes
+    };
+    return btoa(JSON.stringify(data)).replace(/=/g, '');
+  }, [displayName, uniqueId, favorites, playtimes]);
 
   useEffect(() => {
     if (notification) {
@@ -526,9 +532,11 @@ function App() {
           try {
             const cleanCode = code.trim();
             if (!cleanCode) return;
-            const decoded = atob(cleanCode);
-            const name = decoded.split('#')[0];
-            if (!name || !decoded.includes('#')) {
+            // UPDATED: Now decodes the JSON object instead of just splitting strings
+            const decodedData = JSON.parse(atob(cleanCode));
+            const { n: name, f: favs, t: times } = decodedData;
+
+            if (!name) {
               alert("Invalid Friend Code Format!");
               return;
             }
@@ -536,7 +544,7 @@ function App() {
               setNotification("Already Friends!");
               return;
             }
-            const newFriends = [...friends, { name, code: cleanCode, favs: [], times: {} }];
+            const newFriends = [...friends, { name, code: cleanCode, favs: favs || [], times: times || {} }];
             setFriends(newFriends);
             localStorage.setItem('capy-friends', JSON.stringify(newFriends));
             setNotification("Friend Added!");
