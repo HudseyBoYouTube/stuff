@@ -64,7 +64,7 @@ function App() {
   const [volume, setVolume] = useState(() => Number(localStorage.getItem('capy-volume')) || 50);
 
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
-  const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || 'Escape');
+  const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || '');
 
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
