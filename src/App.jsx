@@ -83,7 +83,10 @@ function App() {
   const [uniqueId] = useState(() => {
     let id = localStorage.getItem('capy-unique-id');
     if (!id) {
-      id = Math.floor(1000 + Math.random() * 9000).toString();
+      // Create a more robust unique string
+      id = typeof crypto.randomUUID === 'function' 
+        ? crypto.randomUUID().substring(0, 8) 
+        : Math.random().toString(36).substring(2, 10);
       localStorage.setItem('capy-unique-id', id);
     }
     return id;
@@ -92,7 +95,8 @@ function App() {
   const friendCode = useMemo(() => {
     // Combine name with unique ID to ensure different devices have different codes
     const combined = `${displayName}#${uniqueId}`;
-    return btoa(combined).substring(0, 8).toUpperCase();
+    // Using 12 chars makes the codes look much more distinct
+    return btoa(combined).replace(/=/g, '').toUpperCase().substring(0, 12);
   }, [displayName, uniqueId]);
 
   useEffect(() => {
@@ -495,7 +499,6 @@ function App() {
         friends={friends}
         onAddFriend={(code) => {
           try {
-            // Decode the string and split by '#' to get the name
             const decoded = atob(code);
             const name = decoded.split('#')[0];
             
