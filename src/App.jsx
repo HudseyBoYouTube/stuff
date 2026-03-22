@@ -132,6 +132,11 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // Don't trigger if the user is currently typing in an input field
+      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+        return;
+      }
+
       if (panicKey && e.key === panicKey) {
         window.location.href = panicUrl.startsWith('http') ? panicUrl : `https://${panicUrl}`;
       }
