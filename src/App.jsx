@@ -312,6 +312,8 @@ function App() {
       window.location.reload();
     } else {
       setConfirmReset(true);
+      // This tells the user exactly what's about to happen
+      setNotification("Warning: This will delete ALL games, favorites, and stats!");
     }
   };
 
