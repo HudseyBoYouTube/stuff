@@ -483,7 +483,7 @@ function App() {
                 <UserCircle className="w-12 h-12 text-[var(--theme)]" />
               </div>
               <h3 className="text-2xl font-black tracking-tighter uppercase">{selectedFriend.name}</h3>
-              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Capy-Friend Profile</p>
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Friend Profile</p>
             </div>
             <div className="space-y-4">
               <label className="text-[10px] font-black text-[var(--theme)] uppercase tracking-widest flex items-center gap-2"><Heart className="w-3 h-3" /> Favorite Games</label>
