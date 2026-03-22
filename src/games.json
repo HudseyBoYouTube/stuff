@@ -214,14 +214,14 @@
     "title": "Paper.io (fake)",
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/originals/paperio/",
     "thumbnail": "https://i.pinimg.com/736x/33/48/8a/33488a03a8ec1fb8f79d4800e5d17dcf.jpg",
-    "category": "Arcade"
+    "category": "Io"
   },
   {
     "id": "paper.io-2",
     "title": "Paper.io 2",
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/pages/other/interpreter/index.html?url=https://cdn.jsdelivr.net/gh/gn-math/html@main/102.html",
     "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYI9XuUUZ774KqnfuXSPm1EwXtccJo5q_mng&s",
-    "category": "Arcade"
+    "category": "Io"
   },
   {
     "id": "tiny-fishing",
@@ -368,7 +368,7 @@
     "title": "Snowball.io (fake)",
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/pages/other/interpreter/index.html?url=https://cdn.jsdelivr.net/gh/gn-math/html@main/207.html",
     "thumbnail": "https://www.mathnook.com/img/addthis-fun-games/snowball-io-200x200.jpg",
-    "category": "Arcade"
+    "category": "Io"
   },
   {
     "id": "slice-it-all!",
@@ -455,7 +455,7 @@
     "category": "Arcade"
   },
   {
-    "id": "draw-oust",
+    "id": "draw-joust",
     "title": "Draw Joust",
     "url": "https://lum.815moniquelane.cfd/projects/id387/index.html",
     "thumbnail": "https://www.metacritic.com/a/img/catalog/provider/6/12/6-1-748295-52.jpg",
@@ -606,7 +606,7 @@
     "title": "YoHoHo.io",
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/originals/yohoho/",
     "thumbnail": "https://imgs.crazygames.com/auto-covers/yohoho-io_1x1.jpg?format=auto&quality=70&metadata=none",
-    "category": "Action"
+    "category": "Io"
   },
   {
     "id": "recoil",
@@ -634,7 +634,7 @@
     "title": "Highway Racer 2",
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/originals/highway-race2/",
     "thumbnail": "https://imgs.crazygames.com/games/highway-racer-2/cover_16x9-1693297858485.png?metadata=none&quality=100&width=1200&height=630&fit=crop",
-    "category": "Racing"
+    "category": "Driving"
   },
   {
     "id": "ball-dodge",
@@ -690,7 +690,7 @@
     "title": "aquapark.io (fake)",
     "url": "https://neatliterature.majoitus.ee/books/files/aquapark-slides/index.html",
     "thumbnail": "https://store-images.s-microsoft.com/image/apps.63925.14634069183662722.c171aa28-d69f-4e61-816b-bed08184b8ec.18c7544b-63c5-446f-b833-2ce5764c3668",
-    "category": "Arcade"
+    "category": "Io"
   },
   { 
     "id": "stick-merge",
@@ -830,7 +830,7 @@
     "title": "Skribbl.io",
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/originals/skribbl/",
     "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqIY6UkvxlSiBfKjT-QGtw2wf7lxgbrgA7sA&s",
-    "category": "Creative"
+    "category": "Io"
   },
   {
     "id": "flip-bros",
@@ -844,7 +844,7 @@
     "title": "Agar.io",
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/originals/agar/",
     "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Agar.io_Logo.png",
-    "category": "Arcade"
+    "category": "Io"
   },
   {
     "id": "chicken-merge",
@@ -1138,7 +1138,7 @@
     "title": "Tall.io",
     "url": "https://play.coolmathgames.eu.org/storage/ag/gn/664.html",
     "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2ETHozgxNOnxyzyIpV8u97AT67mcJg91_NA&s",
-    "category": "Easy"
+    "category": "Io"
   },
   {
     "id": "hardware-tycoon",
