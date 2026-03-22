@@ -88,6 +88,22 @@ function App() {
     return () => window.removeEventListener('click', startAudio);
   }, [bgMusic, musicEnabled]);
 
+  // Handle music pause/resume on tab switch
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (audioRef.current && musicEnabled && bgMusic) {
+        if (document.hidden) {
+          audioRef.current.pause();
+        } else {
+          audioRef.current.play().catch(() => {});
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [musicEnabled, bgMusic]);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (panicKey && e.key === panicKey) {
@@ -293,7 +309,7 @@ function App() {
                 <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
               </div>
 
-              <div className="flex items-center gap-2 w-full max-w-sm justify-self-center">
+              <div className="flex items-center gap-2 w-full max-sm justify-self-center">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
                   <input 
