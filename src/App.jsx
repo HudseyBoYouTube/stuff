@@ -329,6 +329,7 @@ function App() {
       window.location.reload();
     } else {
       setConfirmClearSettings(true);
+      setNotification("Warning: This will reset all your settings to default!");
     }
   };
 
@@ -592,7 +593,6 @@ function App() {
         setPerformanceMode={(val) => { 
             setPerformanceMode(val); 
             localStorage.setItem('capy-perf-mode', val);
-            setNotification(val ? "Performance Mode: ON (Effects/Backgrounds Disabled)" : "Performance Mode: OFF");
         }}
         themes={THEMES}
         applyTheme={applyTheme}
