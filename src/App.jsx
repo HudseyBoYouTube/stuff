@@ -123,8 +123,6 @@ function App() {
 
   useEffect(() => {
     if (performanceMode) {
-      setBgEnabled(false);
-      setMusicEnabled(false);
       updateThemeVariables(theme, 0); 
     } else {
       updateThemeVariables(theme, glowIntensity);
@@ -550,6 +548,7 @@ function App() {
         confirmReset={confirmReset}
         confirmClearSettings={confirmClearSettings}
         bgMusic={bgMusic}
+        bgEnabled={bgEnabled}
         volume={volume}
         setVolume={setVolume}
         bgOpacity={bgOpacity}
