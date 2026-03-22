@@ -3,7 +3,7 @@ import {
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
   Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video, Music, Volume2, Power,
-  Cpu // Added Cpu icon for Performance Mode
+  Cpu 
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -197,6 +197,15 @@ function App() {
         }
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleResetMusic = () => {
+    setBgMusic('');
+    setMusicEnabled(false);
+    localStorage.removeItem('capy-bg-music');
+    if (audioRef.current) {
+      audioRef.current.pause();
     }
   };
 
@@ -406,6 +415,7 @@ function App() {
         handleBackgroundUpload={handleBackgroundUpload}
         handleResetBackground={handleResetBackground}
         handleAudioUpload={handleAudioUpload}
+        handleResetMusic={handleResetMusic}
         handleClearSettings={handleClearSettings}
         handleReset={handleReset}
       />
