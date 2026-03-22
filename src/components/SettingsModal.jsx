@@ -47,7 +47,7 @@ export function SettingsModal(props) {
             <div className="grid grid-cols-2 gap-2">
               <label className="p-3 bg-zinc-800 border border-white/10 rounded-xl text-[9px] font-black uppercase text-center cursor-pointer hover:border-[var(--theme)]/50 transition-all">
                 <Upload className="w-3 h-3 mx-auto mb-1 text-[var(--theme)]" />
-                Upload Background IMG/GIF
+                Upload Background
                 <input type="file" accept="image/*,video/*" onChange={props.handleBackgroundUpload} className="hidden" />
               </label>
               <label className="p-3 bg-zinc-800 border border-white/10 rounded-xl text-[9px] font-black uppercase text-center cursor-pointer hover:border-[var(--theme)]/50 transition-all">
@@ -55,6 +55,20 @@ export function SettingsModal(props) {
                 Upload MP3
                 <input type="file" accept="audio/*" onChange={props.handleAudioUpload} className="hidden" />
               </label>
+              
+              {/* RESET BUTTONS */}
+              <button 
+                onClick={props.handleResetBackground}
+                className="p-2 bg-red-500/5 border border-red-500/10 rounded-xl text-[9px] font-black uppercase text-red-500/70 hover:bg-red-500/10 hover:text-red-500 transition-all flex items-center justify-center gap-2"
+              >
+                <RotateCcw className="w-3 h-3" /> Reset BG
+              </button>
+              <button 
+                onClick={props.handleResetMusic}
+                className="p-2 bg-red-500/5 border border-red-500/10 rounded-xl text-[9px] font-black uppercase text-red-500/70 hover:bg-red-500/10 hover:text-red-500 transition-all flex items-center justify-center gap-2"
+              >
+                <RotateCcw className="w-3 h-3" /> Reset Music
+              </button>
             </div>
           </section>
 
