@@ -81,7 +81,7 @@ function App() {
   
   const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
-  // --- NEW: Recently Played State ---
+  // --- Recently Played State ---
   const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
     try {
       const saved = localStorage.getItem('capy-recent');
@@ -94,7 +94,7 @@ function App() {
   const [performanceMode, setPerformanceMode] = useState(() => localStorage.getItem('capy-perf-mode') === 'true');
 
   const [displayName, setDisplayName] = useState(() => localStorage.getItem('capy-display-name') || 'CapyUser');
-  // ADDED: Profile Picture State
+  // Profile Picture State
   const [profilePic, setProfilePic] = useState(() => localStorage.getItem('capy-pfp') || '');
   
   const [friends, setFriends] = useState(() => JSON.parse(localStorage.getItem('capy-friends') || '[]'));
@@ -123,7 +123,7 @@ function App() {
       id: uniqueId,
       f: topFavs,
       t: topTimes,
-      p: profilePic // ADDED: Profile pic to friend code
+      p: profilePic // Profile pic to friend code
     };
     return btoa(JSON.stringify(data)).replace(/=/g, '');
   }, [displayName, uniqueId, favorites, playtimes, profilePic]);
@@ -286,7 +286,7 @@ function App() {
     }
   };
 
-  // ADDED: Handle PFP Upload
+  // Handle PFP Upload
   const handlePfpUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -340,7 +340,7 @@ function App() {
         'capy-custom-title', 'capy-custom-icon', 'capy-bg-image', 
         'capy-bg-video', 'capy-bg-opacity', 'capy-bg-music', 
         'capy-volume', 'capy-panic-url', 'capy-panic-key', 'capy-perf-mode',
-        'capy-bg-enabled', 'capy-recent', 'capy-pfp' // Added pfp here
+        'capy-bg-enabled', 'capy-recent', 'capy-pfp'
       ];
       settingsKeys.forEach(key => localStorage.removeItem(key));
       window.location.reload();
@@ -378,7 +378,7 @@ function App() {
     return final;
   }, [gamesData, validFavoritesCount]);
 
-  // --- UPDATED: launchContent to track history ---
+  // launchContent to track history
   const launchContent = (item) => {
     if (!item?.url) return;
 
@@ -415,7 +415,7 @@ function App() {
     });
   }, [searchQuery, activeCategory, gamesData, favorites]);
 
-  // --- NEW: Helper for Recent Games List ---
+  // Helper for Recent Games List
   const recentGamesData = useMemo(() => {
     return recentlyPlayed
       .map(id => gamesData.find(g => g.id === id))
@@ -552,7 +552,6 @@ function App() {
             <button onClick={() => setSelectedFriend(null)} className="absolute top-4 right-4 text-zinc-500 hover:text-white"><X /></button>
             <div className="text-center space-y-2">
               <div className="w-20 h-20 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20 overflow-hidden">
-                {/* UPDATED: Profile Picture Preview logic */}
                 {(() => {
                     try {
                         const isMe = selectedFriend.code === friendCode;
@@ -640,7 +639,7 @@ function App() {
         handleResetBackground={handleResetBackground}
         handleAudioUpload={handleAudioUpload}
         handleResetMusic={handleResetMusic}
-        // ADDED: Profile Pic Props
+        // Profile Pic Props
         profilePic={profilePic}
         handlePfpUpload={handlePfpUpload}
         handleResetPfp={() => { setProfilePic(''); localStorage.removeItem('capy-pfp'); }}
