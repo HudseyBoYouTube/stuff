@@ -53,8 +53,8 @@ function App() {
   const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
   const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
 
-  // Master switch for Background Visibility
-  const [bgEnabled, setBgEnabled] = useState(() => localStorage.getItem('capy-bg-enabled') !== 'false');
+  // Master switch for Background Visibility - Defaulted to false (OFF) on load
+  const [bgEnabled, setBgEnabled] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
   const [backgroundVideo, setBackgroundVideo] = useState(() => localStorage.getItem('capy-bg-video') || '');
   const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
@@ -119,8 +119,9 @@ function App() {
   }, [confirmReset]);
 
   const toggleBgEnabled = () => {
-    setBgEnabled(!bgEnabled);
-    localStorage.setItem('capy-bg-enabled', !bgEnabled);
+    const newState = !bgEnabled;
+    setBgEnabled(newState);
+    localStorage.setItem('capy-bg-enabled', newState);
   };
 
   const handleBackgroundUpload = (e) => {
