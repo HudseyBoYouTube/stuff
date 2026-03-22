@@ -501,6 +501,7 @@ function App() {
                        let base64 = selectedFriend.code.trim();
                        // Sanitize base64 string
                        base64 = base64.replace(/[^A-Za-z0-9+/]/g, "");
+                       // RE-ADD PADDING FOR PARSING
                        while (base64.length % 4 !== 0) base64 += '=';
                        const decoded = JSON.parse(atob(base64));
                        displayFavs = decoded.f || [];
