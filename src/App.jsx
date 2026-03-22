@@ -63,7 +63,7 @@ function App() {
   const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
   
   const [bgMusic, setBgMusic] = useState(() => localStorage.getItem('capy-bg-music') || '');
-  const [musicEnabled, setMusicEnabled] = useState(false); 
+  const [musicEnabled, setMusicEnabled] = useState(true); 
   const [volume, setVolume] = useState(() => Number(localStorage.getItem('capy-volume')) || 50);
 
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
@@ -87,18 +87,25 @@ function App() {
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume / 100;
+      localStorage.setItem('capy-volume', volume);
     }
   }, [volume]);
 
+  // Handle Autoplay Workaround
   useEffect(() => {
-    if (musicEnabled && bgMusic && audioRef.current && !performanceMode) {
-      audioRef.current.play().catch(err => console.log("Playback failed:", err));
-    }
-  }, [musicEnabled, bgMusic, performanceMode]);
+    const startMusic = () => {
+      if (audioRef.current && bgMusic && !performanceMode) {
+        audioRef.current.play().catch(() => {});
+      }
+    };
+
+    window.addEventListener('click', startMusic, { once: true });
+    return () => window.removeEventListener('click', startMusic);
+  }, [bgMusic, performanceMode]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (audioRef.current && musicEnabled && bgMusic && !performanceMode) {
+      if (audioRef.current && bgMusic && !performanceMode) {
         if (document.hidden) {
           audioRef.current.pause();
         } else {
@@ -108,7 +115,7 @@ function App() {
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [musicEnabled, bgMusic, performanceMode]);
+  }, [bgMusic, performanceMode]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -188,12 +195,9 @@ function App() {
         const base64String = reader.result;
         setBgMusic(base64String);
         localStorage.setItem('capy-bg-music', base64String);
-        if (!performanceMode) {
-            setMusicEnabled(true);
-            if (audioRef.current) {
-              audioRef.current.load();
-              audioRef.current.play().catch(() => {});
-            }
+        if (!performanceMode && audioRef.current) {
+          audioRef.current.load();
+          audioRef.current.play().catch(() => {});
         }
       };
       reader.readAsDataURL(file);
@@ -202,7 +206,6 @@ function App() {
 
   const handleResetMusic = () => {
     setBgMusic('');
-    setMusicEnabled(false);
     localStorage.removeItem('capy-bg-music');
     if (audioRef.current) {
       audioRef.current.pause();
@@ -418,6 +421,9 @@ function App() {
         handleResetMusic={handleResetMusic}
         handleClearSettings={handleClearSettings}
         handleReset={handleReset}
+        bgMusic={bgMusic}
+        volume={volume}
+        setVolume={setVolume}
       />
     </div>
   );
