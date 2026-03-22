@@ -430,129 +430,17 @@ function App() {
       </div>
 
       <SettingsModal 
-  show={showSettings} 
-  onClose={() => setShowSettings(false)}
-  performanceMode={performanceMode}
-  setPerformanceMode={(val) => { setPerformanceMode(val); localStorage.setItem('capy-perf-mode', val); }}
-  themes={THEMES}
-  applyTheme={applyTheme}
-  handleClearSettings={handleClearSettings}
-  handleReset={handleReset}
-/>
-                </div>
-                {(backgroundImage || backgroundVideo) && (
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-[8px] font-black uppercase text-zinc-500">
-                      <span>Opacity</span>
-                      <span>{bgOpacity}%</span>
-                    </div>
-                    <input type="range" min="0" max="100" value={bgOpacity} onChange={(e) => { setBgOpacity(e.target.value); localStorage.setItem('capy-bg-opacity', e.target.value); }} className="w-full accent-[var(--theme)]" />
-                  </div>
-                )}
-              </section>
-
-              <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-                <div className="flex items-center justify-between">
-                  <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Music className="w-3 h-3 text-[var(--theme)]" /> Menu Music</label>
-                  <button onClick={toggleMusicEnabled} disabled={performanceMode} className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${performanceMode ? 'opacity-20 cursor-not-allowed' : ''} ${musicEnabled ? 'bg-[var(--theme)]/20 text-[var(--theme)] border border-[var(--theme)]/30' : 'bg-white/5 text-zinc-500 border border-white/10'}`}>
-                    <Power className="w-3 h-3" />
-                    {musicEnabled ? 'ON' : 'OFF'}
-                  </button>
-                </div>
-                <div className="flex gap-2">
-                  <label className={`flex-1 p-3 bg-zinc-800 border border-white/10 rounded-xl text-[10px] font-black uppercase transition-all text-center cursor-pointer ${performanceMode ? 'opacity-20 cursor-not-allowed' : 'hover:border-[var(--theme)]/50'}`}>
-                    <div className="flex items-center justify-center gap-2">
-                      <Upload className="w-3 h-3 text-[var(--theme)]" />
-                      Upload MP3
-                    </div>
-                    <input type="file" accept="audio/mpeg,audio/wav,audio/ogg" onChange={handleAudioUpload} className="hidden" disabled={performanceMode} />
-                  </label>
-                  {bgMusic && (
-                    <button onClick={() => { setBgMusic(''); localStorage.removeItem('capy-bg-music'); }} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-all">
-                      <Trash2 className="w-3 h-3 text-red-500" />
-                    </button>
-                  )}
-                </div>
-                {bgMusic && (
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-[8px] font-black uppercase text-zinc-500">
-                      <span className="flex items-center gap-1"><Volume2 className="w-2.5 h-2.5" /> Volume</span>
-                      <span>{volume}%</span>
-                    </div>
-                    <input type="range" min="0" max="100" value={volume} onChange={(e) => { setVolume(e.target.value); localStorage.setItem('capy-volume', e.target.value); }} className="w-full accent-[var(--theme)]" />
-                  </div>
-                )}
-              </section>
-
-              <section className="space-y-4 bg-red-500/5 p-4 rounded-2xl border border-red-500/10">
-                <div className="flex justify-between items-center">
-                   <label className="text-[10px] uppercase font-black text-red-500 tracking-widest flex items-center gap-2">
-                    <Ghost className="w-3 h-3" /> Panic Mode
-                  </label>
-                  <span className="text-[9px] font-bold bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full uppercase">
-                    {panicKey ? `Active: ${panicKey}` : 'Disabled'}
-                  </span>
-                </div>
-                <div className="space-y-3">
-                  <input type="text" placeholder="Redirect URL (google.com)" value={panicUrl} onChange={(e) => { setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50" />
-                  <div className="flex gap-2">
-                    <input type="text" placeholder="Press key to set Panic" value={panicKey} onKeyDown={(e) => { e.preventDefault(); setPanicKey(e.key); localStorage.setItem('capy-panic-key', e.key); }} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50 text-center font-mono font-bold" readOnly />
-                    {panicKey && (
-                      <button onClick={() => { setPanicKey(''); localStorage.removeItem('capy-panic-key'); }} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-all group" title="Remove Panic Key">
-                        <Trash2 className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </section>
-
-              <section className="space-y-3">
-                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Palette className="w-3 h-3" /> Capy-Themes</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(THEMES).map(([id, t]) => (
-                    <button key={id} onClick={() => applyTheme(t)} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:border-[var(--theme)] flex items-center gap-2 transition-all">
-                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: t.color }} /> {t.name}
-                    </button>
-                  ))}
-                </div>
-              </section>
-
-              <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Zap className="w-3 h-3" /> Stealth Presets</label>
-                <div className="flex flex-wrap gap-2">
-                  {Object.keys(DISGUISE_CONFIG).map(type => (
-                    <button key={type} onClick={() => { setDisguise(type); localStorage.setItem('capy-stealth-type', type); }} className={`px-3 py-2 rounded-lg text-[9px] font-bold uppercase border transition-all ${disguise === type ? 'bg-[var(--theme)] text-black' : 'bg-zinc-800 border-white/5'}`}>{type}</button>
-                  ))}
-                </div>
-                <div className="pt-2 space-y-2">
-                  <input type="text" placeholder="Custom Tab Title" value={customTitle} onChange={(e) => { setCustomTitle(e.target.value); localStorage.setItem('capy-custom-title', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none" />
-                  <div className="flex gap-2">
-                    <input type="text" placeholder="Custom Favicon URL" value={customIcon} onChange={(e) => { setCustomIcon(e.target.value); localStorage.setItem('capy-custom-icon', e.target.value); }} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none" />
-                    <label className="p-3 bg-zinc-800 border border-white/10 rounded-xl hover:border-[var(--theme)]/50 transition-all cursor-pointer">
-                      <Upload className="w-4 h-4 text-[var(--theme)]" />
-                      <input type="file" accept="image/*" onChange={handleFaviconUpload} className="hidden" />
-                    </label>
-                  </div>
-                </div>
-              </section>
-
-              <div className="grid grid-cols-2 gap-3">
-                <button onClick={handleClearSettings} className={`flex-1 p-4 rounded-2xl border transition-all flex items-center justify-center gap-2 text-[9px] font-black uppercase ${confirmClearSettings ? 'bg-orange-600 border-orange-400 text-white animate-pulse' : 'border-orange-500/20 bg-orange-500/5 text-orange-500 hover:bg-orange-500/10'}`}>
-                  <RotateCcw className={`w-3.5 h-3.5 ${confirmClearSettings ? 'animate-spin' : ''}`} />
-                  {confirmClearSettings ? 'Confirm?' : 'Clear Settings'}
-                </button>
-                <button onClick={handleReset} className={`flex-1 p-4 rounded-2xl border transition-all flex items-center justify-center gap-2 text-[9px] font-black uppercase ${confirmReset ? 'bg-red-600 border-red-400 text-white animate-pulse' : 'border-red-500/20 bg-red-500/5 text-red-500 hover:bg-red-500/10'}`}>
-                  <Trash2 className={`w-3.5 h-3.5 ${confirmReset ? 'animate-spin' : ''}`} />
-                  {confirmReset ? 'Confirm?' : 'Full Wipe'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+        show={showSettings} 
+        onClose={() => setShowSettings(false)}
+        performanceMode={performanceMode}
+        setPerformanceMode={(val) => { setPerformanceMode(val); localStorage.setItem('capy-perf-mode', val); }}
+        themes={THEMES}
+        applyTheme={applyTheme}
+        handleClearSettings={handleClearSettings}
+        handleReset={handleReset}
+      />
     </div>
   );
 }
-
 
 export default App;
