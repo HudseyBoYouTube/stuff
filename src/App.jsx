@@ -312,7 +312,6 @@ function App() {
       window.location.reload();
     } else {
       setConfirmReset(true);
-      // This tells the user exactly what's about to happen
       setNotification("Warning: This will delete ALL games, favorites, and stats!");
     }
   };
@@ -409,7 +408,7 @@ function App() {
     <div className={`min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'}`} style={{ '--theme': theme, '--glow': `${performanceMode ? 0 : glowIntensity}px` }}>
       
       {notification && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed bottom-40 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
           <div className="bg-zinc-900 border border-[var(--theme)]/50 px-6 py-3 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 text-[var(--theme)]" />
             <span className="text-xs font-black uppercase tracking-tight">{notification}</span>
