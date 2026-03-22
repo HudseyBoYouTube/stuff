@@ -92,7 +92,6 @@ function App() {
   });
 
   const friendCode = useMemo(() => {
-    // We base64 the full string, but use it as-is to avoid decoding errors later
     const combined = `${displayName}#${uniqueId}`;
     return btoa(combined).replace(/=/g, '');
   }, [displayName, uniqueId]);
@@ -360,7 +359,6 @@ function App() {
   return (
     <div className={`min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'}`} style={{ '--theme': theme, '--glow': `${performanceMode ? 0 : glowIntensity}px` }}>
       
-      {/* NOTIFICATION TOAST */}
       {notification && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
           <div className="bg-zinc-900 border border-[var(--theme)]/50 px-6 py-3 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] flex items-center gap-3">
@@ -472,15 +470,22 @@ function App() {
             <div className="space-y-4">
               <label className="text-[10px] font-black text-[var(--theme)] uppercase tracking-widest flex items-center gap-2"><Heart className="w-3 h-3" /> Favorite Games</label>
               <div className="grid gap-2">
-                {selectedFriend.favs.length > 0 ? selectedFriend.favs.map(gameId => {
-                  const game = gamesData.find(g => g.id === gameId);
-                  return game ? (
-                    <div key={gameId} className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
-                      <span className="text-xs font-bold">{game.title}</span>
-                      <span className="text-[10px] font-mono text-zinc-500">{selectedFriend.times[gameId] ? Math.floor(selectedFriend.times[gameId]/60) : 0}m played</span>
-                    </div>
-                  ) : null;
-                }) : <p className="text-xs text-zinc-600 text-center py-4 italic">No favorites yet...</p>}
+                {(() => {
+                   // Logic check: Is this profile actually ME? 
+                   const isMe = selectedFriend.code === friendCode;
+                   const displayFavs = isMe ? favorites : selectedFriend.favs;
+                   const displayTimes = isMe ? playtimes : selectedFriend.times;
+
+                   return displayFavs.length > 0 ? displayFavs.map(gameId => {
+                     const game = gamesData.find(g => g.id === gameId);
+                     return game ? (
+                       <div key={gameId} className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
+                         <span className="text-xs font-bold">{game.title}</span>
+                         <span className="text-[10px] font-mono text-zinc-500">{displayTimes[gameId] ? Math.floor(displayTimes[gameId]/60) : 0}m played</span>
+                       </div>
+                     ) : null;
+                   }) : <p className="text-xs text-zinc-600 text-center py-4 italic">No favorites yet...</p>
+                })()}
               </div>
             </div>
           </div>
@@ -515,21 +520,16 @@ function App() {
           try {
             const cleanCode = code.trim();
             if (!cleanCode) return;
-
-            // Simple check: We try to decode it. If it fails, it's invalid.
             const decoded = atob(cleanCode);
             const name = decoded.split('#')[0];
-            
             if (!name || !decoded.includes('#')) {
               alert("Invalid Friend Code Format!");
               return;
             }
-
             if (friends.find(f => f.code === cleanCode)) {
               setNotification("Already Friends!");
               return;
             }
-
             const newFriends = [...friends, { name, code: cleanCode, favs: [], times: {} }];
             setFriends(newFriends);
             localStorage.setItem('capy-friends', JSON.stringify(newFriends));
