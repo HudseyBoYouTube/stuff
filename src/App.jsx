@@ -589,7 +589,11 @@ function App() {
         show={showSettings} 
         onClose={() => setShowSettings(false)}
         performanceMode={performanceMode}
-        setPerformanceMode={(val) => { setPerformanceMode(val); localStorage.setItem('capy-perf-mode', val); }}
+        setPerformanceMode={(val) => { 
+            setPerformanceMode(val); 
+            localStorage.setItem('capy-perf-mode', val);
+            setNotification(val ? "Performance Mode: ON (Effects/Backgrounds Disabled)" : "Performance Mode: OFF");
+        }}
         themes={THEMES}
         applyTheme={applyTheme}
         panicKey={panicKey}
