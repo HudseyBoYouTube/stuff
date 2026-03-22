@@ -8,6 +8,7 @@ import {
 
 import gamesDataRaw from './games.json';
 import { GameCard } from './components/GameCard';
+import { SettingsModal } from './components/SettingsModal';
 
 const DEFAULT_COLOR = '#10A5F5';
 const DEFAULT_GLOW = 50;
@@ -428,55 +429,16 @@ function App() {
         </main>
       </div>
 
-      {showSettings && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-white/5 pb-4">
-              <h2 className="text-xl font-bold flex items-center gap-2 text-[var(--theme)]"><ShieldAlert className="w-5 h-5" /> System Config</h2>
-              <X onClick={() => setShowSettings(false)} className="cursor-pointer text-zinc-400 hover:text-white" />
-            </div>
-            
-            <div className="space-y-6">
-              {/* PERFORMANCE MODE TOGGLE */}
-              <section className="space-y-4 bg-yellow-500/5 p-4 rounded-2xl border border-yellow-500/10">
-                <div className="flex items-center justify-between">
-                  <label className="text-[10px] uppercase font-black text-yellow-500 tracking-widest flex items-center gap-2"><Cpu className="w-3 h-3" /> Performance Mode</label>
-                  <button 
-                    onClick={() => {
-                        const next = !performanceMode;
-                        setPerformanceMode(next);
-                        localStorage.setItem('capy-perf-mode', next);
-                    }} 
-                    className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${performanceMode ? 'bg-yellow-500 text-black' : 'bg-white/5 text-zinc-500 border border-white/10'}`}>
-                    <Zap className="w-3 h-3" />
-                    {performanceMode ? 'ON' : 'OFF'}
-                  </button>
-                </div>
-                <p className="text-[8px] text-zinc-500 font-bold leading-relaxed uppercase">Disables Glow, Backgrounds, and Music to save your cooked CPU on school Chromebooks</p>
-              </section>
-
-              <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-                <div className="flex items-center justify-between">
-                  <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><ImageIcon className="w-3 h-3 text-[var(--theme)]" /> Media Background</label>
-                  <button onClick={toggleBgEnabled} disabled={performanceMode} className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${performanceMode ? 'opacity-20 cursor-not-allowed' : ''} ${bgEnabled ? 'bg-[var(--theme)]/20 text-[var(--theme)] border border-[var(--theme)]/30' : 'bg-white/5 text-zinc-500 border border-white/10'}`}>
-                    <Power className="w-3 h-3" />
-                    {bgEnabled ? 'ON' : 'OFF'}
-                  </button>
-                </div>
-                
-                <div className="flex gap-2">
-                  <label className={`flex-1 p-3 bg-zinc-800 border border-white/10 rounded-xl text-[10px] font-black uppercase transition-all text-center cursor-pointer ${performanceMode ? 'opacity-20 cursor-not-allowed' : 'hover:border-[var(--theme)]/50'}`}>
-                    <div className="flex items-center justify-center gap-2">
-                      <Upload className="w-3 h-3 text-[var(--theme)]" />
-                      Upload IMG/GIF/MP4
-                    </div>
-                    <input type="file" accept="image/*,video/*" onChange={handleBackgroundUpload} className="hidden" disabled={performanceMode} />
-                  </label>
-                  {(backgroundImage || backgroundVideo) && (
-                    <button onClick={() => { setBackgroundImage(''); setBackgroundVideo(''); localStorage.removeItem('capy-bg-image'); localStorage.removeItem('capy-bg-video'); }} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-all">
-                      <Trash2 className="w-3 h-3 text-red-500" />
-                    </button>
-                  )}
+      <SettingsModal 
+  show={showSettings} 
+  onClose={() => setShowSettings(false)}
+  performanceMode={performanceMode}
+  setPerformanceMode={(val) => { setPerformanceMode(val); localStorage.setItem('capy-perf-mode', val); }}
+  themes={THEMES}
+  applyTheme={applyTheme}
+  handleClearSettings={handleClearSettings}
+  handleReset={handleReset}
+/>
                 </div>
                 {(backgroundImage || backgroundVideo) && (
                   <div className="space-y-1.5">
