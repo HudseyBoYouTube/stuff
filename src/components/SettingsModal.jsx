@@ -17,7 +17,7 @@ export function SettingsModal(props) {
         {/* HEADER */}
         <div className="flex items-center justify-between border-b border-white/5 pb-4">
           <h2 className="text-xl font-bold flex items-center gap-2 text-[var(--theme)]">
-            <ShieldAlert className="w-5 h-5" /> System Config
+            <ShieldAlert className="w-5 h-5" /> System Settings
           </h2>
           <X onClick={props.onClose} className="cursor-pointer text-zinc-400 hover:text-white transition-colors" />
         </div>
@@ -83,7 +83,7 @@ export function SettingsModal(props) {
           {/* THEMES */}
           <section className="space-y-3">
             <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2">
-              <Palette className="w-3 h-3" /> Capy-Themes
+              <Palette className="w-3 h-3" /> Themes
             </label>
             <div className="grid grid-cols-2 gap-2">
               {Object.entries(props.themes).map(([id, t]) => (
@@ -97,10 +97,10 @@ export function SettingsModal(props) {
           {/* RESET BUTTONS */}
           <div className="grid grid-cols-2 gap-3 pt-4">
             <button onClick={props.handleClearSettings} className="p-4 rounded-2xl border border-orange-500/20 bg-orange-500/5 text-orange-500 text-[9px] font-black uppercase flex items-center justify-center gap-2">
-              <RotateCcw className="w-3.5 h-3.5" /> Clear
+              <RotateCcw className="w-3.5 h-3.5" /> Clear Settings
             </button>
             <button onClick={props.handleReset} className="p-4 rounded-2xl border border-red-500/20 bg-red-500/5 text-red-500 text-[9px] font-black uppercase flex items-center justify-center gap-2">
-              <Trash2 className="w-3.5 h-3.5" /> Wipe
+              <Trash2 className="w-3.5 h-3.5" /> Wipe Data
             </button>
           </div>
         </div>
