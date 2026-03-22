@@ -435,6 +435,8 @@ function App() {
         handleResetMusic={handleResetMusic}
         handleClearSettings={handleClearSettings}
         handleReset={handleReset}
+        confirmReset={confirmReset}
+        confirmClearSettings={confirmClearSettings}
         bgMusic={bgMusic}
         volume={volume}
         setVolume={setVolume}
