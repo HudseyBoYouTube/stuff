@@ -70,6 +70,26 @@ export function SettingsModal(props) {
                 <RotateCcw className="w-3 h-3" /> Reset Music
               </button>
             </div>
+
+            {/* VOLUME SLIDER - Only shows when music exists */}
+            {props.bgMusic && (
+              <div className="pt-2 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="flex items-center justify-between">
+                  <label className="text-[9px] uppercase font-black text-zinc-400 flex items-center gap-2">
+                    <Volume2 className="w-3 h-3 text-[var(--theme)]" /> Music Volume
+                  </label>
+                  <span className="text-[10px] font-mono text-[var(--theme)]">{props.volume}%</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="100" 
+                  value={props.volume} 
+                  onChange={(e) => props.setVolume(Number(e.target.value))}
+                  className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[var(--theme)]"
+                />
+              </div>
+            )}
           </section>
 
           {/* PANIC PROTOCOL */}
