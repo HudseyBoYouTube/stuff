@@ -70,7 +70,6 @@ function App() {
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
   const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || '');
 
-  // FIXED INITIALIZATION: Ensure it always returns an array
   const [favorites, setFavorites] = useState(() => {
     try {
         const saved = localStorage.getItem('capy-favorites');
@@ -84,7 +83,6 @@ function App() {
 
   const [performanceMode, setPerformanceMode] = useState(() => localStorage.getItem('capy-perf-mode') === 'true');
 
-  // SOCIAL FEATURES STATE
   const [displayName, setDisplayName] = useState(() => localStorage.getItem('capy-display-name') || 'CapyUser');
   const [friends, setFriends] = useState(() => JSON.parse(localStorage.getItem('capy-friends') || '[]'));
   const [selectedFriend, setSelectedFriend] = useState(null);
@@ -331,7 +329,6 @@ function App() {
   const categoriesWithCounts = useMemo(() => {
     const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
     const final = [{ name: 'All', count: gamesData.length }];
-    // Ensure Favorites is added if there are any
     if (validFavoritesCount > 0) final.unshift({ name: 'Favorites', count: validFavoritesCount });
     uniqueCats.forEach(cat => {
       final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
@@ -482,10 +479,10 @@ function App() {
               <div className="grid gap-2">
                 {(() => {
                    const isMe = selectedFriend.code === friendCode;
-                   const displayFavs = isMe ? favorites : selectedFriend.favs;
-                   const displayTimes = isMe ? playtimes : selectedFriend.times;
+                   const displayFavs = isMe ? favorites : (selectedFriend.favs || []);
+                   const displayTimes = isMe ? playtimes : (selectedFriend.times || {});
 
-                   return (displayFavs && displayFavs.length > 0) ? displayFavs.map(gameId => {
+                   return (displayFavs.length > 0) ? displayFavs.map(gameId => {
                      const game = gamesData.find(g => g.id === gameId);
                      return game ? (
                        <div key={gameId} className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
