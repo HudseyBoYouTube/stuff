@@ -3,7 +3,7 @@ import {
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
   Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video, Music, Volume2, Power,
-  Cpu, Users, UserPlus, UserCircle, CheckCircle2, History 
+  Cpu, Users, UserPlus, UserCircle, CheckCircle2, History // Added History icon
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -58,18 +58,13 @@ function App() {
   const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
   const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
 
-  // IMPROVED: Logic to ensure background is enabled if assets exist
-  const [bgEnabled, setBgEnabled] = useState(() => {
-    const saved = localStorage.getItem('capy-bg-enabled');
-    if (saved === null) return !!(localStorage.getItem('capy-bg-image') || localStorage.getItem('capy-bg-video'));
-    return saved === 'true';
-  });
-
+  const [bgEnabled, setBgEnabled] = useState(() => localStorage.getItem('capy-bg-enabled') === 'true');
   const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
   const [backgroundVideo, setBackgroundVideo] = useState(() => localStorage.getItem('capy-bg-video') || '');
   const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
   
   const [bgMusic, setBgMusic] = useState(() => localStorage.getItem('capy-bg-music') || '');
+  const [musicEnabled, setMusicEnabled] = useState(true); 
   const [volume, setVolume] = useState(() => Number(localStorage.getItem('capy-volume')) || 50);
 
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
@@ -86,6 +81,7 @@ function App() {
   
   const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
+  // --- NEW: Recently Played State ---
   const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
     try {
       const saved = localStorage.getItem('capy-recent');
@@ -96,8 +92,11 @@ function App() {
   });
 
   const [performanceMode, setPerformanceMode] = useState(() => localStorage.getItem('capy-perf-mode') === 'true');
+
   const [displayName, setDisplayName] = useState(() => localStorage.getItem('capy-display-name') || 'CapyUser');
+  // ADDED: Profile Picture State
   const [profilePic, setProfilePic] = useState(() => localStorage.getItem('capy-pfp') || '');
+  
   const [friends, setFriends] = useState(() => JSON.parse(localStorage.getItem('capy-friends') || '[]'));
   const [selectedFriend, setSelectedFriend] = useState(null);
 
@@ -113,12 +112,18 @@ function App() {
   });
 
   const friendCode = useMemo(() => {
+    const topFavs = favorites.slice(0, 5);
+    const topTimes = {};
+    topFavs.forEach(id => {
+      if (playtimes[id]) topTimes[id] = playtimes[id];
+    });
+
     const data = {
       n: displayName,
       id: uniqueId,
-      f: favorites.slice(0, 5),
-      t: playtimes,
-      p: profilePic 
+      f: topFavs,
+      t: topTimes,
+      p: profilePic // ADDED: Profile pic to friend code
     };
     return btoa(JSON.stringify(data)).replace(/=/g, '');
   }, [displayName, uniqueId, favorites, playtimes, profilePic]);
@@ -131,12 +136,18 @@ function App() {
   }, [notification]);
 
   useEffect(() => {
-    updateThemeVariables(theme, performanceMode ? 0 : glowIntensity);
+    if (performanceMode) {
+      updateThemeVariables(theme, 0); 
+    } else {
+      updateThemeVariables(theme, glowIntensity);
+    }
   }, [performanceMode, theme, glowIntensity]);
 
   useEffect(() => {
-    if (audioRef.current) audioRef.current.volume = volume / 100;
-    localStorage.setItem('capy-volume', volume);
+    if (audioRef.current) {
+      audioRef.current.volume = volume / 100;
+      localStorage.setItem('capy-volume', volume);
+    }
   }, [volume]);
 
   useEffect(() => {
@@ -144,8 +155,48 @@ function App() {
   }, [bgOpacity]);
 
   useEffect(() => {
+    if (bgMusic && audioRef.current && !performanceMode) {
+      audioRef.current.load();
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          console.log("Autoplay prevented. Music will start on next click.");
+        });
+      }
+    }
+  }, [bgMusic, performanceMode]);
+
+  useEffect(() => {
+    const startMusic = () => {
+      if (audioRef.current && bgMusic && !performanceMode) {
+        audioRef.current.play().catch(() => {});
+      }
+    };
+
+    window.addEventListener('click', startMusic, { once: true });
+    return () => window.removeEventListener('click', startMusic);
+  }, [bgMusic, performanceMode]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (audioRef.current && bgMusic && !performanceMode) {
+        if (document.hidden) {
+          audioRef.current.pause();
+        } else {
+          audioRef.current.play().catch(() => {});
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [bgMusic, performanceMode]);
+
+  useEffect(() => {
     const handleKeyDown = (e) => {
-      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+        return;
+      }
+
       if (panicKey && e.key === panicKey) {
         window.location.href = panicUrl.startsWith('http') ? panicUrl : `https://${panicUrl}`;
       }
@@ -166,6 +217,20 @@ function App() {
     }
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (confirmReset) {
+      const timeout = setTimeout(() => setConfirmReset(false), 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [confirmReset]);
+
+  useEffect(() => {
+    if (confirmClearSettings) {
+      const timeout = setTimeout(() => setConfirmClearSettings(false), 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [confirmClearSettings]);
 
   const handleBackgroundUpload = (e) => {
     const file = e.target.files[0];
@@ -205,13 +270,23 @@ function App() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setBgMusic(reader.result);
-        localStorage.setItem('capy-bg-music', reader.result);
+        const base64String = reader.result;
+        setBgMusic(base64String);
+        localStorage.setItem('capy-bg-music', base64String);
       };
       reader.readAsDataURL(file);
     }
   };
 
+  const handleResetMusic = () => {
+    setBgMusic('');
+    localStorage.removeItem('capy-bg-music');
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+  };
+
+  // ADDED: Handle PFP Upload
   const handlePfpUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -224,11 +299,55 @@ function App() {
     }
   };
 
+  const toggleFavorite = (id) => {
+    const isRemoving = favorites.includes(id);
+    const newFavs = isRemoving 
+      ? favorites.filter(favId => favId !== id) 
+      : [...favorites, id];
+    
+    setFavorites(newFavs);
+    localStorage.setItem('capy-favorites', JSON.stringify(newFavs));
+
+    if (isRemoving && newFavs.length === 0 && activeCategory === 'Favorites') {
+        setActiveCategory('All');
+    }
+  };
+
   const applyTheme = (t) => {
     setTheme(t.color);
     setGlowIntensity(t.glow);
     localStorage.setItem('capy-theme', t.color);
     localStorage.setItem('capy-glow', t.glow);
+    if (!performanceMode) {
+        updateThemeVariables(t.color, t.glow);
+    }
+  };
+
+  const handleReset = () => {
+    if (confirmReset) {
+      localStorage.clear();
+      window.location.reload();
+    } else {
+      setConfirmReset(true);
+      setNotification("Warning: This will delete ALL customization, favorites, friends, and stats!");
+    }
+  };
+
+  const handleClearSettings = () => {
+    if (confirmClearSettings) {
+      const settingsKeys = [
+        'capy-theme', 'capy-glow', 'capy-stealth-type', 
+        'capy-custom-title', 'capy-custom-icon', 'capy-bg-image', 
+        'capy-bg-video', 'capy-bg-opacity', 'capy-bg-music', 
+        'capy-volume', 'capy-panic-url', 'capy-panic-key', 'capy-perf-mode',
+        'capy-bg-enabled', 'capy-recent', 'capy-pfp' // Added pfp here
+      ];
+      settingsKeys.forEach(key => localStorage.removeItem(key));
+      window.location.reload();
+    } else {
+      setConfirmClearSettings(true);
+      setNotification("Warning: This will reset all your settings to default!");
+    }
   };
 
   const currentIdentity = useMemo(() => {
@@ -247,22 +366,26 @@ function App() {
     link.href = currentIdentity.icon;
   }, [currentIdentity]);
 
+  const validFavoritesCount = useMemo(() => gamesData.filter(g => favorites.includes(g.id)).length, [gamesData, favorites]);
+
   const categoriesWithCounts = useMemo(() => {
     const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
     const final = [{ name: 'All', count: gamesData.length }];
-    const favCount = gamesData.filter(g => favorites.includes(g.id)).length;
-    if (favCount > 0) final.unshift({ name: 'Favorites', count: favCount });
+    if (validFavoritesCount > 0) final.unshift({ name: 'Favorites', count: validFavoritesCount });
     uniqueCats.forEach(cat => {
       final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
     });
     return final;
-  }, [gamesData, favorites]);
+  }, [gamesData, validFavoritesCount]);
 
+  // --- UPDATED: launchContent to track history ---
   const launchContent = (item) => {
     if (!item?.url) return;
+
+    // Track recently played
     setRecentlyPlayed(prev => {
       const filtered = prev.filter(id => id !== item.id);
-      const updated = [item.id, ...filtered].slice(0, 4);
+      const updated = [item.id, ...filtered].slice(0, 4); // Keep last 4
       localStorage.setItem('capy-recent', JSON.stringify(updated));
       return updated;
     });
@@ -292,8 +415,11 @@ function App() {
     });
   }, [searchQuery, activeCategory, gamesData, favorites]);
 
+  // --- NEW: Helper for Recent Games List ---
   const recentGamesData = useMemo(() => {
-    return recentlyPlayed.map(id => gamesData.find(g => g.id === id)).filter(Boolean);
+    return recentlyPlayed
+      .map(id => gamesData.find(g => g.id === id))
+      .filter(Boolean);
   }, [recentlyPlayed, gamesData]);
 
   return (
@@ -308,75 +434,204 @@ function App() {
         </div>
       )}
 
-      {/* FIXED: Background Renderer with enhanced visibility logic */}
-      {bgEnabled && !performanceMode && (backgroundImage || backgroundVideo) && (
+      {bgEnabled && !performanceMode && (
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" style={{ opacity: bgOpacity / 100 }}>
           {backgroundVideo ? (
             <video key={backgroundVideo} autoPlay muted loop playsInline className="w-full h-full object-cover">
               <source src={backgroundVideo} />
             </video>
-          ) : (
-            <div className="w-full h-full bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${backgroundImage})` }} />
-          )}
+          ) : backgroundImage ? (
+            <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${backgroundImage})` }} />
+          ) : null}
         </div>
       )}
 
       {bgMusic && <audio ref={audioRef} src={bgMusic} loop />}
 
       <div className="relative z-10">
-        <header className="sticky top-0 z-50 border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
-          <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
-            <div className="flex items-center gap-2">
-              <img src={DEFAULT_ICON} alt="Logo" className="w-7 h-7 object-contain" />
-              <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
-            </div>
-
-            <div className="flex items-center gap-2 w-full justify-self-center">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-                <input type="text" placeholder="Search games..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50" />
+        <div className="sticky top-0 z-50">
+          <header className="border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
+            <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
+              <div className="flex items-center gap-2">
+                <img src={DEFAULT_ICON} alt="Logo" className="w-7 h-7 object-contain" />
+                <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
               </div>
-              <button onClick={() => {
-                const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
-                if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
-              }} className="p-2 bg-white/5 border border-white/10 rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black">
-                <Dices className="w-5 h-5" />
-              </button>
-            </div>
 
-            <div className="flex items-center justify-end gap-4">
-              <button onClick={() => setShowSettings(true)} className="p-2 text-[var(--theme)] hover:opacity-70"><Settings className="w-6 h-6" /></button>
+              <div className="flex items-center gap-2 w-full justify-self-center">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                  <input 
+                    type="text" 
+                    placeholder="Search games..." 
+                    value={searchQuery} 
+                    onChange={(e) => setSearchQuery(e.target.value)} 
+                    className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 transition-colors" 
+                  />
+                  {searchQuery && (
+                    <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-white/10 rounded-full text-[var(--theme)]">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+                <button onClick={() => {
+                  const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
+                  if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
+                }} className="p-2 bg-white/5 border border-white/10 rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all">
+                  <Dices className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="flex items-center justify-end gap-4">
+                <div className="hidden sm:flex items-center gap-3 text-[9px] font-black uppercase text-[var(--theme)] bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                  <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                  <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
+                  <div className="flex items-center gap-1 border-l border-white/10 pl-3">
+                    <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500' : ''}`} />
+                    <span>{battery.level}%</span>
+                  </div>
+                </div>
+                <button onClick={() => setShowSettings(true)} className="p-2 text-[var(--theme)] hover:opacity-70 transition-all"><Settings className="w-6 h-6" /></button>
+              </div>
+            </div>
+          </header>
+
+          <div className="bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 overflow-hidden">
+            <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+              {categoriesWithCounts.map(cat => (
+                <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'}`}>
+                  {cat.name} <span className="opacity-40 ml-1">{cat.count}</span>
+                </button>
+              ))}
             </div>
           </div>
-        </header>
+        </div>
 
         <main className="max-w-7xl mx-auto px-4 mt-8 space-y-12">
           {recentGamesData.length > 0 && activeCategory === 'All' && !searchQuery && (
             <section className="space-y-4">
               <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                <History className="w-3 h-3 text-[var(--theme)]" /> Recently Played
+                <History className="w-3 h-3 text-[var(--theme)]" />
+                Recently Played
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 {recentGamesData.map(game => (
-                  <GameCard key={`recent-${game.id}`} game={game} onLaunch={launchContent} isFavorite={favorites.includes(game.id)} onToggleFavorite={() => toggleFavorite(game.id)} performanceMode={performanceMode} />
+                  <GameCard 
+                    key={`recent-${game.id}`} 
+                    game={game} 
+                    onLaunch={launchContent} 
+                    playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
+                    isFavorite={favorites.includes(game.id)}
+                    onToggleFavorite={() => toggleFavorite(game.id)}
+                    performanceMode={performanceMode}
+                  />
                 ))}
               </div>
+              <div className="h-px bg-white/5 w-full mt-8" />
             </section>
           )}
 
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {filteredGames.map(game => (
-              <GameCard key={game.id} game={game} onLaunch={launchContent} isFavorite={favorites.includes(game.id)} onToggleFavorite={() => toggleFavorite(game.id)} performanceMode={performanceMode} />
+              <GameCard 
+                key={game.id} 
+                game={game} 
+                onLaunch={launchContent} 
+                playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
+                isFavorite={favorites.includes(game.id)}
+                onToggleFavorite={() => toggleFavorite(game.id)}
+                performanceMode={performanceMode}
+              />
             ))}
           </section>
         </main>
       </div>
 
+      {selectedFriend && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+          <div className="bg-zinc-900 border border-[var(--theme)]/30 p-8 rounded-3xl max-w-sm w-full relative shadow-[0_0_50px_rgba(0,0,0,0.5)] space-y-6">
+            <button onClick={() => setSelectedFriend(null)} className="absolute top-4 right-4 text-zinc-500 hover:text-white"><X /></button>
+            <div className="text-center space-y-2">
+              <div className="w-20 h-20 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20 overflow-hidden">
+                {/* UPDATED: Profile Picture Preview logic */}
+                {(() => {
+                    try {
+                        const isMe = selectedFriend.code === friendCode;
+                        let displayPfp = '';
+                        if (isMe) {
+                            displayPfp = profilePic;
+                        } else {
+                            let base64 = selectedFriend.code.trim();
+                            base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+                            while (base64.length % 4 !== 0) base64 += '=';
+                            const decoded = JSON.parse(atob(base64));
+                            displayPfp = decoded.p;
+                        }
+
+                        return displayPfp ? (
+                            <img src={displayPfp} className="w-full h-full object-cover" />
+                        ) : (
+                            <UserCircle className="w-12 h-12 text-[var(--theme)]" />
+                        );
+                    } catch(e) {
+                        return <UserCircle className="w-12 h-12 text-[var(--theme)]" />;
+                    }
+                })()}
+              </div>
+              <h3 className="text-2xl font-black tracking-tighter">{selectedFriend.name}</h3>
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Friend Profile</p>
+            </div>
+            <div className="space-y-4">
+              <label className="text-[10px] font-black text-[var(--theme)] uppercase tracking-widest flex items-center gap-2"><Heart className="w-3 h-3" /> Favorite Games</label>
+              <div className="grid gap-2">
+                {(() => {
+                   try {
+                     const isMe = selectedFriend.code === friendCode;
+                     let displayFavs = [];
+                     let displayTimes = {};
+
+                     if (isMe) {
+                       displayFavs = favorites;
+                       displayTimes = playtimes;
+                     } else {
+                       let base64 = selectedFriend.code.trim();
+                       base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+                       while (base64.length % 4 !== 0) base64 += '=';
+                       
+                       const decoded = JSON.parse(atob(base64));
+                       displayFavs = decoded.f || [];
+                       displayTimes = decoded.t || {};
+                     }
+
+                     const validFavs = displayFavs.filter(id => gamesData.find(g => g.id === id));
+
+                     return (validFavs.length > 0) ? validFavs.map(gameId => {
+                       const game = gamesData.find(g => g.id === gameId);
+                       return game ? (
+                         <div key={gameId} className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
+                           <span className="text-xs font-bold">{game.title}</span>
+                           <span className="text-[10px] font-mono text-zinc-500">{displayTimes[gameId] ? Math.floor(displayTimes[gameId]/60) : 0}m played</span>
+                         </div>
+                       ) : null;
+                     }) : <p className="text-xs text-zinc-600 text-center py-4 italic">No favorites yet...</p>
+                   } catch(e) {
+                     console.error("Profile Load Error:", e);
+                     return <p className="text-xs text-red-500 text-center py-4">Error loading favorites</p>
+                   }
+                })()}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <SettingsModal 
         show={showSettings} 
         onClose={() => setShowSettings(false)}
         performanceMode={performanceMode}
-        setPerformanceMode={(val) => { setPerformanceMode(val); localStorage.setItem('capy-perf-mode', val); }}
+        setPerformanceMode={(val) => { 
+            setPerformanceMode(val); 
+            localStorage.setItem('capy-perf-mode', val);
+        }}
         themes={THEMES}
         applyTheme={applyTheme}
         panicKey={panicKey}
@@ -384,9 +639,15 @@ function App() {
         handleBackgroundUpload={handleBackgroundUpload}
         handleResetBackground={handleResetBackground}
         handleAudioUpload={handleAudioUpload}
+        handleResetMusic={handleResetMusic}
+        // ADDED: Profile Pic Props
         profilePic={profilePic}
         handlePfpUpload={handlePfpUpload}
         handleResetPfp={() => { setProfilePic(''); localStorage.removeItem('capy-pfp'); }}
+        handleClearSettings={handleClearSettings}
+        handleReset={handleReset}
+        confirmReset={confirmReset}
+        confirmClearSettings={confirmClearSettings}
         bgMusic={bgMusic}
         bgEnabled={bgEnabled}
         volume={volume}
@@ -397,6 +658,39 @@ function App() {
         setDisplayName={(val) => { setDisplayName(val); localStorage.setItem('capy-display-name', val); }}
         friendCode={friendCode}
         friends={friends}
+        onAddFriend={(code) => {
+          try {
+            let cleanCode = code.trim();
+            if (!cleanCode) return;
+            
+            let base64 = cleanCode;
+            base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+            while (base64.length % 4 !== 0) base64 += '=';
+            
+            const decodedData = JSON.parse(atob(base64));
+            const { n: name } = decodedData;
+
+            if (!name) {
+              alert("Invalid Friend Code Format!");
+              return;
+            }
+            if (friends.find(f => f.code === cleanCode)) {
+              setNotification("Already Friends!");
+              return;
+            }
+            const newFriends = [...friends, { name, code: cleanCode }];
+            setFriends(newFriends);
+            localStorage.setItem('capy-friends', JSON.stringify(newFriends));
+            setNotification("Friend Added!");
+          } catch(e) { 
+            alert("Invalid Friend Code!"); 
+          }
+        }}
+        onRemoveFriend={(code) => {
+          const newFriends = friends.filter(f => f.code !== code);
+          setFriends(newFriends);
+          localStorage.setItem('capy-friends', JSON.stringify(newFriends));
+        }}
         onViewFriend={setSelectedFriend}
       />
     </div>
