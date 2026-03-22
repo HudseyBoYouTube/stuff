@@ -57,7 +57,7 @@ function App() {
   const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
   const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
 
-  const [bgEnabled, setBgEnabled] = useState(false);
+  const [bgEnabled, setBgEnabled] = useState(() => localStorage.getItem('capy-bg-enabled') === 'true');
   const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
   const [backgroundVideo, setBackgroundVideo] = useState(() => localStorage.getItem('capy-bg-video') || '');
   const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
@@ -153,21 +153,31 @@ function App() {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result;
-        setBgEnabled(true); // Automatically turn on background when uploaded
+        setBgEnabled(true);
+        localStorage.setItem('capy-bg-enabled', 'true');
         if (file.type.startsWith('video/')) {
           setBackgroundVideo(base64String);
-          setBackgroundImage(''); // Clear image if video is uploaded
+          setBackgroundImage('');
           localStorage.setItem('capy-bg-video', base64String);
           localStorage.removeItem('capy-bg-image');
         } else {
           setBackgroundImage(base64String);
-          setBackgroundVideo(''); // Clear video if image is uploaded
+          setBackgroundVideo('');
           localStorage.setItem('capy-bg-image', base64String);
           localStorage.removeItem('capy-bg-video');
         }
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleResetBackground = () => {
+    setBackgroundImage('');
+    setBackgroundVideo('');
+    setBgEnabled(false);
+    localStorage.removeItem('capy-bg-image');
+    localStorage.removeItem('capy-bg-video');
+    localStorage.setItem('capy-bg-enabled', 'false');
   };
 
   const handleAudioUpload = (e) => {
@@ -229,7 +239,8 @@ function App() {
         'capy-theme', 'capy-glow', 'capy-stealth-type', 
         'capy-custom-title', 'capy-custom-icon', 'capy-bg-image', 
         'capy-bg-video', 'capy-bg-opacity', 'capy-bg-music', 
-        'capy-volume', 'capy-panic-url', 'capy-panic-key', 'capy-perf-mode'
+        'capy-volume', 'capy-panic-url', 'capy-panic-key', 'capy-perf-mode',
+        'capy-bg-enabled'
       ];
       settingsKeys.forEach(key => localStorage.removeItem(key));
       window.location.reload();
@@ -393,6 +404,7 @@ function App() {
         panicKey={panicKey}
         setPanicKey={(val) => { setPanicKey(val); localStorage.setItem('capy-panic-key', val); }}
         handleBackgroundUpload={handleBackgroundUpload}
+        handleResetBackground={handleResetBackground}
         handleAudioUpload={handleAudioUpload}
         handleClearSettings={handleClearSettings}
         handleReset={handleReset}
