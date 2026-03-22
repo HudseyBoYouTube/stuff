@@ -498,15 +498,17 @@ function App() {
                        displayFavs = favorites;
                        displayTimes = playtimes;
                      } else {
-                       // Clean the Base64 string for atob (add padding if missing)
-                       let base64 = selectedFriend.code;
+                       let base64 = selectedFriend.code.trim();
+                       // Sanitize and pad Base64
                        while (base64.length % 4 !== 0) base64 += '=';
                        const decoded = JSON.parse(atob(base64));
                        displayFavs = decoded.f || [];
                        displayTimes = decoded.t || {};
                      }
 
-                     return (displayFavs.length > 0) ? displayFavs.map(gameId => {
+                     const validFavs = displayFavs.filter(id => gamesData.find(g => g.id === id));
+
+                     return (validFavs.length > 0) ? validFavs.map(gameId => {
                        const game = gamesData.find(g => g.id === gameId);
                        return game ? (
                          <div key={gameId} className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
@@ -555,7 +557,6 @@ function App() {
             let cleanCode = code.trim();
             if (!cleanCode) return;
             
-            // Normalize Base64 for validation
             let base64 = cleanCode;
             while (base64.length % 4 !== 0) base64 += '=';
             
