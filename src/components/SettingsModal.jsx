@@ -43,6 +43,19 @@ export function SettingsModal(props) {
               <Type className="w-3 h-3" /> Profile Identity
             </label>
             <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-2">
+                <label className="p-3 bg-zinc-800 border border-white/10 rounded-xl text-[9px] font-black uppercase text-center cursor-pointer hover:border-[var(--theme)]/50 transition-all">
+                  <Upload className="w-3 h-3 mx-auto mb-1 text-[var(--theme)]" />
+                  Upload Avatar
+                  <input type="file" accept="image/*" onChange={props.handleAvatarUpload} className="hidden" />
+                </label>
+                <button 
+                  onClick={props.handleResetAvatar}
+                  className="p-3 bg-red-500/5 border border-red-500/10 rounded-xl text-[9px] font-black uppercase text-red-500/70 hover:bg-red-500/10 hover:text-red-500 transition-all flex flex-col items-center justify-center gap-1"
+                >
+                  <RotateCcw className="w-3 h-3" /> Reset Avatar
+                </button>
+              </div>
               <input 
                 type="text" 
                 placeholder="Custom Display Name..." 
