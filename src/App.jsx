@@ -173,6 +173,14 @@ function App() {
         const base64String = reader.result;
         setBgMusic(base64String);
         localStorage.setItem('capy-bg-music', base64String);
+        
+        // Auto-start logic
+        setMusicEnabled(true);
+        if (audioRef.current) {
+          audioRef.current.play().catch(() => {
+            console.log("Autoplay prevented; will start on next interaction.");
+          });
+        }
       };
       reader.readAsDataURL(file);
     }
