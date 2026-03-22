@@ -489,12 +489,22 @@ function App() {
               <label className="text-[10px] font-black text-[var(--theme)] uppercase tracking-widest flex items-center gap-2"><Heart className="w-3 h-3" /> Favorite Games</label>
               <div className="grid gap-2">
                 {(() => {
-                   // Always decode current data from the code string
                    try {
                      const isMe = selectedFriend.code === friendCode;
-                     const data = isMe ? { f: favorites, t: playtimes } : JSON.parse(atob(selectedFriend.code));
-                     const displayFavs = data.f || [];
-                     const displayTimes = data.t || {};
+                     let displayFavs = [];
+                     let displayTimes = {};
+
+                     if (isMe) {
+                       displayFavs = favorites;
+                       displayTimes = playtimes;
+                     } else {
+                       // Clean the Base64 string for atob (add padding if missing)
+                       let base64 = selectedFriend.code;
+                       while (base64.length % 4 !== 0) base64 += '=';
+                       const decoded = JSON.parse(atob(base64));
+                       displayFavs = decoded.f || [];
+                       displayTimes = decoded.t || {};
+                     }
 
                      return (displayFavs.length > 0) ? displayFavs.map(gameId => {
                        const game = gamesData.find(g => g.id === gameId);
@@ -506,6 +516,7 @@ function App() {
                        ) : null;
                      }) : <p className="text-xs text-zinc-600 text-center py-4 italic">No favorites yet...</p>
                    } catch(e) {
+                     console.error("Profile Load Error:", e);
                      return <p className="text-xs text-red-500 text-center py-4">Error loading favorites</p>
                    }
                 })()}
@@ -541,9 +552,14 @@ function App() {
         friends={friends}
         onAddFriend={(code) => {
           try {
-            const cleanCode = code.trim();
+            let cleanCode = code.trim();
             if (!cleanCode) return;
-            const decodedData = JSON.parse(atob(cleanCode));
+            
+            // Normalize Base64 for validation
+            let base64 = cleanCode;
+            while (base64.length % 4 !== 0) base64 += '=';
+            
+            const decodedData = JSON.parse(atob(base64));
             const { n: name } = decodedData;
 
             if (!name) {
