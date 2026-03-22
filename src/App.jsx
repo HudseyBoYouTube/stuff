@@ -111,6 +111,7 @@ function App() {
     return id;
   });
 
+  // FIXED: Removed profilePic (p) from the friend code to keep it short
   const friendCode = useMemo(() => {
     const topFavs = favorites.slice(0, 5);
     const topTimes = {};
@@ -122,11 +123,11 @@ function App() {
       n: displayName,
       id: uniqueId,
       f: topFavs,
-      t: topTimes,
-      p: profilePic // Profile pic to friend code
+      t: topTimes
+      // Removed 'p: profilePic' to prevent long codes
     };
     return btoa(JSON.stringify(data)).replace(/=/g, '');
-  }, [displayName, uniqueId, favorites, playtimes, profilePic]);
+  }, [displayName, uniqueId, favorites, playtimes]);
 
   useEffect(() => {
     if (notification) {
