@@ -430,15 +430,19 @@ function App() {
       </div>
 
       <SettingsModal 
-        show={showSettings} 
-        onClose={() => setShowSettings(false)}
-        performanceMode={performanceMode}
-        setPerformanceMode={(val) => { setPerformanceMode(val); localStorage.setItem('capy-perf-mode', val); }}
-        themes={THEMES}
-        applyTheme={applyTheme}
-        handleClearSettings={handleClearSettings}
-        handleReset={handleReset}
-      />
+  show={showSettings} 
+  onClose={() => setShowSettings(false)}
+  performanceMode={performanceMode}
+  setPerformanceMode={(val) => { setPerformanceMode(val); localStorage.setItem('capy-perf-mode', val); }}
+  themes={THEMES}
+  applyTheme={applyTheme}
+  panicKey={panicKey}
+  setPanicKey={(val) => { setPanicKey(val); localStorage.setItem('capy-panic-key', val); }}
+  handleBackgroundUpload={handleBackgroundUpload}
+  handleAudioUpload={handleAudioUpload}
+  handleClearSettings={handleClearSettings}
+  handleReset={handleReset}
+/>
     </div>
   );
 }
