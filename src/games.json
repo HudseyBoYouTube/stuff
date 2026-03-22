@@ -1097,6 +1097,55 @@
     "url": "https://play.coolmathgames.eu.org/storage/ag/echo/stick-duel-battle/",
     "thumbnail": "https://yepicdn.com/system/static/thumbs/tile_thumb/25453/thumb150_stick-duel-battle-191x191.jpg?1631274024",
     "category": "Stickman"
+  },
+  {
+    "id": "poor-bunny",
+    "title": "Poor Bunny",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/poor-bunny/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/b879100262e0821907e97a2eaf97a2bf/poor-bunny.png",
+    "category": "Arcade"
+  },
+  {
+    "id": "poor-eddie",
+    "title": "Poor Eddie",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/poor-eddie/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/bf83e47208822a41d35d8dc5f8fd0bb3/poor-eddie.png",
+    "category": "Easy"
+  },
+  {
+    "id": "push-your-luck",
+    "title": "Push Your Luck",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/push-your-luck/",
+    "thumbnail": "https://www.coolmathgames.com/sites/default/files/push-your-luck-game-icon.png",
+    "category": "Luck"
+  },
+  {
+    "id": "zombie-rush",
+    "title": "Zombie Rush",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/zombie-rush/",
+    "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/ce219d03b723f2d07e4d3c00d1cd104a/zombie-rush.png",
+    "category": "Action"
+  },
+  {
+    "id": "tall-man-run",
+    "title": "Tall Man Run",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/gn/20a.html",
+    "thumbnail": "https://cdn.aptoide.com/imgs/8/3/b/83b894e9d5978bf34eb79a3d918a79c0_icon.png",
+    "category": "Easy"
+  },
+  {
+    "id": "tall.io",
+    "title": "Tall.io",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/gn/664.html",
+    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2ETHozgxNOnxyzyIpV8u97AT67mcJg91_NA&s",
+    "category": "Easy"
+  },
+  {
+    "id": "hardware-tycoon",
+    "title": "Hardware Tycoon",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/echo/hardware-tycoon/",
+    "thumbnail": "https://ht.poggers.ltd/icon-256.png",
+    "category": "Tycoon"
   }
 ]
   
