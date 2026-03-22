@@ -53,13 +53,13 @@ function App() {
   const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
   const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
 
-  // Master switch for Background Visibility - Defaulted to false (OFF) on load
   const [bgEnabled, setBgEnabled] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
   const [backgroundVideo, setBackgroundVideo] = useState(() => localStorage.getItem('capy-bg-video') || '');
   const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
   
   const [bgMusic, setBgMusic] = useState(() => localStorage.getItem('capy-bg-music') || '');
+  const [musicEnabled, setMusicEnabled] = useState(false); // Default to OFF every reload
   const [volume, setVolume] = useState(() => Number(localStorage.getItem('capy-volume')) || 50);
 
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
@@ -80,13 +80,13 @@ function App() {
 
   useEffect(() => {
     const startAudio = () => {
-      if (audioRef.current && bgMusic) {
+      if (audioRef.current && bgMusic && musicEnabled) {
         audioRef.current.play().catch(() => {});
       }
     };
     window.addEventListener('click', startAudio, { once: true });
     return () => window.removeEventListener('click', startAudio);
-  }, [bgMusic]);
+  }, [bgMusic, musicEnabled]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -119,9 +119,16 @@ function App() {
   }, [confirmReset]);
 
   const toggleBgEnabled = () => {
-    const newState = !bgEnabled;
-    setBgEnabled(newState);
-    localStorage.setItem('capy-bg-enabled', newState);
+    setBgEnabled(!bgEnabled);
+  };
+
+  const toggleMusicEnabled = () => {
+    const newState = !musicEnabled;
+    setMusicEnabled(newState);
+    if (audioRef.current) {
+      if (newState) audioRef.current.play().catch(() => {});
+      else audioRef.current.pause();
+    }
   };
 
   const handleBackgroundUpload = (e) => {
@@ -263,7 +270,6 @@ function App() {
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased relative" style={{ '--theme': theme, '--glow': `${glowIntensity}px` }}>
       
-      {/* Background Layer (Only renders if enabled) */}
       {bgEnabled && (
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" style={{ opacity: bgOpacity / 100 }}>
           {backgroundVideo ? (
@@ -276,7 +282,7 @@ function App() {
         </div>
       )}
 
-      {bgMusic && <audio ref={audioRef} src={bgMusic} loop autoPlay />}
+      {bgMusic && <audio ref={audioRef} src={bgMusic} loop />}
 
       <div className="relative z-10">
         <div className="sticky top-0 z-50">
@@ -383,7 +389,13 @@ function App() {
               </section>
 
               <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Music className="w-3 h-3 text-[var(--theme)]" /> Menu Music</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Music className="w-3 h-3 text-[var(--theme)]" /> Menu Music</label>
+                  <button onClick={toggleMusicEnabled} className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${musicEnabled ? 'bg-[var(--theme)]/20 text-[var(--theme)] border border-[var(--theme)]/30' : 'bg-white/5 text-zinc-500 border border-white/10'}`}>
+                    <Power className="w-3 h-3" />
+                    {musicEnabled ? 'ON' : 'OFF'}
+                  </button>
+                </div>
                 <div className="flex gap-2">
                   <label className="flex-1 p-3 bg-zinc-800 border border-white/10 rounded-xl text-[10px] font-black uppercase hover:border-[var(--theme)]/50 transition-all text-center cursor-pointer">
                     <div className="flex items-center justify-center gap-2">
