@@ -78,15 +78,12 @@ function App() {
     }
   }, [volume]);
 
+  // Force play when music is enabled and source exists
   useEffect(() => {
-    const startAudio = () => {
-      if (audioRef.current && bgMusic && musicEnabled) {
-        audioRef.current.play().catch(() => {});
-      }
-    };
-    window.addEventListener('click', startAudio, { once: true });
-    return () => window.removeEventListener('click', startAudio);
-  }, [bgMusic, musicEnabled]);
+    if (musicEnabled && bgMusic && audioRef.current) {
+      audioRef.current.play().catch(err => console.log("Playback failed:", err));
+    }
+  }, [musicEnabled, bgMusic]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -172,12 +169,17 @@ function App() {
         const base64String = reader.result;
         setBgMusic(base64String);
         localStorage.setItem('capy-bg-music', base64String);
-        
-        // Auto-enable and play immediately
         setMusicEnabled(true);
+        
+        // Immediate play attempt using the interaction context
         if (audioRef.current) {
           audioRef.current.load();
-          audioRef.current.play().catch(() => {});
+          const playPromise = audioRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              console.log("Auto-play prevented, but state is ON.");
+            });
+          }
         }
       };
       reader.readAsDataURL(file);
