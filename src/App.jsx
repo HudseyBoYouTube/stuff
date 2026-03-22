@@ -3,7 +3,7 @@ import {
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
   Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video, Music, Volume2, Power,
-  Cpu 
+  Cpu, Users, UserPlus, UserCircle
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -74,6 +74,15 @@ function App() {
 
   const [performanceMode, setPerformanceMode] = useState(() => localStorage.getItem('capy-perf-mode') === 'true');
 
+  // SOCIAL FEATURES STATE
+  const [displayName, setDisplayName] = useState(() => localStorage.getItem('capy-display-name') || 'CapyUser');
+  const [friends, setFriends] = useState(() => JSON.parse(localStorage.getItem('capy-friends') || '[]'));
+  const [selectedFriend, setSelectedFriend] = useState(null);
+
+  const friendCode = useMemo(() => {
+    return btoa(displayName).substring(0, 6).toUpperCase();
+  }, [displayName]);
+
   useEffect(() => {
     if (performanceMode) {
       setBgEnabled(false);
@@ -91,7 +100,6 @@ function App() {
     }
   }, [volume]);
 
-  // Force play when bgMusic changes (Upload trigger)
   useEffect(() => {
     if (bgMusic && audioRef.current && !performanceMode) {
       audioRef.current.load();
@@ -104,7 +112,6 @@ function App() {
     }
   }, [bgMusic, performanceMode]);
 
-  // Handle Autoplay Workaround
   useEffect(() => {
     const startMusic = () => {
       if (audioRef.current && bgMusic && !performanceMode) {
@@ -132,7 +139,6 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Don't trigger if the user is currently typing in an input field
       if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
         return;
       }
@@ -266,7 +272,7 @@ function App() {
         'capy-custom-title', 'capy-custom-icon', 'capy-bg-image', 
         'capy-bg-video', 'capy-bg-opacity', 'capy-bg-music', 
         'capy-volume', 'capy-panic-url', 'capy-panic-key', 'capy-perf-mode',
-        'capy-bg-enabled'
+        'capy-bg-enabled', 'capy-display-name', 'capy-friends'
       ];
       settingsKeys.forEach(key => localStorage.removeItem(key));
       window.location.reload();
@@ -420,6 +426,36 @@ function App() {
         </main>
       </div>
 
+      {/* FRIEND PROFILE MODAL */}
+      {selectedFriend && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+          <div className="bg-zinc-900 border border-[var(--theme)]/30 p-8 rounded-3xl max-w-sm w-full relative shadow-[0_0_50px_rgba(0,0,0,0.5)] space-y-6">
+            <button onClick={() => setSelectedFriend(null)} className="absolute top-4 right-4 text-zinc-500 hover:text-white"><X /></button>
+            <div className="text-center space-y-2">
+              <div className="w-20 h-20 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20">
+                <UserCircle className="w-12 h-12 text-[var(--theme)]" />
+              </div>
+              <h3 className="text-2xl font-black tracking-tighter uppercase">{selectedFriend.name}</h3>
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Capy-Friend Profile</p>
+            </div>
+            <div className="space-y-4">
+              <label className="text-[10px] font-black text-[var(--theme)] uppercase tracking-widest flex items-center gap-2"><Heart className="w-3 h-3" /> Favorite Games</label>
+              <div className="grid gap-2">
+                {selectedFriend.favs.length > 0 ? selectedFriend.favs.map(gameId => {
+                  const game = gamesData.find(g => g.id === gameId);
+                  return game ? (
+                    <div key={gameId} className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
+                      <span className="text-xs font-bold">{game.title}</span>
+                      <span className="text-[10px] font-mono text-zinc-500">{selectedFriend.times[gameId] ? Math.floor(selectedFriend.times[gameId]/60) : 0}m played</span>
+                    </div>
+                  ) : null;
+                }) : <p className="text-xs text-zinc-600 text-center py-4 italic">No favorites yet...</p>}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <SettingsModal 
         show={showSettings} 
         onClose={() => setShowSettings(false)}
@@ -440,6 +476,26 @@ function App() {
         bgMusic={bgMusic}
         volume={volume}
         setVolume={setVolume}
+        // Social Props
+        displayName={displayName}
+        setDisplayName={(val) => { setDisplayName(val); localStorage.setItem('capy-display-name', val); }}
+        friendCode={friendCode}
+        friends={friends}
+        onAddFriend={(code) => {
+          try {
+            const name = atob(code);
+            if (friends.find(f => f.code === code)) return;
+            const newFriends = [...friends, { name, code, favs: [], times: {} }];
+            setFriends(newFriends);
+            localStorage.setItem('capy-friends', JSON.stringify(newFriends));
+          } catch(e) { alert("Invalid Friend Code!"); }
+        }}
+        onRemoveFriend={(code) => {
+          const newFriends = friends.filter(f => f.code !== code);
+          setFriends(newFriends);
+          localStorage.setItem('capy-friends', JSON.stringify(newFriends));
+        }}
+        onViewFriend={setSelectedFriend}
       />
     </div>
   );
