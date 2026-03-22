@@ -499,7 +499,8 @@ function App() {
                        displayTimes = playtimes;
                      } else {
                        let base64 = selectedFriend.code.trim();
-                       // Sanitize and pad Base64
+                       // Sanitize base64 string
+                       base64 = base64.replace(/[^A-Za-z0-9+/]/g, "");
                        while (base64.length % 4 !== 0) base64 += '=';
                        const decoded = JSON.parse(atob(base64));
                        displayFavs = decoded.f || [];
