@@ -195,9 +195,13 @@ function App() {
         const base64String = reader.result;
         setBgMusic(base64String);
         localStorage.setItem('capy-bg-music', base64String);
+        
+        // Immediate playback logic
         if (!performanceMode && audioRef.current) {
+          audioRef.current.src = base64String;
+          audioRef.current.volume = volume / 100;
           audioRef.current.load();
-          audioRef.current.play().catch(() => {});
+          audioRef.current.play().catch(err => console.log("Playback blocked:", err));
         }
       };
       reader.readAsDataURL(file);
