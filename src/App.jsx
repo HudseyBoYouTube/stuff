@@ -98,13 +98,19 @@ function App() {
     return id;
   });
 
-  // UPDATED: Now includes favorites and playtimes in the code string
+  // UPDATED: Shortened friend code by only including top 5 favorites and their times
   const friendCode = useMemo(() => {
+    const topFavs = favorites.slice(0, 5);
+    const topTimes = {};
+    topFavs.forEach(id => {
+      if (playtimes[id]) topTimes[id] = playtimes[id];
+    });
+
     const data = {
       n: displayName,
       id: uniqueId,
-      f: favorites,
-      t: playtimes
+      f: topFavs,
+      t: topTimes
     };
     return btoa(JSON.stringify(data)).replace(/=/g, '');
   }, [displayName, uniqueId, favorites, playtimes]);
@@ -532,7 +538,6 @@ function App() {
           try {
             const cleanCode = code.trim();
             if (!cleanCode) return;
-            // UPDATED: Now decodes the JSON object instead of just splitting strings
             const decodedData = JSON.parse(atob(cleanCode));
             const { n: name, f: favs, t: times } = decodedData;
 
