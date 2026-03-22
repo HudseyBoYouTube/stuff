@@ -2,7 +2,8 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
-  Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video, Music, Volume2, Power
+  Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video, Music, Volume2, Power,
+  Cpu // Added Cpu icon for Performance Mode
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -69,9 +70,19 @@ function App() {
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
+  // --- PERFORMANCE MODE LOGIC ---
+  const [performanceMode, setPerformanceMode] = useState(() => localStorage.getItem('capy-perf-mode') === 'true');
+
   useEffect(() => {
-    updateThemeVariables(theme, glowIntensity);
-  }, [theme, glowIntensity]);
+    if (performanceMode) {
+      setBgEnabled(false);
+      setMusicEnabled(false);
+      updateThemeVariables(theme, 0); // Remove glow
+    } else {
+      updateThemeVariables(theme, glowIntensity);
+    }
+  }, [performanceMode, theme, glowIntensity]);
+  // ------------------------------
 
   useEffect(() => {
     if (audioRef.current) {
@@ -80,14 +91,14 @@ function App() {
   }, [volume]);
 
   useEffect(() => {
-    if (musicEnabled && bgMusic && audioRef.current) {
+    if (musicEnabled && bgMusic && audioRef.current && !performanceMode) {
       audioRef.current.play().catch(err => console.log("Playback failed:", err));
     }
-  }, [musicEnabled, bgMusic]);
+  }, [musicEnabled, bgMusic, performanceMode]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (audioRef.current && musicEnabled && bgMusic) {
+      if (audioRef.current && musicEnabled && bgMusic && !performanceMode) {
         if (document.hidden) {
           audioRef.current.pause();
         } else {
@@ -98,7 +109,7 @@ function App() {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [musicEnabled, bgMusic]);
+  }, [musicEnabled, bgMusic, performanceMode]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -138,10 +149,12 @@ function App() {
   }, [confirmClearSettings]);
 
   const toggleBgEnabled = () => {
+    if (performanceMode) return;
     setBgEnabled(!bgEnabled);
   };
 
   const toggleMusicEnabled = () => {
+    if (performanceMode) return;
     const newState = !musicEnabled;
     setMusicEnabled(newState);
     if (audioRef.current) {
@@ -176,15 +189,17 @@ function App() {
         const base64String = reader.result;
         setBgMusic(base64String);
         localStorage.setItem('capy-bg-music', base64String);
-        setMusicEnabled(true);
-        if (audioRef.current) {
-          audioRef.current.load();
-          const playPromise = audioRef.current.play();
-          if (playPromise !== undefined) {
-            playPromise.catch(error => {
-              console.log("Auto-play prevented, but state is ON.");
-            });
-          }
+        if (!performanceMode) {
+            setMusicEnabled(true);
+            if (audioRef.current) {
+              audioRef.current.load();
+              const playPromise = audioRef.current.play();
+              if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                  console.log("Auto-play prevented, but state is ON.");
+                });
+              }
+            }
         }
       };
       reader.readAsDataURL(file);
@@ -224,7 +239,9 @@ function App() {
     setGlowIntensity(t.glow);
     localStorage.setItem('capy-theme', t.color);
     localStorage.setItem('capy-glow', t.glow);
-    updateThemeVariables(t.color, t.glow);
+    if (!performanceMode) {
+        updateThemeVariables(t.color, t.glow);
+    }
   };
 
   const handleReset = () => {
@@ -242,7 +259,7 @@ function App() {
         'capy-theme', 'capy-glow', 'capy-stealth-type', 
         'capy-custom-title', 'capy-custom-icon', 'capy-bg-image', 
         'capy-bg-video', 'capy-bg-opacity', 'capy-bg-music', 
-        'capy-volume', 'capy-panic-url', 'capy-panic-key'
+        'capy-volume', 'capy-panic-url', 'capy-panic-key', 'capy-perf-mode'
       ];
       settingsKeys.forEach(key => localStorage.removeItem(key));
       window.location.reload();
@@ -318,9 +335,9 @@ function App() {
   }, [searchQuery, activeCategory, gamesData, favorites]);
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased relative" style={{ '--theme': theme, '--glow': `${glowIntensity}px` }}>
+    <div className={`min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'}`} style={{ '--theme': theme, '--glow': `${performanceMode ? 0 : glowIntensity}px` }}>
       
-      {bgEnabled && (
+      {bgEnabled && !performanceMode && (
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" style={{ opacity: bgOpacity / 100 }}>
           {backgroundVideo ? (
             <video autoPlay muted loop playsInline className="w-full h-full object-cover">
@@ -404,6 +421,7 @@ function App() {
               playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
               isFavorite={favorites.includes(game.id)}
               onToggleFavorite={(e) => toggleFavorite(game.id, e)}
+              performanceMode={performanceMode}
             />
           ))}
         </main>
@@ -418,22 +436,40 @@ function App() {
             </div>
             
             <div className="space-y-6">
+              {/* PERFORMANCE MODE TOGGLE */}
+              <section className="space-y-4 bg-yellow-500/5 p-4 rounded-2xl border border-yellow-500/10">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] uppercase font-black text-yellow-500 tracking-widest flex items-center gap-2"><Cpu className="w-3 h-3" /> Performance Mode</label>
+                  <button 
+                    onClick={() => {
+                        const next = !performanceMode;
+                        setPerformanceMode(next);
+                        localStorage.setItem('capy-perf-mode', next);
+                    }} 
+                    className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${performanceMode ? 'bg-yellow-500 text-black' : 'bg-white/5 text-zinc-500 border border-white/10'}`}>
+                    <Zap className="w-3 h-3" />
+                    {performanceMode ? 'ON' : 'OFF'}
+                  </button>
+                </div>
+                <p className="text-[8px] text-zinc-500 font-bold leading-relaxed uppercase">Disables Glow, Backgrounds, and Music to save CPU on school computers.</p>
+              </section>
+
               <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
                 <div className="flex items-center justify-between">
                   <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><ImageIcon className="w-3 h-3 text-[var(--theme)]" /> Media Background</label>
-                  <button onClick={toggleBgEnabled} className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${bgEnabled ? 'bg-[var(--theme)]/20 text-[var(--theme)] border border-[var(--theme)]/30' : 'bg-white/5 text-zinc-500 border border-white/10'}`}>
+                  <button onClick={toggleBgEnabled} disabled={performanceMode} className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${performanceMode ? 'opacity-20 cursor-not-allowed' : ''} ${bgEnabled ? 'bg-[var(--theme)]/20 text-[var(--theme)] border border-[var(--theme)]/30' : 'bg-white/5 text-zinc-500 border border-white/10'}`}>
                     <Power className="w-3 h-3" />
                     {bgEnabled ? 'ON' : 'OFF'}
                   </button>
                 </div>
                 
                 <div className="flex gap-2">
-                  <label className="flex-1 p-3 bg-zinc-800 border border-white/10 rounded-xl text-[10px] font-black uppercase hover:border-[var(--theme)]/50 transition-all text-center cursor-pointer">
+                  <label className={`flex-1 p-3 bg-zinc-800 border border-white/10 rounded-xl text-[10px] font-black uppercase transition-all text-center cursor-pointer ${performanceMode ? 'opacity-20 cursor-not-allowed' : 'hover:border-[var(--theme)]/50'}`}>
                     <div className="flex items-center justify-center gap-2">
                       <Upload className="w-3 h-3 text-[var(--theme)]" />
                       Upload IMG/GIF/MP4
                     </div>
-                    <input type="file" accept="image/*,video/*" onChange={handleBackgroundUpload} className="hidden" />
+                    <input type="file" accept="image/*,video/*" onChange={handleBackgroundUpload} className="hidden" disabled={performanceMode} />
                   </label>
                   {(backgroundImage || backgroundVideo) && (
                     <button onClick={() => { setBackgroundImage(''); setBackgroundVideo(''); localStorage.removeItem('capy-bg-image'); localStorage.removeItem('capy-bg-video'); }} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-all">
@@ -455,18 +491,18 @@ function App() {
               <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
                 <div className="flex items-center justify-between">
                   <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><Music className="w-3 h-3 text-[var(--theme)]" /> Menu Music</label>
-                  <button onClick={toggleMusicEnabled} className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${musicEnabled ? 'bg-[var(--theme)]/20 text-[var(--theme)] border border-[var(--theme)]/30' : 'bg-white/5 text-zinc-500 border border-white/10'}`}>
+                  <button onClick={toggleMusicEnabled} disabled={performanceMode} className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${performanceMode ? 'opacity-20 cursor-not-allowed' : ''} ${musicEnabled ? 'bg-[var(--theme)]/20 text-[var(--theme)] border border-[var(--theme)]/30' : 'bg-white/5 text-zinc-500 border border-white/10'}`}>
                     <Power className="w-3 h-3" />
                     {musicEnabled ? 'ON' : 'OFF'}
                   </button>
                 </div>
                 <div className="flex gap-2">
-                  <label className="flex-1 p-3 bg-zinc-800 border border-white/10 rounded-xl text-[10px] font-black uppercase hover:border-[var(--theme)]/50 transition-all text-center cursor-pointer">
+                  <label className={`flex-1 p-3 bg-zinc-800 border border-white/10 rounded-xl text-[10px] font-black uppercase transition-all text-center cursor-pointer ${performanceMode ? 'opacity-20 cursor-not-allowed' : 'hover:border-[var(--theme)]/50'}`}>
                     <div className="flex items-center justify-center gap-2">
                       <Upload className="w-3 h-3 text-[var(--theme)]" />
                       Upload MP3
                     </div>
-                    <input type="file" accept="audio/mpeg,audio/wav,audio/ogg" onChange={handleAudioUpload} className="hidden" />
+                    <input type="file" accept="audio/mpeg,audio/wav,audio/ogg" onChange={handleAudioUpload} className="hidden" disabled={performanceMode} />
                   </label>
                   {bgMusic && (
                     <button onClick={() => { setBgMusic(''); localStorage.removeItem('capy-bg-music'); }} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-all">
@@ -555,11 +591,11 @@ function App() {
   );
 }
 
-function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite }) {
+function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite, performanceMode }) {
   const isUtility = ['request', 'report'].includes(game.id);
   return (
     <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg" onClick={() => onLaunch(game)}>
-      <div className="relative w-full aspect-[4/3] bg-black/20 overflow-hidden group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)] transition-all duration-500">
+      <div className={`relative w-full aspect-[4/3] bg-black/20 overflow-hidden transition-all duration-500 ${performanceMode ? '' : 'group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)]'}`}>
         <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24 h-24 object-contain' : 'w-full h-full object-cover'}`} alt="" />
         {!isUtility && (
           <button onClick={onToggleFavorite} className="absolute top-4 right-4 z-10 p-2 bg-zinc-900/80 backdrop-blur-sm rounded-full border border-white/10 hover:scale-110 transition-transform shadow-lg">
@@ -567,7 +603,7 @@ function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite }) {
           </button>
         )}
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="w-12 h-12 bg-[var(--theme)] rounded-full flex items-center justify-center shadow-[0_0_20px_var(--theme)]">
+          <div className={`w-12 h-12 bg-[var(--theme)] rounded-full flex items-center justify-center ${performanceMode ? '' : 'shadow-[0_0_20px_var(--theme)]'}`}>
             <Play className="w-6 h-6 text-black fill-current ml-1" />
           </div>
         </div>
