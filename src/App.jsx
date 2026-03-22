@@ -3,7 +3,7 @@ import {
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
   Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video, Music, Volume2, Power,
-  Cpu, Users, UserPlus, UserCircle, CheckCircle2, History // Added History icon
+  Cpu, Users, UserPlus, UserCircle, CheckCircle2, History 
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -81,7 +81,6 @@ function App() {
   
   const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
-  // --- Recently Played State ---
   const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
     try {
       const saved = localStorage.getItem('capy-recent');
@@ -94,7 +93,6 @@ function App() {
   const [performanceMode, setPerformanceMode] = useState(() => localStorage.getItem('capy-perf-mode') === 'true');
 
   const [displayName, setDisplayName] = useState(() => localStorage.getItem('capy-display-name') || 'CapyUser');
-  // Profile Picture State
   const [profilePic, setProfilePic] = useState(() => localStorage.getItem('capy-pfp') || '');
   
   const [friends, setFriends] = useState(() => JSON.parse(localStorage.getItem('capy-friends') || '[]'));
@@ -111,7 +109,6 @@ function App() {
     return id;
   });
 
-  // FIXED: Removed profilePic (p) from the friend code to keep it short
   const friendCode = useMemo(() => {
     const topFavs = favorites.slice(0, 5);
     const topTimes = {};
@@ -124,7 +121,6 @@ function App() {
       id: uniqueId,
       f: topFavs,
       t: topTimes
-      // Removed 'p: profilePic' to prevent long codes
     };
     return btoa(JSON.stringify(data)).replace(/=/g, '');
   }, [displayName, uniqueId, favorites, playtimes]);
@@ -287,14 +283,15 @@ function App() {
     }
   };
 
-  // Handle PFP Upload
   const handlePfpUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Logic supports GIF, PNG, JPG natively via FileReader
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfilePic(reader.result);
         localStorage.setItem('capy-pfp', reader.result);
+        setNotification("Profile Picture Updated!");
       };
       reader.readAsDataURL(file);
     }
@@ -379,14 +376,12 @@ function App() {
     return final;
   }, [gamesData, validFavoritesCount]);
 
-  // launchContent to track history
   const launchContent = (item) => {
     if (!item?.url) return;
 
-    // Track recently played
     setRecentlyPlayed(prev => {
       const filtered = prev.filter(id => id !== item.id);
-      const updated = [item.id, ...filtered].slice(0, 4); // Keep last 4
+      const updated = [item.id, ...filtered].slice(0, 4);
       localStorage.setItem('capy-recent', JSON.stringify(updated));
       return updated;
     });
@@ -416,7 +411,6 @@ function App() {
     });
   }, [searchQuery, activeCategory, gamesData, favorites]);
 
-  // Helper for Recent Games List
   const recentGamesData = useMemo(() => {
     return recentlyPlayed
       .map(id => gamesData.find(g => g.id === id))
@@ -554,27 +548,15 @@ function App() {
             <div className="text-center space-y-2">
               <div className="w-20 h-20 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20 overflow-hidden">
                 {(() => {
-                    try {
-                        const isMe = selectedFriend.code === friendCode;
-                        let displayPfp = '';
-                        if (isMe) {
-                            displayPfp = profilePic;
-                        } else {
-                            let base64 = selectedFriend.code.trim();
-                            base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
-                            while (base64.length % 4 !== 0) base64 += '=';
-                            const decoded = JSON.parse(atob(base64));
-                            displayPfp = decoded.p;
-                        }
-
-                        return displayPfp ? (
-                            <img src={displayPfp} className="w-full h-full object-cover" />
+                    const isMe = selectedFriend.code === friendCode;
+                    if (isMe) {
+                        return profilePic ? (
+                            <img src={profilePic} className="w-full h-full object-cover" style={{ imageRendering: 'auto' }} />
                         ) : (
                             <UserCircle className="w-12 h-12 text-[var(--theme)]" />
                         );
-                    } catch(e) {
-                        return <UserCircle className="w-12 h-12 text-[var(--theme)]" />;
                     }
+                    return <UserCircle className="w-12 h-12 text-[var(--theme)]" />;
                 })()}
               </div>
               <h3 className="text-2xl font-black tracking-tighter">{selectedFriend.name}</h3>
@@ -640,9 +622,8 @@ function App() {
         handleResetBackground={handleResetBackground}
         handleAudioUpload={handleAudioUpload}
         handleResetMusic={handleResetMusic}
-        // Profile Pic Props
         profilePic={profilePic}
-        handlePfpUpload={handlePfpUpload}
+        handlePfpUpload={handlePfpUpload} // GIF support included here
         handleResetPfp={() => { setProfilePic(''); localStorage.removeItem('capy-pfp'); }}
         handleClearSettings={handleClearSettings}
         handleReset={handleReset}
