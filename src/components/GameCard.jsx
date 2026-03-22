@@ -10,11 +10,19 @@ export function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorit
         <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24 h-24 object-contain' : 'w-full h-full object-cover'}`} alt="" />
         {!isUtility && (
           <button 
-            onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }} 
-            className="absolute top-4 right-4 z-10 p-2 bg-zinc-900/80 backdrop-blur-sm rounded-full border border-white/10 hover:scale-110 transition-transform shadow-lg"
-          >
-            <Heart className={`w-4 h-4 transition-colors`} stroke={isFavorite ? "var(--theme)" : "#71717a"} strokeWidth={2.5} fill={isFavorite ? 'var(--theme)' : 'none'} />
-          </button>
+  onClick={(e) => { 
+    e.stopPropagation(); // Prevents the game from launching when you click heart
+    onToggleFavorite(); 
+  }} 
+  className="absolute top-4 right-4 z-10 p-2 bg-zinc-900/80 backdrop-blur-sm rounded-full border border-white/10 hover:scale-110 transition-transform shadow-lg"
+>
+  <Heart 
+    className="w-4 h-4 transition-colors" 
+    stroke={isFavorite ? "var(--theme)" : "#71717a"} 
+    strokeWidth={2.5} 
+    fill={isFavorite ? 'var(--theme)' : 'none'} 
+  />
+</button>
         )}
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <div className={`w-12 h-12 bg-[var(--theme)] rounded-full flex items-center justify-center ${performanceMode ? '' : 'shadow-[0_0_20px_var(--theme)]'}`}>
