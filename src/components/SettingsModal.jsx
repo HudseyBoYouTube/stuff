@@ -47,10 +47,11 @@ export function SettingsModal(props) {
                 <label className="p-3 bg-zinc-800 border border-white/10 rounded-xl text-[9px] font-black uppercase text-center cursor-pointer hover:border-[var(--theme)]/50 transition-all">
                   <Upload className="w-3 h-3 mx-auto mb-1 text-[var(--theme)]" />
                   Upload Avatar
-                  <input type="file" accept="image/*" onChange={props.handleAvatarUpload} className="hidden" />
+                  {/* Updated to use handlePfpUpload to match App.jsx */}
+                  <input type="file" accept="image/*" onChange={props.handlePfpUpload} className="hidden" />
                 </label>
                 <button 
-                  onClick={props.handleResetAvatar}
+                  onClick={props.handleResetPfp} // Updated to handleResetPfp
                   className="p-3 bg-red-500/5 border border-red-500/10 rounded-xl text-[9px] font-black uppercase text-red-500/70 hover:bg-red-500/10 hover:text-red-500 transition-all flex flex-col items-center justify-center gap-1"
                 >
                   <RotateCcw className="w-3 h-3" /> Reset Avatar
@@ -106,8 +107,8 @@ export function SettingsModal(props) {
             </div>
 
             <div className="space-y-2 max-h-32 overflow-y-auto custom-scrollbar pr-1">
-              {props.friends.length > 0 ? props.friends.map(friend => (
-                <div key={friend.code} className="flex items-center justify-between bg-white/5 p-2 rounded-xl border border-white/5">
+              {props.friends && props.friends.length > 0 ? props.friends.map(friend => (
+                <div key={friend.id} className="flex items-center justify-between bg-white/5 p-2 rounded-xl border border-white/5">
                   <span className="text-[10px] font-bold truncate max-w-[120px]">{friend.name}</span>
                   <div className="flex gap-1">
                     <button 
@@ -117,7 +118,7 @@ export function SettingsModal(props) {
                       <Eye className="w-3 h-3" />
                     </button>
                     <button 
-                      onClick={() => props.onRemoveFriend(friend.code)}
+                      onClick={() => props.onRemoveFriend(friend.id)}
                       className="p-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-all"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -154,7 +155,7 @@ export function SettingsModal(props) {
             <div className="grid grid-cols-2 gap-2">
               <label className="p-3 bg-zinc-800 border border-white/10 rounded-xl text-[9px] font-black uppercase text-center cursor-pointer hover:border-[var(--theme)]/50 transition-all">
                 <Upload className="w-3 h-3 mx-auto mb-1 text-[var(--theme)]" />
-                Upload BG IMG/GIF
+                Upload BG IMG/VID
                 <input type="file" accept="image/*,video/*" onChange={props.handleBackgroundUpload} className="hidden" />
               </label>
               <label className="p-3 bg-zinc-800 border border-white/10 rounded-xl text-[9px] font-black uppercase text-center cursor-pointer hover:border-[var(--theme)]/50 transition-all">
@@ -177,7 +178,7 @@ export function SettingsModal(props) {
               </button>
             </div>
 
-            {/* BG TRANSPARENCY SLIDER */}
+            {/* BG TRANSPARENCY SLIDER - Now shows if bgEnabled is true */}
             {props.bgEnabled && !props.performanceMode && (
               <div className="pt-2 border-t border-white/5 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="flex items-center justify-between">
@@ -255,7 +256,6 @@ export function SettingsModal(props) {
 
           {/* RESET BUTTONS */}
           <div className="grid grid-cols-2 gap-3 pt-4">
-            {/* Clear Settings Button */}
             <button 
               onClick={props.handleClearSettings} 
               className={`p-4 rounded-2xl border transition-all text-[9px] font-black uppercase flex items-center justify-center gap-2 ${
@@ -268,7 +268,6 @@ export function SettingsModal(props) {
               {props.confirmClearSettings ? 'ARE YOU SURE?' : 'Clear Settings'}
             </button>
 
-            {/* Factory Reset Button */}
             <button 
               onClick={props.handleReset} 
               className={`p-4 rounded-2xl border transition-all text-[9px] font-black uppercase flex items-center justify-center gap-2 ${
