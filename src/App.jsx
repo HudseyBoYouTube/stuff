@@ -1,125 +1,72 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
-  Search, Gamepad2, Play, Settings, X, ShieldAlert, 
-  Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
-  Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video, Music, Volume2, Power,
-  Cpu // Added Cpu icon for Performance Mode
+  Search, Settings, X, Heart, Play, Battery, Clock, Calendar, 
+  ShieldAlert, Cpu, Zap, Power, Upload, Trash2, Volume2, 
+  Music, ImageIcon, Ghost, Palette, Dices, RotateCcw, 
+  LayoutGrid // Added this for the Compact Mode icon
 } from 'lucide-react';
 
-import gamesDataRaw from './games.json';
-
-const DEFAULT_COLOR = '#10A5F5';
-const DEFAULT_GLOW = 50;
 const DEFAULT_TITLE = "Capybara Science";
-const DEFAULT_ICON = "https://img.icons8.com/color/32/capybara.png";
+const DEFAULT_ICON = "https://raw.githubusercontent.com/HudseyBo/CapybaraScience/main/favicon.png";
 
 const THEMES = {
-  cyber: { name: 'Cyberpunk', color: '#ff0055', glow: 60 },
-  midnight: { name: 'Midnight', color: '#7c3aed', glow: 40 },
-  forest: { name: 'Forest', color: '#10b981', glow: 30 },
-  classic: { name: 'Classic', color: DEFAULT_COLOR, glow: DEFAULT_GLOW }
+  emerald: { name: 'Emerald Night', color: '#10b981', glow: 20 },
+  ruby: { name: 'Ruby Core', color: '#ef4444', glow: 25 },
+  amber: { name: 'Amber Glow', color: '#f59e0b', glow: 20 },
+  violet: { name: 'Violet Void', color: '#8b5cf6', glow: 30 },
+  cyan: { name: 'Cyan Pulse', color: '#06b6d4', glow: 15 },
+  rose: { name: 'Rose Petal', color: '#f43f5e', glow: 20 }
 };
 
 const DISGUISE_CONFIG = {
   none: { title: DEFAULT_TITLE, icon: DEFAULT_ICON },
-  drive: { title: "My Drive - Google Drive", icon: "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" },
-  classroom: { title: "Home - Classroom", icon: "https://www.gstatic.com/classroom/favicon.png" },
-  canvas: { title: "Dashboard", icon: "https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico" }
+  google: { title: 'Google', icon: 'https://www.google.com/favicon.ico' },
+  drive: { title: 'My Drive - Google Drive', icon: 'https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png' },
+  classroom: { title: 'Classes', icon: 'https://www.gstatic.com/classroom/favicon.png' },
+  canvas: { title: 'Dashboard', icon: 'https://du11hjcvhe62u.cloudfront.net/favicon.ico' }
 };
 
-const updateThemeVariables = (color, glow) => {
-  const root = document.documentElement;
-  root.style.setProperty('--theme', color);
-  root.style.setProperty('--glow', `${glow}px`);
-};
+// Replace this with your actual games list
+const gamesData = [
+  { id: '1', title: 'Sample Game', category: 'Action', url: 'https://example.com', thumbnail: DEFAULT_ICON },
+  { id: 'request', title: 'Request Game', category: 'Community', url: '#', thumbnail: 'https://cdn-icons-png.flaticon.com/512/1159/1159633.png' },
+  { id: 'report', title: 'Report Issue', category: 'Community', url: '#', thumbnail: 'https://cdn-icons-png.flaticon.com/512/564/564619.png' },
+];
 
 function App() {
-  const gamesData = useMemo(() => {
-    if (!gamesDataRaw || !Array.isArray(gamesDataRaw)) return [];
-    return gamesDataRaw;
-  }, []);
-
-  const audioRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
-  const [confirmReset, setConfirmReset] = useState(false);
-  const [confirmClearSettings, setConfirmClearSettings] = useState(false);
-
   const [time, setTime] = useState(new Date());
   const [battery, setBattery] = useState({ level: 100, charging: false });
+  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
+  const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
+  
+  const [theme, setTheme] = useState(() => localStorage.getItem('capy-theme') || '#10b981');
+  const [glowIntensity, setGlowIntensity] = useState(() => Number(localStorage.getItem('capy-glow')) || 20);
+  const [performanceMode, setPerformanceMode] = useState(() => localStorage.getItem('capy-perf-mode') === 'true');
+  
+  // NEW COMPACT MODE STATE
+  const [compactMode, setCompactMode] = useState(() => localStorage.getItem('capy-compact') === 'true');
 
-  const [theme, setTheme] = useState(() => localStorage.getItem('capy-theme') || DEFAULT_COLOR);
-  const [glowIntensity, setGlowIntensity] = useState(() => Number(localStorage.getItem('capy-glow')) || DEFAULT_GLOW);
+  const [bgEnabled, setBgEnabled] = useState(true);
+  const [bgOpacity, setBgOpacity] = useState(() => localStorage.getItem('capy-bg-opacity') || 50);
+  const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
+  const [backgroundVideo, setBackgroundVideo] = useState(() => localStorage.getItem('capy-bg-video') || '');
+  
+  const [bgMusic, setBgMusic] = useState(() => localStorage.getItem('capy-bg-music') || '');
+  const [musicEnabled, setMusicEnabled] = useState(false);
+  const [volume, setVolume] = useState(() => localStorage.getItem('capy-volume') || 50);
+  const audioRef = useRef(null);
+
   const [disguise, setDisguise] = useState(() => localStorage.getItem('capy-stealth-type') || 'none');
   const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
   const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
-
-  const [bgEnabled, setBgEnabled] = useState(false);
-  const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
-  const [backgroundVideo, setBackgroundVideo] = useState(() => localStorage.getItem('capy-bg-video') || '');
-  const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
-  
-  const [bgMusic, setBgMusic] = useState(() => localStorage.getItem('capy-bg-music') || '');
-  const [musicEnabled, setMusicEnabled] = useState(false); 
-  const [volume, setVolume] = useState(() => Number(localStorage.getItem('capy-volume')) || 50);
-
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
   const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || '');
-
-  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
-  const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
-
-  // --- PERFORMANCE MODE LOGIC ---
-  const [performanceMode, setPerformanceMode] = useState(() => localStorage.getItem('capy-perf-mode') === 'true');
-
-  useEffect(() => {
-    if (performanceMode) {
-      setBgEnabled(false);
-      setMusicEnabled(false);
-      updateThemeVariables(theme, 0); // Remove glow
-    } else {
-      updateThemeVariables(theme, glowIntensity);
-    }
-  }, [performanceMode, theme, glowIntensity]);
-  // ------------------------------
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume / 100;
-    }
-  }, [volume]);
-
-  useEffect(() => {
-    if (musicEnabled && bgMusic && audioRef.current && !performanceMode) {
-      audioRef.current.play().catch(err => console.log("Playback failed:", err));
-    }
-  }, [musicEnabled, bgMusic, performanceMode]);
-
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (audioRef.current && musicEnabled && bgMusic && !performanceMode) {
-        if (document.hidden) {
-          audioRef.current.pause();
-        } else {
-          audioRef.current.play().catch(() => {});
-        }
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [musicEnabled, bgMusic, performanceMode]);
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (panicKey && e.key === panicKey) {
-        window.location.href = panicUrl.startsWith('http') ? panicUrl : `https://${panicUrl}`;
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [panicUrl, panicKey]);
+  
+  const [confirmReset, setConfirmReset] = useState(false);
+  const [confirmClearSettings, setConfirmClearSettings] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -239,9 +186,6 @@ function App() {
     setGlowIntensity(t.glow);
     localStorage.setItem('capy-theme', t.color);
     localStorage.setItem('capy-glow', t.glow);
-    if (!performanceMode) {
-        updateThemeVariables(t.color, t.glow);
-    }
   };
 
   const handleReset = () => {
@@ -259,7 +203,7 @@ function App() {
         'capy-theme', 'capy-glow', 'capy-stealth-type', 
         'capy-custom-title', 'capy-custom-icon', 'capy-bg-image', 
         'capy-bg-video', 'capy-bg-opacity', 'capy-bg-music', 
-        'capy-volume', 'capy-panic-url', 'capy-panic-key', 'capy-perf-mode'
+        'capy-volume', 'capy-panic-url', 'capy-panic-key', 'capy-perf-mode', 'capy-compact'
       ];
       settingsKeys.forEach(key => localStorage.removeItem(key));
       window.location.reload();
@@ -412,7 +356,11 @@ function App() {
           </div>
         </div>
 
-        <main className="max-w-7xl mx-auto px-4 mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <main className={`max-w-7xl mx-auto px-4 mt-8 grid transition-all duration-500 ${
+          compactMode 
+          ? 'grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2' 
+          : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8'
+        }`}>
           {filteredGames.map(game => (
             <GameCard 
               key={game.id} 
@@ -422,6 +370,7 @@ function App() {
               isFavorite={favorites.includes(game.id)}
               onToggleFavorite={(e) => toggleFavorite(game.id, e)}
               performanceMode={performanceMode}
+              compactMode={compactMode}
             />
           ))}
         </main>
@@ -436,7 +385,23 @@ function App() {
             </div>
             
             <div className="space-y-6">
-              {/* PERFORMANCE MODE TOGGLE */}
+              {/* COMPACT MODE TOGGLE (NEW) */}
+              <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><LayoutGrid className="w-3 h-3 text-[var(--theme)]" /> Compact Mode</label>
+                  <button 
+                    onClick={() => {
+                        const next = !compactMode;
+                        setCompactMode(next);
+                        localStorage.setItem('capy-compact', next);
+                    }} 
+                    className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${compactMode ? 'bg-[var(--theme)] text-black' : 'bg-white/5 text-zinc-500 border border-white/10'}`}>
+                    {compactMode ? 'ON' : 'OFF'}
+                  </button>
+                </div>
+                <p className="text-[8px] text-zinc-500 font-bold leading-relaxed uppercase">Shrinks items to fit more on screen.</p>
+              </section>
+
               <section className="space-y-4 bg-yellow-500/5 p-4 rounded-2xl border border-yellow-500/10">
                 <div className="flex items-center justify-between">
                   <label className="text-[10px] uppercase font-black text-yellow-500 tracking-widest flex items-center gap-2"><Cpu className="w-3 h-3" /> Performance Mode</label>
@@ -591,13 +556,13 @@ function App() {
   );
 }
 
-function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite, performanceMode }) {
+function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite, performanceMode, compactMode }) {
   const isUtility = ['request', 'report'].includes(game.id);
   return (
-    <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg" onClick={() => onLaunch(game)}>
+    <div className={`group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg ${compactMode ? 'rounded-xl' : ''}`} onClick={() => onLaunch(game)}>
       <div className={`relative w-full aspect-[4/3] bg-black/20 overflow-hidden transition-all duration-500 ${performanceMode ? '' : 'group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)]'}`}>
-        <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility ? 'w-24 h-24 object-contain' : 'w-full h-full object-cover'}`} alt="" />
-        {!isUtility && (
+        <img src={game.thumbnail} className={`absolute inset-0 m-auto transition-transform duration-500 group-hover:scale-110 ${isUtility || compactMode ? 'w-20 h-20 object-contain' : 'w-full h-full object-cover'}`} alt="" />
+        {!isUtility && !compactMode && (
           <button onClick={onToggleFavorite} className="absolute top-4 right-4 z-10 p-2 bg-zinc-900/80 backdrop-blur-sm rounded-full border border-white/10 hover:scale-110 transition-transform shadow-lg">
             <Heart className={`w-4 h-4 transition-colors`} stroke={isFavorite ? "var(--theme)" : "#71717a"} strokeWidth={2.5} fill={isFavorite ? 'var(--theme)' : 'none'} />
           </button>
@@ -608,13 +573,15 @@ function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorite, perf
           </div>
         </div>
       </div>
-      <div className="p-5">
-        <div className="flex justify-between items-start gap-2">
-          <h3 className="font-bold text-sm truncate group-hover:text-[var(--theme)] transition-colors">{game.title}</h3>
-          {!isUtility && <span className="text-[8px] text-zinc-600 font-bold bg-white/5 px-1.5 py-0.5 rounded shrink-0">{playtime}</span>}
+      {!compactMode && (
+        <div className="p-5">
+          <div className="flex justify-between items-start gap-2">
+            <h3 className="font-bold text-sm truncate group-hover:text-[var(--theme)] transition-colors">{game.title}</h3>
+            {!isUtility && <span className="text-[8px] text-zinc-600 font-bold bg-white/5 px-1.5 py-0.5 rounded shrink-0">{playtime}</span>}
+          </div>
+          <p className="text-[9px] text-zinc-500 uppercase font-black tracking-widest mt-1">{game.category}</p>
         </div>
-        <p className="text-[9px] text-zinc-500 uppercase font-black tracking-widest mt-1">{game.category}</p>
-      </div>
+      )}
     </div>
   );
 }
