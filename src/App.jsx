@@ -138,7 +138,6 @@ function App() {
     }
   }, [volume]);
 
-  // Save Background Opacity to localStorage
   useEffect(() => {
     localStorage.setItem('capy-bg-opacity', bgOpacity);
   }, [bgOpacity]);
@@ -478,7 +477,6 @@ function App() {
         </main>
       </div>
 
-      {/* FRIEND PROFILE MODAL */}
       {selectedFriend && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
           <div className="bg-zinc-900 border border-[var(--theme)]/30 p-8 rounded-3xl max-w-sm w-full relative shadow-[0_0_50px_rgba(0,0,0,0.5)] space-y-6">
