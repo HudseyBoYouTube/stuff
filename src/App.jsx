@@ -306,7 +306,6 @@ function App() {
         return favorites.includes(g.id) && matchesSearch;
       }
 
-      // Updated: Utility items only show in 'All' or 'Community'
       const isAllowedCategoryForUtility = activeCategory === 'All' || activeCategory === 'Community';
       const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
 
@@ -357,7 +356,7 @@ function App() {
                   {searchQuery && (
                     <button 
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-white/10 rounded-full transition-colors text-zinc-500 hover:text-white"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-white/10 rounded-full transition-colors text-[var(--theme)]"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
