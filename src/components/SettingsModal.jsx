@@ -25,25 +25,15 @@ export function SettingsModal(props) {
   };
 
   return (
-    <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
-      onClick={props.onClose}
-    >
-      <div 
-        className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+      <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
         
         {/* HEADER */}
         <div className="flex items-center justify-between border-b border-white/5 pb-4">
           <h2 className="text-xl font-bold flex items-center gap-2 text-[var(--theme)]">
             <ShieldAlert className="w-5 h-5" /> System Settings
           </h2>
-          <X 
-            onClick={props.onClose} 
-            className="cursor-pointer text-zinc-400 hover:text-white transition-colors" 
-            aria-label="Close settings"
-          />
+          <X onClick={props.onClose} className="cursor-pointer text-zinc-400 hover:text-white transition-colors" />
         </div>
 
         <div className="space-y-6">
@@ -64,7 +54,6 @@ export function SettingsModal(props) {
                 <div className="flex items-center justify-between">
                   <p className="text-[8px] font-black text-zinc-500 uppercase leading-none">Your Friend Code</p>
                   <button 
-                    type="button"
                     onClick={handleCopyCode}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${copied ? 'bg-green-500 text-black' : 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white'}`}
                   >
@@ -93,37 +82,30 @@ export function SettingsModal(props) {
                 placeholder="Enter friend code..." 
                 value={friendInput}
                 onChange={(e) => setFriendInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddFriend()}
                 className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-2.5 text-xs outline-none focus:border-[var(--theme)]/50"
               />
               <button 
-                type="button"
                 onClick={handleAddFriend}
                 className="p-2.5 bg-[var(--theme)] text-black rounded-xl hover:opacity-80 transition-all"
-                aria-label="Add friend"
               >
                 <UserPlus className="w-4 h-4" />
               </button>
             </div>
 
             <div className="space-y-2 max-h-32 overflow-y-auto custom-scrollbar pr-1">
-              {props.friends && props.friends.length > 0 ? props.friends.map(friend => (
+              {props.friends.length > 0 ? props.friends.map(friend => (
                 <div key={friend.code} className="flex items-center justify-between bg-white/5 p-2 rounded-xl border border-white/5">
                   <span className="text-[10px] font-bold truncate max-w-[120px]">{friend.name}</span>
                   <div className="flex gap-1">
                     <button 
-                      type="button"
                       onClick={() => props.onViewFriend(friend)}
                       className="p-1.5 bg-white/5 hover:bg-[var(--theme)] hover:text-black rounded-lg transition-all"
-                      aria-label="View friend"
                     >
                       <Eye className="w-3 h-3" />
                     </button>
                     <button 
-                      type="button"
                       onClick={() => props.onRemoveFriend(friend.code)}
                       className="p-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-all"
-                      aria-label="Remove friend"
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
@@ -142,7 +124,6 @@ export function SettingsModal(props) {
                 <Cpu className="w-3 h-3" /> Performance Mode
               </label>
               <button 
-                type="button"
                 onClick={() => props.setPerformanceMode(!props.performanceMode)}
                 className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${props.performanceMode ? 'bg-yellow-500 text-black' : 'bg-white/5 text-zinc-500 border border-white/10'}`}
               >
@@ -170,20 +151,38 @@ export function SettingsModal(props) {
               </label>
               
               <button 
-                type="button"
                 onClick={props.handleResetBackground}
                 className="p-2 bg-red-500/5 border border-red-500/10 rounded-xl text-[9px] font-black uppercase text-red-500/70 hover:bg-red-500/10 hover:text-red-500 transition-all flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-3 h-3" /> Reset BG
               </button>
               <button 
-                type="button"
                 onClick={props.handleResetMusic}
                 className="p-2 bg-red-500/5 border border-red-500/10 rounded-xl text-[9px] font-black uppercase text-red-500/70 hover:bg-red-500/10 hover:text-red-500 transition-all flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-3 h-3" /> Reset Music
               </button>
             </div>
+
+            {/* BG TRANSPARENCY SLIDER */}
+            {props.bgEnabled && !props.performanceMode && (
+              <div className="pt-2 border-t border-white/5 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="flex items-center justify-between">
+                  <label className="text-[9px] uppercase font-black text-zinc-400 flex items-center gap-2">
+                    <ImageIcon className="w-3 h-3 text-[var(--theme)]" /> BG Opacity
+                  </label>
+                  <span className="text-[10px] font-mono text-[var(--theme)]">{props.bgOpacity}%</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="100" 
+                  value={props.bgOpacity} 
+                  onChange={(e) => props.setBgOpacity(Number(e.target.value))}
+                  className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[var(--theme)]"
+                />
+              </div>
+            )}
 
             {props.bgMusic && (
               <div className="pt-2 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
@@ -220,12 +219,7 @@ export function SettingsModal(props) {
                 readOnly 
               />
               {props.panicKey && (
-                <button 
-                  type="button"
-                  onClick={() => props.setPanicKey('')} 
-                  className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl"
-                  aria-label="Clear panic key"
-                >
+                <button onClick={() => props.setPanicKey('')} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
                   <Trash2 className="w-4 h-4 text-red-500" />
                 </button>
               )}
@@ -238,13 +232,8 @@ export function SettingsModal(props) {
               <Palette className="w-3 h-3" /> Themes
             </label>
             <div className="grid grid-cols-2 gap-2">
-              {props.themes && Object.entries(props.themes).map(([id, t]) => (
-                <button 
-                  type="button"
-                  key={id} 
-                  onClick={() => props.applyTheme(t)} 
-                  className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:border-[var(--theme)] flex items-center gap-2 transition-all"
-                >
+              {Object.entries(props.themes).map(([id, t]) => (
+                <button key={id} onClick={() => props.applyTheme(t)} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:border-[var(--theme)] flex items-center gap-2 transition-all">
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: t.color }} /> {t.name}
                 </button>
               ))}
@@ -254,7 +243,6 @@ export function SettingsModal(props) {
           {/* RESET BUTTONS */}
           <div className="grid grid-cols-2 gap-3 pt-4">
             <button 
-              type="button"
               onClick={props.handleClearSettings} 
               className={`p-4 rounded-2xl border transition-all text-[9px] font-black uppercase flex items-center justify-center gap-2 ${props.confirmClearSettings ? 'bg-orange-500 text-black border-orange-400' : 'border-orange-500/20 bg-orange-500/5 text-orange-500'}`}
             >
@@ -262,7 +250,6 @@ export function SettingsModal(props) {
               {props.confirmClearSettings ? 'ARE YOU SURE?' : 'Clear Settings'}
             </button>
             <button 
-              type="button"
               onClick={props.handleReset} 
               className={`p-4 rounded-2xl border transition-all text-[9px] font-black uppercase flex items-center justify-center gap-2 ${props.confirmReset ? 'bg-red-500 text-black border-red-400' : 'border-red-500/20 bg-red-500/5 text-red-500'}`}
             >
