@@ -72,19 +72,17 @@ function App() {
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favorites') || '[]'));
   const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
-  // --- PERFORMANCE MODE LOGIC ---
   const [performanceMode, setPerformanceMode] = useState(() => localStorage.getItem('capy-perf-mode') === 'true');
 
   useEffect(() => {
     if (performanceMode) {
       setBgEnabled(false);
       setMusicEnabled(false);
-      updateThemeVariables(theme, 0); // Remove glow
+      updateThemeVariables(theme, 0); 
     } else {
       updateThemeVariables(theme, glowIntensity);
     }
   }, [performanceMode, theme, glowIntensity]);
-  // ------------------------------
 
   useEffect(() => {
     if (audioRef.current) {
@@ -108,7 +106,6 @@ function App() {
         }
       }
     };
-
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [musicEnabled, bgMusic, performanceMode]);
@@ -150,21 +147,6 @@ function App() {
     }
   }, [confirmClearSettings]);
 
-  const toggleBgEnabled = () => {
-    if (performanceMode) return;
-    setBgEnabled(!bgEnabled);
-  };
-
-  const toggleMusicEnabled = () => {
-    if (performanceMode) return;
-    const newState = !musicEnabled;
-    setMusicEnabled(newState);
-    if (audioRef.current) {
-      if (newState) audioRef.current.play().catch(() => {});
-      else audioRef.current.pause();
-    }
-  };
-
   const handleBackgroundUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -195,12 +177,7 @@ function App() {
             setMusicEnabled(true);
             if (audioRef.current) {
               audioRef.current.load();
-              const playPromise = audioRef.current.play();
-              if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                  console.log("Auto-play prevented, but state is ON.");
-                });
-              }
+              audioRef.current.play().catch(() => {});
             }
         }
       };
@@ -208,21 +185,7 @@ function App() {
     }
   };
 
-  const handleFaviconUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result;
-        setCustomIcon(base64String);
-        localStorage.setItem('capy-custom-icon', base64String);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const toggleFavorite = (id, e) => {
-    e.stopPropagation();
+  const toggleFavorite = (id) => {
     const isRemoving = favorites.includes(id);
     const newFavs = isRemoving 
       ? favorites.filter(favId => favId !== id) 
@@ -318,20 +281,9 @@ function App() {
   const filteredGames = useMemo(() => {
     const q = searchQuery.toLowerCase();
     return gamesData.filter(g => {
-      const isUtility = g.id === 'request' || g.id === 'report';
       const matchesSearch = g?.title?.toLowerCase().includes(q);
-      
-      if (activeCategory === 'Favorites') {
-        return favorites.includes(g.id) && matchesSearch;
-      }
-
-      const isAllowedCategoryForUtility = activeCategory === 'All' || activeCategory === 'Community';
+      if (activeCategory === 'Favorites') return favorites.includes(g.id) && matchesSearch;
       const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
-
-      if (isUtility) {
-        return matchesSearch && isAllowedCategoryForUtility;
-      }
-
       return matchesSearch && matchesCategory;
     });
   }, [searchQuery, activeCategory, gamesData, favorites]);
@@ -362,7 +314,7 @@ function App() {
                 <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
               </div>
 
-              <div className="flex items-center gap-2 w-full max-sm justify-self-center">
+              <div className="flex items-center gap-2 w-full justify-self-center">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
                   <input 
@@ -373,10 +325,7 @@ function App() {
                     className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 transition-colors" 
                   />
                   {searchQuery && (
-                    <button 
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-white/10 rounded-full transition-colors text-[var(--theme)]"
-                    >
+                    <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-white/10 rounded-full text-[var(--theme)]">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   )}
@@ -384,13 +333,13 @@ function App() {
                 <button onClick={() => {
                   const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
                   if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
-                }} className="p-2 bg-white/5 border border-white/10 rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all shrink-0">
+                }} className="p-2 bg-white/5 border border-white/10 rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all">
                   <Dices className="w-5 h-5" />
                 </button>
               </div>
 
               <div className="flex items-center justify-end gap-4">
-                <div className="hidden sm:flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-[var(--theme)] bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                <div className="hidden sm:flex items-center gap-3 text-[9px] font-black uppercase text-[var(--theme)] bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
                   <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                   <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
                   <div className="flex items-center gap-1 border-l border-white/10 pl-3">
@@ -430,19 +379,19 @@ function App() {
       </div>
 
       <SettingsModal 
-  show={showSettings} 
-  onClose={() => setShowSettings(false)}
-  performanceMode={performanceMode}
-  setPerformanceMode={(val) => { setPerformanceMode(val); localStorage.setItem('capy-perf-mode', val); }}
-  themes={THEMES}
-  applyTheme={applyTheme}
-  panicKey={panicKey}
-  setPanicKey={(val) => { setPanicKey(val); localStorage.setItem('capy-panic-key', val); }}
-  handleBackgroundUpload={handleBackgroundUpload}
-  handleAudioUpload={handleAudioUpload}
-  handleClearSettings={handleClearSettings}
-  handleReset={handleReset}
-/>
+        show={showSettings} 
+        onClose={() => setShowSettings(false)}
+        performanceMode={performanceMode}
+        setPerformanceMode={(val) => { setPerformanceMode(val); localStorage.setItem('capy-perf-mode', val); }}
+        themes={THEMES}
+        applyTheme={applyTheme}
+        panicKey={panicKey}
+        setPanicKey={(val) => { setPanicKey(val); localStorage.setItem('capy-panic-key', val); }}
+        handleBackgroundUpload={handleBackgroundUpload}
+        handleAudioUpload={handleAudioUpload}
+        handleClearSettings={handleClearSettings}
+        handleReset={handleReset}
+      />
     </div>
   );
 }
