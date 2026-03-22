@@ -39,7 +39,6 @@ function App() {
   }, []);
 
   const audioRef = useRef(null);
-  const videoRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
@@ -54,7 +53,7 @@ function App() {
   const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
   const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
 
-  const [bgEnabled, setBgEnabled] = useState(() => localStorage.getItem('capy-bg-enabled') === 'true');
+  const [bgEnabled, setBgEnabled] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
   const [backgroundVideo, setBackgroundVideo] = useState(() => localStorage.getItem('capy-bg-video') || '');
   const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
@@ -78,13 +77,6 @@ function App() {
       audioRef.current.volume = volume / 100;
     }
   }, [volume]);
-
-  // Ensure video reloads when source changes
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.load();
-    }
-  }, [backgroundVideo]);
 
   useEffect(() => {
     if (musicEnabled && bgMusic && audioRef.current) {
@@ -138,9 +130,7 @@ function App() {
   }, [confirmReset]);
 
   const toggleBgEnabled = () => {
-    const newState = !bgEnabled;
-    setBgEnabled(newState);
-    localStorage.setItem('capy-bg-enabled', newState);
+    setBgEnabled(!bgEnabled);
   };
 
   const toggleMusicEnabled = () => {
@@ -160,17 +150,11 @@ function App() {
         const base64String = reader.result;
         if (file.type.startsWith('video/')) {
           setBackgroundVideo(base64String);
-          setBackgroundImage('');
           localStorage.setItem('capy-bg-video', base64String);
-          localStorage.removeItem('capy-bg-image');
         } else {
           setBackgroundImage(base64String);
-          setBackgroundVideo('');
           localStorage.setItem('capy-bg-image', base64String);
-          localStorage.removeItem('capy-bg-video');
         }
-        setBgEnabled(true);
-        localStorage.setItem('capy-bg-enabled', 'true');
       };
       reader.readAsDataURL(file);
     }
@@ -185,7 +169,6 @@ function App() {
         setBgMusic(base64String);
         localStorage.setItem('capy-bg-music', base64String);
         setMusicEnabled(true);
-        
         if (audioRef.current) {
           audioRef.current.load();
           const playPromise = audioRef.current.play();
@@ -311,7 +294,7 @@ function App() {
       {bgEnabled && (
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" style={{ opacity: bgOpacity / 100 }}>
           {backgroundVideo ? (
-            <video ref={videoRef} autoPlay muted loop playsInline className="w-full h-full object-cover">
+            <video autoPlay muted loop playsInline className="w-full h-full object-cover">
               <source src={backgroundVideo} />
             </video>
           ) : backgroundImage ? (
@@ -361,7 +344,7 @@ function App() {
               <div className="flex items-center justify-end gap-4">
                 <div className="hidden sm:flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-[var(--theme)] bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
                   <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-                  <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
                   <div className="flex items-center gap-1 border-l border-white/10 pl-3">
                     <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500' : ''}`} />
                     <span>{battery.level}%</span>
@@ -484,7 +467,14 @@ function App() {
                 </div>
                 <div className="space-y-3">
                   <input type="text" placeholder="Redirect URL (google.com)" value={panicUrl} onChange={(e) => { setPanicUrl(e.target.value); localStorage.setItem('capy-panic-url', e.target.value); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50" />
-                  <input type="text" placeholder="Press key to set Panic" value={panicKey} onKeyDown={(e) => { e.preventDefault(); setPanicKey(e.key); localStorage.setItem('capy-panic-key', e.key); }} className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50 text-center font-mono font-bold" readOnly />
+                  <div className="flex gap-2">
+                    <input type="text" placeholder="Press key to set Panic" value={panicKey} onKeyDown={(e) => { e.preventDefault(); setPanicKey(e.key); localStorage.setItem('capy-panic-key', e.key); }} className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50 text-center font-mono font-bold" readOnly />
+                    {panicKey && (
+                      <button onClick={() => { setPanicKey(''); localStorage.removeItem('capy-panic-key'); }} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-all group" title="Remove Panic Key">
+                        <Trash2 className="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </section>
 
