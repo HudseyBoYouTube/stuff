@@ -451,7 +451,7 @@ function App() {
                     {performanceMode ? 'ON' : 'OFF'}
                   </button>
                 </div>
-                <p className="text-[8px] text-zinc-500 font-bold leading-relaxed uppercase">Disables Glow, Backgrounds, and Music to save CPU on school computers.</p>
+                <p className="text-[8px] text-zinc-500 font-bold leading-relaxed uppercase">Disables Glow, Backgrounds, and Music to save your cooked CPU on school Chromebooks.</p>
               </section>
 
               <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
