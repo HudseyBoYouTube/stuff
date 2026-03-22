@@ -3,7 +3,7 @@ import {
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
   Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video, Music, Volume2, Power,
-  Cpu, Users, UserPlus, UserCircle
+  Cpu, Users, UserPlus, UserCircle, CheckCircle2
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -47,6 +47,7 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmClearSettings, setConfirmClearSettings] = useState(false);
+  const [notification, setNotification] = useState(null);
 
   const [time, setTime] = useState(new Date());
   const [battery, setBattery] = useState({ level: 100, charging: false });
@@ -79,11 +80,9 @@ function App() {
   const [friends, setFriends] = useState(() => JSON.parse(localStorage.getItem('capy-friends') || '[]'));
   const [selectedFriend, setSelectedFriend] = useState(null);
 
-  // Generate a persistent unique ID for the device if it doesn't exist
   const [uniqueId] = useState(() => {
     let id = localStorage.getItem('capy-unique-id');
     if (!id) {
-      // Create a more robust unique string
       id = typeof crypto.randomUUID === 'function' 
         ? crypto.randomUUID().substring(0, 8) 
         : Math.random().toString(36).substring(2, 10);
@@ -93,11 +92,16 @@ function App() {
   });
 
   const friendCode = useMemo(() => {
-    // Combine name with unique ID to ensure different devices have different codes
     const combined = `${displayName}#${uniqueId}`;
-    // Using 12 chars makes the codes look much more distinct
     return btoa(combined).replace(/=/g, '').toUpperCase().substring(0, 12);
   }, [displayName, uniqueId]);
+
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => setNotification(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
 
   useEffect(() => {
     if (performanceMode) {
@@ -355,6 +359,16 @@ function App() {
   return (
     <div className={`min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'}`} style={{ '--theme': theme, '--glow': `${performanceMode ? 0 : glowIntensity}px` }}>
       
+      {/* NOTIFICATION TOAST */}
+      {notification && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="bg-zinc-900 border border-[var(--theme)]/50 px-6 py-3 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] flex items-center gap-3">
+            <CheckCircle2 className="w-5 h-5 text-[var(--theme)]" />
+            <span className="text-xs font-black uppercase tracking-tight">{notification}</span>
+          </div>
+        </div>
+      )}
+
       {bgEnabled && !performanceMode && (
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" style={{ opacity: bgOpacity / 100 }}>
           {backgroundVideo ? (
@@ -492,7 +506,6 @@ function App() {
         bgMusic={bgMusic}
         volume={volume}
         setVolume={setVolume}
-        // Social Props
         displayName={displayName}
         setDisplayName={(val) => { setDisplayName(val); localStorage.setItem('capy-display-name', val); }}
         friendCode={friendCode}
@@ -502,10 +515,14 @@ function App() {
             const decoded = atob(code);
             const name = decoded.split('#')[0];
             
-            if (friends.find(f => f.code === code)) return;
+            if (friends.find(f => f.code === code)) {
+              setNotification("Already Friends!");
+              return;
+            }
             const newFriends = [...friends, { name, code, favs: [], times: {} }];
             setFriends(newFriends);
             localStorage.setItem('capy-friends', JSON.stringify(newFriends));
+            setNotification("Friend Request Sent!");
           } catch(e) { alert("Invalid Friend Code!"); }
         }}
         onRemoveFriend={(code) => {
