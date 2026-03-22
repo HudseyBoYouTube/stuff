@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
-  Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video, Music, Volume2
+  Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video, Music, Volume2, Power
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -53,6 +53,8 @@ function App() {
   const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
   const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
 
+  // Master switch for Background Visibility
+  const [bgEnabled, setBgEnabled] = useState(() => localStorage.getItem('capy-bg-enabled') !== 'false');
   const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
   const [backgroundVideo, setBackgroundVideo] = useState(() => localStorage.getItem('capy-bg-video') || '');
   const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
@@ -115,6 +117,11 @@ function App() {
       return () => clearTimeout(timeout);
     }
   }, [confirmReset]);
+
+  const toggleBgEnabled = () => {
+    setBgEnabled(!bgEnabled);
+    localStorage.setItem('capy-bg-enabled', !bgEnabled);
+  };
 
   const handleBackgroundUpload = (e) => {
     const file = e.target.files[0];
@@ -255,15 +262,18 @@ function App() {
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased relative" style={{ '--theme': theme, '--glow': `${glowIntensity}px` }}>
       
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" style={{ opacity: bgOpacity / 100 }}>
-        {backgroundVideo ? (
-          <video autoPlay muted loop playsInline className="w-full h-full object-cover">
-            <source src={backgroundVideo} />
-          </video>
-        ) : backgroundImage ? (
-          <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${backgroundImage})` }} />
-        ) : null}
-      </div>
+      {/* Background Layer (Only renders if enabled) */}
+      {bgEnabled && (
+        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" style={{ opacity: bgOpacity / 100 }}>
+          {backgroundVideo ? (
+            <video autoPlay muted loop playsInline className="w-full h-full object-cover">
+              <source src={backgroundVideo} />
+            </video>
+          ) : backgroundImage ? (
+            <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${backgroundImage})` }} />
+          ) : null}
+        </div>
+      )}
 
       {bgMusic && <audio ref={audioRef} src={bgMusic} loop autoPlay />}
 
@@ -338,7 +348,14 @@ function App() {
             
             <div className="space-y-6">
               <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><ImageIcon className="w-3 h-3 text-[var(--theme)]" /> Media Background</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2"><ImageIcon className="w-3 h-3 text-[var(--theme)]" /> Media Background</label>
+                  <button onClick={toggleBgEnabled} className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${bgEnabled ? 'bg-[var(--theme)]/20 text-[var(--theme)] border border-[var(--theme)]/30' : 'bg-white/5 text-zinc-500 border border-white/10'}`}>
+                    <Power className="w-3 h-3" />
+                    {bgEnabled ? 'ON' : 'OFF'}
+                  </button>
+                </div>
+                
                 <div className="flex gap-2">
                   <label className="flex-1 p-3 bg-zinc-800 border border-white/10 rounded-xl text-[10px] font-black uppercase hover:border-[var(--theme)]/50 transition-all text-center cursor-pointer">
                     <div className="flex items-center justify-center gap-2">
