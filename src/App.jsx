@@ -537,7 +537,8 @@ function App() {
               <div className="w-20 h-20 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20">
                 <UserCircle className="w-12 h-12 text-[var(--theme)]" />
               </div>
-              <h3 className="text-2xl font-black tracking-tighter uppercase">{selectedFriend.name}</h3>
+              {/* FIXED: Removed 'uppercase' class below to preserve original capitalization */}
+              <h3 className="text-2xl font-black tracking-tighter">{selectedFriend.name}</h3>
               <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Friend Profile</p>
             </div>
             <div className="space-y-4">
