@@ -499,10 +499,10 @@ function App() {
                        displayTimes = playtimes;
                      } else {
                        let base64 = selectedFriend.code.trim();
-                       // Sanitize base64 string
-                       base64 = base64.replace(/[^A-Za-z0-9+/]/g, "");
-                       // RE-ADD PADDING FOR PARSING
+                       // Sanitize and fix potential URL-safe encoding
+                       base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
                        while (base64.length % 4 !== 0) base64 += '=';
+                       
                        const decoded = JSON.parse(atob(base64));
                        displayFavs = decoded.f || [];
                        displayTimes = decoded.t || {};
@@ -560,6 +560,8 @@ function App() {
             if (!cleanCode) return;
             
             let base64 = cleanCode;
+            // Robust padding and URL character fix for adding friends too
+            base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
             while (base64.length % 4 !== 0) base64 += '=';
             
             const decodedData = JSON.parse(atob(base64));
