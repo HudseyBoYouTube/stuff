@@ -153,12 +153,17 @@ function App() {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result;
+        setBgEnabled(true); // Automatically turn on background when uploaded
         if (file.type.startsWith('video/')) {
           setBackgroundVideo(base64String);
+          setBackgroundImage(''); // Clear image if video is uploaded
           localStorage.setItem('capy-bg-video', base64String);
+          localStorage.removeItem('capy-bg-image');
         } else {
           setBackgroundImage(base64String);
+          setBackgroundVideo(''); // Clear video if image is uploaded
           localStorage.setItem('capy-bg-image', base64String);
+          localStorage.removeItem('capy-bg-video');
         }
       };
       reader.readAsDataURL(file);
@@ -294,7 +299,7 @@ function App() {
       {bgEnabled && !performanceMode && (
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" style={{ opacity: bgOpacity / 100 }}>
           {backgroundVideo ? (
-            <video autoPlay muted loop playsInline className="w-full h-full object-cover">
+            <video key={backgroundVideo} autoPlay muted loop playsInline className="w-full h-full object-cover">
               <source src={backgroundVideo} />
             </video>
           ) : backgroundImage ? (
