@@ -39,6 +39,7 @@ function App() {
   }, []);
 
   const audioRef = useRef(null);
+  const videoRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
@@ -53,7 +54,7 @@ function App() {
   const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
   const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
 
-  const [bgEnabled, setBgEnabled] = useState(false);
+  const [bgEnabled, setBgEnabled] = useState(() => localStorage.getItem('capy-bg-enabled') === 'true');
   const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
   const [backgroundVideo, setBackgroundVideo] = useState(() => localStorage.getItem('capy-bg-video') || '');
   const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
@@ -78,7 +79,13 @@ function App() {
     }
   }, [volume]);
 
-  // Force play when music is enabled and source exists
+  // Ensure video reloads when source changes
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.load();
+    }
+  }, [backgroundVideo]);
+
   useEffect(() => {
     if (musicEnabled && bgMusic && audioRef.current) {
       audioRef.current.play().catch(err => console.log("Playback failed:", err));
@@ -131,7 +138,9 @@ function App() {
   }, [confirmReset]);
 
   const toggleBgEnabled = () => {
-    setBgEnabled(!bgEnabled);
+    const newState = !bgEnabled;
+    setBgEnabled(newState);
+    localStorage.setItem('capy-bg-enabled', newState);
   };
 
   const toggleMusicEnabled = () => {
@@ -151,11 +160,17 @@ function App() {
         const base64String = reader.result;
         if (file.type.startsWith('video/')) {
           setBackgroundVideo(base64String);
+          setBackgroundImage('');
           localStorage.setItem('capy-bg-video', base64String);
+          localStorage.removeItem('capy-bg-image');
         } else {
           setBackgroundImage(base64String);
+          setBackgroundVideo('');
           localStorage.setItem('capy-bg-image', base64String);
+          localStorage.removeItem('capy-bg-video');
         }
+        setBgEnabled(true);
+        localStorage.setItem('capy-bg-enabled', 'true');
       };
       reader.readAsDataURL(file);
     }
@@ -171,7 +186,6 @@ function App() {
         localStorage.setItem('capy-bg-music', base64String);
         setMusicEnabled(true);
         
-        // Immediate play attempt using the interaction context
         if (audioRef.current) {
           audioRef.current.load();
           const playPromise = audioRef.current.play();
@@ -297,7 +311,7 @@ function App() {
       {bgEnabled && (
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" style={{ opacity: bgOpacity / 100 }}>
           {backgroundVideo ? (
-            <video autoPlay muted loop playsInline className="w-full h-full object-cover">
+            <video ref={videoRef} autoPlay muted loop playsInline className="w-full h-full object-cover">
               <source src={backgroundVideo} />
             </video>
           ) : backgroundImage ? (
