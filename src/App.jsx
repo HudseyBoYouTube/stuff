@@ -138,6 +138,11 @@ function App() {
     }
   }, [volume]);
 
+  // Save Background Opacity to localStorage
+  useEffect(() => {
+    localStorage.setItem('capy-bg-opacity', bgOpacity);
+  }, [bgOpacity]);
+
   useEffect(() => {
     if (bgMusic && audioRef.current && !performanceMode) {
       audioRef.current.load();
@@ -499,7 +504,6 @@ function App() {
                        displayTimes = playtimes;
                      } else {
                        let base64 = selectedFriend.code.trim();
-                       // Sanitize and fix potential URL-safe encoding
                        base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
                        while (base64.length % 4 !== 0) base64 += '=';
                        
@@ -550,6 +554,8 @@ function App() {
         bgMusic={bgMusic}
         volume={volume}
         setVolume={setVolume}
+        bgOpacity={bgOpacity}
+        setBgOpacity={setBgOpacity}
         displayName={displayName}
         setDisplayName={(val) => { setDisplayName(val); localStorage.setItem('capy-display-name', val); }}
         friendCode={friendCode}
@@ -560,7 +566,6 @@ function App() {
             if (!cleanCode) return;
             
             let base64 = cleanCode;
-            // Robust padding and URL character fix for adding friends too
             base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
             while (base64.length % 4 !== 0) base64 += '=';
             
