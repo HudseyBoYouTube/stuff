@@ -306,8 +306,15 @@ function App() {
         return favorites.includes(g.id) && matchesSearch;
       }
 
+      // Updated: Utility items only show in 'All' or 'Community'
+      const isAllowedCategoryForUtility = activeCategory === 'All' || activeCategory === 'Community';
       const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
-      return (matchesSearch && matchesCategory) || (isUtility && matchesSearch);
+
+      if (isUtility) {
+        return matchesSearch && isAllowedCategoryForUtility;
+      }
+
+      return matchesSearch && matchesCategory;
     });
   }, [searchQuery, activeCategory, gamesData, favorites]);
 
