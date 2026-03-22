@@ -512,7 +512,11 @@ function App() {
         friends={friends}
         onAddFriend={(code) => {
           try {
-            const decoded = atob(code);
+            // Fix: Trim extra spaces and validate structure before decoding
+            const cleanCode = code.trim();
+            if (!cleanCode) return;
+
+            const decoded = atob(cleanCode);
             const name = decoded.split('#')[0];
             
             if (!name || !decoded.includes('#')) {
@@ -520,23 +524,18 @@ function App() {
               return;
             }
 
-            if (friends.find(f => f.code === code)) {
+            if (friends.find(f => f.code === cleanCode)) {
               setNotification("Already Friends!");
               return;
             }
 
-            const newFriend = { 
-              name: name, 
-              code: code, 
-              favs: [], 
-              times: {} 
-            };
-
-            const newFriends = [...friends, newFriend];
+            const newFriends = [...friends, { name, code: cleanCode, favs: [], times: {} }];
             setFriends(newFriends);
             localStorage.setItem('capy-friends', JSON.stringify(newFriends));
-            setNotification(`Added ${name}!`);
-          } catch(e) { alert("Invalid Friend Code!"); }
+            setNotification("Friend Request Sent!");
+          } catch(e) { 
+            alert("Invalid Friend Code!"); 
+          }
         }}
         onRemoveFriend={(code) => {
           const newFriends = friends.filter(f => f.code !== code);
