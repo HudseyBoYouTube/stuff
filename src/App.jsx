@@ -79,9 +79,21 @@ function App() {
   const [friends, setFriends] = useState(() => JSON.parse(localStorage.getItem('capy-friends') || '[]'));
   const [selectedFriend, setSelectedFriend] = useState(null);
 
+  // Generate a persistent unique ID for the device if it doesn't exist
+  const [uniqueId] = useState(() => {
+    let id = localStorage.getItem('capy-unique-id');
+    if (!id) {
+      id = Math.floor(1000 + Math.random() * 9000).toString();
+      localStorage.setItem('capy-unique-id', id);
+    }
+    return id;
+  });
+
   const friendCode = useMemo(() => {
-    return btoa(displayName).substring(0, 6).toUpperCase();
-  }, [displayName]);
+    // Combine name with unique ID to ensure different devices have different codes
+    const combined = `${displayName}#${uniqueId}`;
+    return btoa(combined).substring(0, 8).toUpperCase();
+  }, [displayName, uniqueId]);
 
   useEffect(() => {
     if (performanceMode) {
@@ -272,7 +284,7 @@ function App() {
         'capy-custom-title', 'capy-custom-icon', 'capy-bg-image', 
         'capy-bg-video', 'capy-bg-opacity', 'capy-bg-music', 
         'capy-volume', 'capy-panic-url', 'capy-panic-key', 'capy-perf-mode',
-        'capy-bg-enabled', 'capy-display-name', 'capy-friends'
+        'capy-bg-enabled', 'capy-display-name', 'capy-friends', 'capy-unique-id'
       ];
       settingsKeys.forEach(key => localStorage.removeItem(key));
       window.location.reload();
@@ -483,7 +495,10 @@ function App() {
         friends={friends}
         onAddFriend={(code) => {
           try {
-            const name = atob(code);
+            // Decode the string and split by '#' to get the name
+            const decoded = atob(code);
+            const name = decoded.split('#')[0];
+            
             if (friends.find(f => f.code === code)) return;
             const newFriends = [...friends, { name, code, favs: [], times: {} }];
             setFriends(newFriends);
