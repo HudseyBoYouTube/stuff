@@ -59,7 +59,7 @@ function App() {
   const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
   
   const [bgMusic, setBgMusic] = useState(() => localStorage.getItem('capy-bg-music') || '');
-  const [musicEnabled, setMusicEnabled] = useState(false); // Default to OFF every reload
+  const [musicEnabled, setMusicEnabled] = useState(false); 
   const [volume, setVolume] = useState(() => Number(localStorage.getItem('capy-volume')) || 50);
 
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
@@ -88,7 +88,6 @@ function App() {
     return () => window.removeEventListener('click', startAudio);
   }, [bgMusic, musicEnabled]);
 
-  // Handle music pause/resume on tab switch
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (audioRef.current && musicEnabled && bgMusic) {
@@ -174,12 +173,11 @@ function App() {
         setBgMusic(base64String);
         localStorage.setItem('capy-bg-music', base64String);
         
-        // Auto-start logic
+        // Auto-enable and play immediately
         setMusicEnabled(true);
         if (audioRef.current) {
-          audioRef.current.play().catch(() => {
-            console.log("Autoplay prevented; will start on next interaction.");
-          });
+          audioRef.current.load();
+          audioRef.current.play().catch(() => {});
         }
       };
       reader.readAsDataURL(file);
