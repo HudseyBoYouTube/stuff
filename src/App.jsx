@@ -43,6 +43,7 @@ function App() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [confirmClearSettings, setConfirmClearSettings] = useState(false);
 
   const [time, setTime] = useState(new Date());
   const [battery, setBattery] = useState({ level: 100, charging: false });
@@ -101,8 +102,7 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Logic: Only panic if we aren't currently typing in an input field
-      if (panicKey && e.key === panicKey && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+      if (panicKey && e.key === panicKey) {
         window.location.href = panicUrl.startsWith('http') ? panicUrl : `https://${panicUrl}`;
       }
     };
@@ -129,6 +129,13 @@ function App() {
       return () => clearTimeout(timeout);
     }
   }, [confirmReset]);
+
+  useEffect(() => {
+    if (confirmClearSettings) {
+      const timeout = setTimeout(() => setConfirmClearSettings(false), 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [confirmClearSettings]);
 
   const toggleBgEnabled = () => {
     setBgEnabled(!bgEnabled);
@@ -226,6 +233,21 @@ function App() {
       window.location.reload();
     } else {
       setConfirmReset(true);
+    }
+  };
+
+  const handleClearSettings = () => {
+    if (confirmClearSettings) {
+      const settingsKeys = [
+        'capy-theme', 'capy-glow', 'capy-stealth-type', 
+        'capy-custom-title', 'capy-custom-icon', 'capy-bg-image', 
+        'capy-bg-video', 'capy-bg-opacity', 'capy-bg-music', 
+        'capy-volume', 'capy-panic-url', 'capy-panic-key'
+      ];
+      settingsKeys.forEach(key => localStorage.removeItem(key));
+      window.location.reload();
+    } else {
+      setConfirmClearSettings(true);
     }
   };
 
@@ -328,7 +350,7 @@ function App() {
                   {searchQuery && (
                     <button 
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-white/10 rounded-full transition-colors text-[var(--theme)] hover:text-white"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-white/10 rounded-full transition-colors text-zinc-500 hover:text-white"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -509,10 +531,16 @@ function App() {
                 </div>
               </section>
 
-              <button onClick={handleReset} className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-center gap-2 text-[10px] font-black uppercase ${confirmReset ? 'bg-red-600 border-red-400 text-white animate-pulse' : 'border-red-500/20 bg-red-500/5 text-red-500 hover:bg-red-500/10'}`}>
-                <RotateCcw className={`w-4 h-4 ${confirmReset ? 'animate-spin' : ''}`} />
-                {confirmReset ? 'Confirm Full Reset?' : 'Wipe System Data'}
-              </button>
+              <div className="grid grid-cols-2 gap-3">
+                <button onClick={handleClearSettings} className={`flex-1 p-4 rounded-2xl border transition-all flex items-center justify-center gap-2 text-[9px] font-black uppercase ${confirmClearSettings ? 'bg-orange-600 border-orange-400 text-white animate-pulse' : 'border-orange-500/20 bg-orange-500/5 text-orange-500 hover:bg-orange-500/10'}`}>
+                  <RotateCcw className={`w-3.5 h-3.5 ${confirmClearSettings ? 'animate-spin' : ''}`} />
+                  {confirmClearSettings ? 'Confirm?' : 'Clear Settings'}
+                </button>
+                <button onClick={handleReset} className={`flex-1 p-4 rounded-2xl border transition-all flex items-center justify-center gap-2 text-[9px] font-black uppercase ${confirmReset ? 'bg-red-600 border-red-400 text-white animate-pulse' : 'border-red-500/20 bg-red-500/5 text-red-500 hover:bg-red-500/10'}`}>
+                  <Trash2 className={`w-3.5 h-3.5 ${confirmReset ? 'animate-spin' : ''}`} />
+                  {confirmReset ? 'Confirm?' : 'Full Wipe'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
