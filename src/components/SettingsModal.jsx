@@ -20,7 +20,7 @@ export function SettingsModal(props) {
   const handleAddFriend = () => {
     if (friendInput.trim()) {
       props.onAddFriend(friendInput.trim());
-      setFriendInput('');
+      setFriendInput(''); // Clears input so the user knows the action was taken
     }
   };
 
