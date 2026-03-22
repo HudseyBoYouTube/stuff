@@ -242,19 +242,30 @@ export function SettingsModal(props) {
 
           {/* RESET BUTTONS */}
           <div className="grid grid-cols-2 gap-3 pt-4">
+            {/* Clear Settings Button */}
             <button 
               onClick={props.handleClearSettings} 
-              className={`p-4 rounded-2xl border transition-all text-[9px] font-black uppercase flex items-center justify-center gap-2 ${props.confirmClearSettings ? 'bg-orange-500 text-black border-orange-400' : 'border-orange-500/20 bg-orange-500/5 text-orange-500'}`}
+              className={`p-4 rounded-2xl border transition-all text-[9px] font-black uppercase flex items-center justify-center gap-2 ${
+                props.confirmClearSettings 
+                  ? 'bg-orange-500 text-black border-orange-400 animate-pulse' 
+                  : 'border-orange-500/20 bg-orange-500/5 text-orange-500 hover:bg-orange-500/10'
+              }`}
             >
-              <RotateCcw className="w-3.5 h-3.5" /> 
+              <RotateCcw className={`w-3.5 h-3.5 ${props.confirmClearSettings ? 'animate-spin' : ''}`} /> 
               {props.confirmClearSettings ? 'ARE YOU SURE?' : 'Clear Settings'}
             </button>
+
+            {/* Factory Reset Button */}
             <button 
               onClick={props.handleReset} 
-              className={`p-4 rounded-2xl border transition-all text-[9px] font-black uppercase flex items-center justify-center gap-2 ${props.confirmReset ? 'bg-red-500 text-black border-red-400' : 'border-red-500/20 bg-red-500/5 text-red-500'}`}
+              className={`p-4 rounded-2xl border transition-all text-[9px] font-black uppercase flex items-center justify-center gap-2 ${
+                props.confirmReset 
+                  ? 'bg-red-500 text-black border-red-400 animate-pulse' 
+                  : 'border-red-500/20 bg-red-500/5 text-red-500 hover:bg-red-500/10'
+              }`}
             >
-              <Trash2 className="w-3.5 h-3.5" /> 
-              {props.confirmReset ? 'WIPE EVERYTHING?' : 'Wipe Data'}
+              <RotateCcw className={`w-4 h-4 ${props.confirmReset ? 'animate-spin' : ''}`} />
+              {props.confirmReset ? 'ARE YOU SURE?' : 'Factory Reset'}
             </button>
           </div>
         </div>
