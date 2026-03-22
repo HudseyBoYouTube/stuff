@@ -101,7 +101,8 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (panicKey && e.key === panicKey) {
+      // Logic: Only panic if we aren't currently typing in an input field
+      if (panicKey && e.key === panicKey && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
         window.location.href = panicUrl.startsWith('http') ? panicUrl : `https://${panicUrl}`;
       }
     };
@@ -327,7 +328,7 @@ function App() {
                   {searchQuery && (
                     <button 
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-white/10 rounded-full transition-colors text-zinc-500 hover:text-white"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-white/10 rounded-full transition-colors text-[var(--theme)] hover:text-white"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
