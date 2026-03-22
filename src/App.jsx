@@ -3,7 +3,7 @@ import {
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
   Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video, Music, Volume2, Power,
-  Cpu, Users, UserPlus, UserCircle, CheckCircle2
+  Cpu, Users, UserPlus, UserCircle, CheckCircle2, History // Added History icon
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -80,6 +80,16 @@ function App() {
   });
   
   const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
+
+  // --- NEW: Recently Played State ---
+  const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
+    try {
+      const saved = localStorage.getItem('capy-recent');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
 
   const [performanceMode, setPerformanceMode] = useState(() => localStorage.getItem('capy-perf-mode') === 'true');
 
@@ -312,7 +322,7 @@ function App() {
         'capy-custom-title', 'capy-custom-icon', 'capy-bg-image', 
         'capy-bg-video', 'capy-bg-opacity', 'capy-bg-music', 
         'capy-volume', 'capy-panic-url', 'capy-panic-key', 'capy-perf-mode',
-        'capy-bg-enabled'
+        'capy-bg-enabled', 'capy-recent' // Added capy-recent here
       ];
       settingsKeys.forEach(key => localStorage.removeItem(key));
       window.location.reload();
@@ -349,8 +359,18 @@ function App() {
     return final;
   }, [gamesData, validFavoritesCount]);
 
+  // --- UPDATED: launchContent to track history ---
   const launchContent = (item) => {
     if (!item?.url) return;
+
+    // Track recently played
+    setRecentlyPlayed(prev => {
+      const filtered = prev.filter(id => id !== item.id);
+      const updated = [item.id, ...filtered].slice(0, 4); // Keep last 4
+      localStorage.setItem('capy-recent', JSON.stringify(updated));
+      return updated;
+    });
+
     const win = window.open('about:blank', '_blank');
     if (win) {
       win.document.title = "DO NOT REFRESH";
@@ -375,6 +395,13 @@ function App() {
       return matchesSearch && matchesCategory;
     });
   }, [searchQuery, activeCategory, gamesData, favorites]);
+
+  // --- NEW: Helper for Recent Games List ---
+  const recentGamesData = useMemo(() => {
+    return recentlyPlayed
+      .map(id => gamesData.find(g => g.id === id))
+      .filter(Boolean);
+  }, [recentlyPlayed, gamesData]);
 
   return (
     <div className={`min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'}`} style={{ '--theme': theme, '--glow': `${performanceMode ? 0 : glowIntensity}px` }}>
@@ -460,18 +487,44 @@ function App() {
           </div>
         </div>
 
-        <main className="max-w-7xl mx-auto px-4 mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {filteredGames.map(game => (
-            <GameCard 
-              key={game.id} 
-              game={game} 
-              onLaunch={launchContent} 
-              playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
-              isFavorite={favorites.includes(game.id)}
-              onToggleFavorite={() => toggleFavorite(game.id)}
-              performanceMode={performanceMode}
-            />
-          ))}
+        {/* --- UPDATED: Main section with Recently Played Row --- */}
+        <main className="max-w-7xl mx-auto px-4 mt-8 space-y-12">
+          {recentGamesData.length > 0 && activeCategory === 'All' && !searchQuery && (
+            <section className="space-y-4">
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                <History className="w-3 h-3 text-[var(--theme)]" />
+                Recently Played
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {recentGamesData.map(game => (
+                  <GameCard 
+                    key={`recent-${game.id}`} 
+                    game={game} 
+                    onLaunch={launchContent} 
+                    playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
+                    isFavorite={favorites.includes(game.id)}
+                    onToggleFavorite={() => toggleFavorite(game.id)}
+                    performanceMode={performanceMode}
+                  />
+                ))}
+              </div>
+              <div className="h-px bg-white/5 w-full mt-8" />
+            </section>
+          )}
+
+          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {filteredGames.map(game => (
+              <GameCard 
+                key={game.id} 
+                game={game} 
+                onLaunch={launchContent} 
+                playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
+                isFavorite={favorites.includes(game.id)}
+                onToggleFavorite={() => toggleFavorite(game.id)}
+                performanceMode={performanceMode}
+              />
+            ))}
+          </section>
         </main>
       </div>
 
