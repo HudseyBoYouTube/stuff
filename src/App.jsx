@@ -312,7 +312,7 @@ function App() {
       window.location.reload();
     } else {
       setConfirmReset(true);
-      setNotification("Warning: This will delete ALL games, favorites, and stats!");
+      setNotification("Warning: This will delete ALL customization, favorites, friends, and stats!");
     }
   };
 
