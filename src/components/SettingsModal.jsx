@@ -50,18 +50,23 @@ export function SettingsModal(props) {
                 onChange={(e) => props.setDisplayName(e.target.value)}
                 className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)]/50 font-bold"
               />
-              <div className="flex items-center justify-between bg-black/20 p-2 rounded-xl border border-white/5">
-                <div className="pl-2">
-                  <p className="text-[8px] font-black text-zinc-500 uppercase leading-none mb-1">Your Friend Code</p>
-                  <p className="text-xs font-mono font-black text-[var(--theme)] tracking-widest leading-none">{props.friendCode}</p>
+              <div className="bg-black/20 p-3 rounded-xl border border-white/5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-[8px] font-black text-zinc-500 uppercase leading-none">Your Friend Code</p>
+                  <button 
+                    onClick={handleCopyCode}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${copied ? 'bg-green-500 text-black' : 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white'}`}
+                  >
+                    {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                    {copied ? 'Copied' : 'Copy'}
+                  </button>
                 </div>
-                <button 
-                  onClick={handleCopyCode}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${copied ? 'bg-green-500 text-black' : 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white'}`}
-                >
-                  {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                  {copied ? 'Copied' : 'Copy'}
-                </button>
+                {/* Scrollable container to handle long Base64 strings */}
+                <div className="bg-white/5 p-2 rounded-lg border border-white/5 max-h-20 overflow-y-auto no-scrollbar">
+                  <p className="text-[10px] font-mono font-black text-[var(--theme)] break-all leading-relaxed tracking-tight">
+                    {props.friendCode}
+                  </p>
+                </div>
               </div>
             </div>
           </section>
