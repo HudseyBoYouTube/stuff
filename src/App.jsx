@@ -422,7 +422,7 @@ function App() {
               onLaunch={launchContent} 
               playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
               isFavorite={favorites.includes(game.id)}
-              onToggleFavorite={(e) => toggleFavorite(game.id, e)}
+              onToggleFavorite={() => toggleFavorite(game.id)}
               performanceMode={performanceMode}
             />
           ))}
