@@ -310,7 +310,7 @@ function App() {
         'capy-custom-title', 'capy-custom-icon', 'capy-bg-image', 
         'capy-bg-video', 'capy-bg-opacity', 'capy-bg-music', 
         'capy-volume', 'capy-panic-url', 'capy-panic-key', 'capy-perf-mode',
-        'capy-bg-enabled', 'capy-display-name', 'capy-friends', 'capy-unique-id'
+        'capy-bg-enabled'
       ];
       settingsKeys.forEach(key => localStorage.removeItem(key));
       window.location.reload();
