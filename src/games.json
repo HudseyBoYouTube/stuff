@@ -1153,6 +1153,34 @@
     "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/core-ball/",
     "thumbnail": "https://coreball-online.github.io/img/class-356.png",
     "category": "Strategy"
+  },
+  {
+    "id": "magic-tiles-3",
+    "title": "Magic Tiles 3",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/gn/17.html",
+    "thumbnail": "https://www.metacritic.com/a/img/catalog/provider/6/12/6-1-679999-52.jpg",
+    "category": "Music"
+  },
+  {
+    "id": "draw-climber",
+    "title": "Draw Climber",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/gn/86.html",
+    "thumbnail": "https://www.metacritic.com/a/img/catalog/provider/6/12/6-1-741604-52.jpg",
+    "category": "Easy"
+  },
+  {
+    "id": "bazooka-boy",
+    "title": "Bazooka Boy",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/gn/29.html",
+    "thumbnail": "https://img.utdstc.com/icon/365/d87/365d877af60ccb880c81f52c245d9173f5b501989a9fbe24a6d5a6e58bc0ee3d:200",
+    "category": "Action"
+  },
+  {
+    "id": "turbo-moto-racer",
+    "title": "Turbo Moto Racer",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/turbo-moto-racer/",
+    "thumbnail": "https://dinosaur-game.io/data/image/game/turbo-moto-racer.png",
+    "category": "Driving"
   }
 ]
   
