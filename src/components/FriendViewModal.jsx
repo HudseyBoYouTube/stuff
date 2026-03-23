@@ -1,10 +1,14 @@
 import { X, UserCircle, Heart } from 'lucide-react';
 
-export function FriendViewModal({ friend, gamesData, onClose }) {
-  if (!friend || !friend.decoded) return null;
+export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfile }) {
+  // If it's not your profile AND there's no decoded friend data, don't show anything
+  if (!friend || (!friend.decoded && !isOwnProfile)) return null;
 
-  // Extract profile picture from the decoded data
-  const friendPfp = friend.decoded.p;
+  // Decide which data to use based on if it's "Me" or a "Friend"
+  const displayPfp = isOwnProfile ? ownPfp : friend.decoded?.p;
+  const displayName = isOwnProfile ? (friend.name || "You") : (friend.decoded?.n || friend.name);
+  const displayFavs = isOwnProfile ? (friend.favs || []) : (friend.decoded?.f || []);
+  const displayTimes = isOwnProfile ? (friend.times || {}) : (friend.decoded?.t || {});
 
   return (
     <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
@@ -14,12 +18,11 @@ export function FriendViewModal({ friend, gamesData, onClose }) {
         </button>
         
         <div className="text-center space-y-2">
-          {/* Profile Picture Section */}
           <div className="w-20 h-20 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20 overflow-hidden shadow-[0_0_15px_rgba(var(--theme-rgb),0.2)]">
-            {friendPfp ? (
+            {displayPfp ? (
               <img 
-                src={friendPfp} 
-                alt={friend.decoded.n} 
+                src={displayPfp} 
+                alt={displayName} 
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -28,10 +31,10 @@ export function FriendViewModal({ friend, gamesData, onClose }) {
           </div>
           
           <h3 className="text-2xl font-black tracking-tighter">
-            {friend.decoded.n || friend.name}
+            {displayName}
           </h3>
           <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">
-            Friend Profile
+            {isOwnProfile ? "Your Profile" : "Friend Profile"}
           </p>
         </div>
 
@@ -41,8 +44,6 @@ export function FriendViewModal({ friend, gamesData, onClose }) {
           </label>
           <div className="grid gap-2">
             {(() => {
-              const displayFavs = friend.decoded.f || [];
-              const displayTimes = friend.decoded.t || {};
               const validFavs = displayFavs.filter(id => gamesData.find(g => g.id === id));
 
               return (validFavs.length > 0) ? validFavs.map(gameId => {
