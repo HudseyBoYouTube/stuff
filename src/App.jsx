@@ -689,6 +689,12 @@ function App() {
               return;
             }
 
+            // NEW: Check if the friend's name matches your own displayName
+            if (name.toLowerCase() === displayName.toLowerCase()) {
+              alert("You cannot add a friend with the same name as you!");
+              return;
+            }
+
             const existingFriendIndex = friends.findIndex(f => {
                 try {
                     let fBase = f.code.replace(/-/g, '+').replace(/_/g, '/');
