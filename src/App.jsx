@@ -78,7 +78,7 @@ function App() {
     }
   });
   
-  const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
+  const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
   const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
     try {
@@ -401,7 +401,9 @@ function App() {
       return updated;
     });
 
+    const startTime = Date.now();
     const win = window.open('about:blank', '_blank');
+    
     if (win) {
       win.document.title = "DO NOT REFRESH";
       const link = win.document.createElement('link');
@@ -413,6 +415,20 @@ function App() {
       iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
       iframe.allow = "fullscreen";
       win.document.body.appendChild(iframe);
+
+      const trackPlaytime = setInterval(() => {
+        if (win.closed) {
+          clearInterval(trackPlaytime);
+          const endTime = Date.now();
+          const elapsedSeconds = Math.floor((endTime - startTime) / 1000);
+          
+          setPlaytimes(prev => {
+            const updated = { ...prev, [item.id]: (prev[item.id] || 0) + elapsedSeconds };
+            localStorage.setItem('capy-playtimes', JSON.stringify(updated));
+            return updated;
+          });
+        }
+      }, 1000);
     }
   };
 
