@@ -158,16 +158,18 @@ function App() {
   }, [displayName, uniqueId, profilePic, theme, glowIntensity, favorites]);
 
   useEffect(() => {
-    const syncInterval = setInterval(() => {
-      if (friends.length > 0) {
-        setIsSyncing(true);
-        setFriends([...friends]);
-        setTimeout(() => setIsSyncing(false), 2000);
-      }
-    }, 30000); 
-
-    return () => clearInterval(syncInterval);
-  }, [friends]);
+  // We are pausing the sync interval to stop the 'players' 500 errors
+  /*
+  const syncInterval = setInterval(() => {
+    if (friends.length > 0) {
+      setIsSyncing(true);
+      setFriends([...friends]);
+      setTimeout(() => setIsSyncing(false), 2000);
+    }
+  }, 30000);
+  return () => clearInterval(syncInterval);
+  */
+}, [friends]); // This closing line is very important!
 
   useEffect(() => {
     if (notification) {
