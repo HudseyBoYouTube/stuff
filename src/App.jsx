@@ -36,7 +36,6 @@ const updateThemeVariables = (color, glow) => {
 };
 
 function App() {
-  // FIXED: Added gamesDataRaw to the dependency array so it updates when the JSON changes
   const gamesData = useMemo(() => {
     if (!gamesDataRaw || !Array.isArray(gamesDataRaw)) return [];
     return gamesDataRaw;
@@ -640,16 +639,30 @@ function App() {
             while (base64.length % 4 !== 0) base64 += '=';
             
             const decodedData = JSON.parse(atob(base64));
-            const { n: name } = decodedData;
+            const { n: name, id: friendId } = decodedData;
 
             if (!name) {
               alert("Invalid Friend Code Format!");
               return;
             }
-            if (friends.find(f => f.code === cleanCode)) {
-              setNotification("Already Friends!");
+
+            // FIXED: We check for existing friend ID, but update the CODE if it is new
+            const existingFriendIndex = friends.findIndex(f => {
+                try {
+                    const existingDecoded = JSON.parse(atob(f.code.replace(/-/g, '+').replace(/_/g, '/')));
+                    return existingDecoded.id === friendId;
+                } catch(e) { return false; }
+            });
+
+            if (existingFriendIndex > -1) {
+              const updatedFriends = [...friends];
+              updatedFriends[existingFriendIndex] = { name, code: cleanCode };
+              setFriends(updatedFriends);
+              localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
+              setNotification("Friend Updated!");
               return;
             }
+
             const newFriends = [...friends, { name, code: cleanCode }];
             setFriends(newFriends);
             localStorage.setItem('capy-friends', JSON.stringify(newFriends));
@@ -663,7 +676,10 @@ function App() {
           setFriends(newFriends);
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
-        onViewFriend={setSelectedFriend}
+        onViewFriend={(friend) => {
+           // We decode the friend code first to ensure we have the absolute latest data from the code provided
+           setSelectedFriend(friend);
+        }}
       />
     </div>
   );
