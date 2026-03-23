@@ -720,7 +720,9 @@ function App() {
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
         onViewFriend={(friend) => {
-            setSelectedFriendId(friend.code);
+            // Re-set selected ID to trigger the useMemo refresh
+            setSelectedFriendId(null);
+            setTimeout(() => setSelectedFriendId(friend.code), 10);
         }}
         onRefreshFriend={(code) => {
             setFriends([...friends]);
