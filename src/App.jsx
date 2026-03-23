@@ -117,7 +117,6 @@ function App() {
     try {
       let base64 = str.trim().replace(/-/g, '+').replace(/_/g, '/');
       while (base64.length % 4 !== 0) base64 += '=';
-      // This part handles special characters like emojis or profile pics
       return JSON.parse(decodeURIComponent(escape(atob(base64))));
     } catch (e) {
       console.error("Decode failed", e);
@@ -307,22 +306,19 @@ function App() {
   };
 
   const handleAudioUpload = (e) => {
-  // If it's a preset from the Music Library
   if (e && e.presetUrl) {
     setBgMusic(e.presetUrl);
-    setBgEnabled(true); // Ensures the player is "ON"
+    setBgEnabled(true);
     localStorage.setItem('capy-bg-music', e.presetUrl);
     return;
   }
-
-  // If it's a manual file upload
   const file = e.target?.files ? e.target.files[0] : null;
   if (file) {
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64String = reader.result;
       setBgMusic(base64String);
-      setBgEnabled(true); // Ensures the player is "ON"
+      setBgEnabled(true);
       localStorage.setItem('capy-bg-music', base64String);
     };
     reader.readAsDataURL(file);
@@ -501,11 +497,7 @@ function App() {
     if (!selectedFriendId || selectedFriendId === 'me') return null;
     const friend = friends.find(f => f.code === selectedFriendId);
     if (!friend) return null;
-
-    // Use the safeDecode function you added earlier!
     const decoded = safeDecode(selectedFriendId);
-    
-    // This part is much safer and cleaner
     return decoded ? { ...friend, decoded } : friend;
   }, [friends, selectedFriendId]);
 
@@ -664,12 +656,10 @@ function App() {
         friendCode={friendCode}
         fullSyncCode={fullSyncCode}
         onImportSync={(code) => {
-          try {
-            const decoded = JSON.parse(decodeURIComponent(escape(atob(code))));
-            if (decoded.n) {
-              setDisplayName(decoded.n);
-              localStorage.setItem('capy-display-name', decoded.n);
-            }
+          const decoded = safeDecode(code);
+          if (decoded && decoded.n) {
+            setDisplayName(decoded.n);
+            localStorage.setItem('capy-display-name', decoded.n);
             if (decoded.p) {
               setProfilePic(decoded.p);
               localStorage.setItem('capy-pfp', decoded.p);
@@ -684,7 +674,7 @@ function App() {
             }
             setNotification("Profile Synced Successfully!");
             setTimeout(() => window.location.reload(), 1000);
-          } catch(e) {
+          } else {
             alert("Invalid Sync Code!");
           }
         }}
@@ -696,50 +686,25 @@ function App() {
         setCustomTitle={(val) => { setCustomTitle(val); localStorage.setItem('capy-custom-title', val); }}
         customIcon={customIcon}
         setCustomIcon={(val) => { setCustomIcon(val); localStorage.setItem('capy-custom-icon', val); }}
+        
         onAddFriend={(code) => {
-          // Use the safeDecode helper we added earlier
           const decodedData = safeDecode(code);
-          
           if (decodedData && decodedData.id) {
             const { n: name, id: friendId } = decodedData;
-
-            // 1. Check if it's you
             if (name.toLowerCase() === displayName.toLowerCase()) {
               alert("You cannot add yourself!");
               return;
             }
-
-            // 2. Filter out the old version of this friend if they already exist
             const otherFriends = friends.filter(f => {
               const existingData = safeDecode(f.code);
               return existingData?.id !== friendId;
             });
-
-            // 3. Add the new friend code to the list
             const updatedFriends = [...otherFriends, { name, code: code.trim() }];
-            
             setFriends(updatedFriends);
             localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
             setNotification(`Added ${name}!`);
           } else {
             alert("Invalid Friend Code!");
-          }
-        }}
-
-            const updatedFriends = [...friends];
-            if (existingFriendIndex > -1) {
-              updatedFriends[existingFriendIndex] = { name, code: cleanCode };
-              setNotification(`Updated ${name}'s Profile!`);
-            } else {
-              updatedFriends.push({ name, code: cleanCode });
-              setNotification(`Added ${name} to Friends!`);
-            }
-
-            setFriends(updatedFriends);
-            localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
-          } catch(e) { 
-            alert("Invalid Friend Code!"); 
-            console.error(e);
           }
         }}
         onRemoveFriend={(code) => {
@@ -748,34 +713,17 @@ function App() {
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
         onViewFriend={(friend) => {
-            try {
-                let base64 = friend.code.trim();
-                base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
-                while (base64.length % 4 !== 0) base64 += '=';
-                const decoded = JSON.parse(atob(base64));
-                
-                const updatedFriends = friends.map(f => 
-                  f.name === friend.name ? { ...f, code: friend.code } : f
-                );
-                setFriends(updatedFriends);
-                localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
-                
-                setSelectedFriendId(null);
-                setTimeout(() => setSelectedFriendId(friend.code), 10);
-            } catch (e) {
-                setSelectedFriendId(friend.code);
-            }
+          setSelectedFriendId(null);
+          setTimeout(() => setSelectedFriendId(friend.code), 10);
         }}
         onRefreshFriend={(code) => {
             setIsSyncing(true);
             const freshFriends = [...friends];
             setFriends(freshFriends);
-            
             if (selectedFriendId === code) {
                 setSelectedFriendId(null);
                 setTimeout(() => setSelectedFriendId(code), 50);
             }
-            
             setTimeout(() => {
               setIsSyncing(false);
               setNotification("Friend view refreshed!");
