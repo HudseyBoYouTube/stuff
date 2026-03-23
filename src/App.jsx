@@ -9,6 +9,8 @@ import {
 import gamesDataRaw from './games.json';
 import { GameCard } from './components/GameCard';
 import { SettingsModal } from './components/SettingsModal';
+import { Header } from './components/Header';
+import { FriendViewModal } from './components/FriendViewModal';
 
 const DEFAULT_COLOR = '#10A5F5';
 const DEFAULT_GLOW = 50;
@@ -492,63 +494,19 @@ function App() {
 
       <div className="relative z-10">
         <div className="sticky top-0 z-50">
-          <header className="border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md">
-            <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
-              <div className="flex items-center gap-2">
-                <img src={DEFAULT_ICON} alt="Logo" className="w-7 h-7 object-contain" />
-                <span className="text-xl font-black hidden lg:block tracking-tighter">Capybara <span className="text-[var(--theme)]">Science</span></span>
-              </div>
-
-              <div className="flex items-center gap-2 w-full justify-self-center">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-                  <input 
-                    type="text" 
-                    placeholder="Search games..." 
-                    value={searchQuery} 
-                    onChange={(e) => setSearchQuery(e.target.value)} 
-                    className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 transition-colors" 
-                  />
-                  {searchQuery && (
-                    <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-white/10 rounded-full text-[var(--theme)]">
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-                <button onClick={() => {
-                  const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
-                  if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
-                }} className="p-2 bg-white/5 border border-white/10 rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all">
-                  <Dices className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="flex items-center justify-end gap-4">
-                <div className="hidden sm:flex items-center gap-3 text-[9px] font-black uppercase text-[var(--theme)] bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-                  <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-                  <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
-                  <div className="flex items-center gap-1 border-l border-white/10 pl-3">
-                    <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500' : ''}`} />
-                    <span>{battery.level}%</span>
-                  </div>
-                </div>
-                
-             
-
-<button onClick={() => setShowSettings(true)} className="flex items-center gap-2 group">
-  <div className="w-8 h-8 rounded-full border border-[var(--theme)]/50 overflow-hidden bg-white/5 transition-all">
-    {profilePic ? (
-      <img src={profilePic} className="w-full h-full object-cover" alt="Profile" />
-    ) : (
-      <UserCircle className="w-full h-full p-1 text-[var(--theme)]" />
-    )}
-  </div>
-  <Settings className="w-5 h-5 text-[var(--theme)] transition-colors" />
-</button>
-              </div>
-            </div>
-          </header>
-
+          <Header 
+  searchQuery={searchQuery} 
+  setSearchQuery={setSearchQuery}
+  time={time}
+  battery={battery}
+  profilePic={profilePic}
+  setShowSettings={setShowSettings}
+  DEFAULT_ICON={DEFAULT_ICON}
+  onRandomGame={() => {
+    const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
+    if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
+  }}
+/>
           <div className="bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 overflow-hidden">
             <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
               {categoriesWithCounts.map(cat => (
@@ -600,40 +558,11 @@ function App() {
         </main>
       </div>
 
-      {selectedFriendId && currentFriend && currentFriend.decoded && (
-        <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-          <div className="bg-zinc-900 border border-[var(--theme)]/30 p-8 rounded-3xl max-w-sm w-full relative shadow-[0_0_50px_rgba(0,0,0,0.5)] space-y-6">
-            <button onClick={() => setSelectedFriendId(null)} className="absolute top-4 right-4 text-zinc-500 hover:text-white"><X /></button>
-            <div className="text-center space-y-2">
-              <div className="w-20 h-20 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20 overflow-hidden">
-                <UserCircle className="w-12 h-12 text-[var(--theme)]" />
-              </div>
-              <h3 className="text-2xl font-black tracking-tighter">{currentFriend.decoded.n || currentFriend.name}</h3>
-              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Friend Profile</p>
-            </div>
-            <div className="space-y-4">
-              <label className="text-[10px] font-black text-[var(--theme)] uppercase tracking-widest flex items-center gap-2"><Heart className="w-3 h-3" /> Favorite Games</label>
-              <div className="grid gap-2">
-                {(() => {
-                   const displayFavs = currentFriend.decoded.f || [];
-                   const displayTimes = currentFriend.decoded.t || {};
-                   const validFavs = displayFavs.filter(id => gamesData.find(g => g.id === id));
-
-                   return (validFavs.length > 0) ? validFavs.map(gameId => {
-                     const game = gamesData.find(g => g.id === gameId);
-                     return game ? (
-                       <div key={gameId} className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
-                         <span className="text-xs font-bold">{game.title}</span>
-                         <span className="text-[10px] font-mono text-zinc-500">{displayTimes[gameId] ? Math.floor(displayTimes[gameId]/60) : 0}m played</span>
-                       </div>
-                     ) : null;
-                   }) : <p className="text-xs text-zinc-600 text-center py-4 italic">No favorites yet...</p>
-                })()}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <FriendViewModal 
+  friend={currentFriend} 
+  gamesData={gamesData} 
+  onClose={() => setSelectedFriendId(null)} 
+/>
 
       <SettingsModal 
         show={showSettings} 
