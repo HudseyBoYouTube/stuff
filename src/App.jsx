@@ -295,7 +295,16 @@ function App() {
   };
 
   const handleAudioUpload = (e) => {
-    const file = e.target.files[0];
+    // Check if we clicked a PRESET button
+    if (e.presetUrl) {
+      setBgMusic(e.presetUrl);
+      setBgEnabled(true);
+      localStorage.setItem('capy-bg-music', e.presetUrl);
+      return;
+    }
+
+    // Otherwise, handle the FILE UPLOAD like normal
+    const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -611,7 +620,7 @@ function App() {
         setPanicUrl={(val) => { setPanicUrl(val); localStorage.setItem('capy-panic-url', val); }}
         handleBackgroundUpload={handleBackgroundUpload}
         handleResetBackground={handleResetBackground}
-        handleAudioUpload={handleAudioUpload}
+        handleAudioUpload={handleAudioUpload} // Added this
         handleResetMusic={handleResetMusic}
         profilePic={profilePic}
         handlePfpUpload={handlePfpUpload}
@@ -689,7 +698,6 @@ function App() {
               return;
             }
 
-            // NEW: Check if the friend's name matches your own displayName
             if (name.toLowerCase() === displayName.toLowerCase()) {
               alert("You cannot add a friend with the same name as you!");
               return;
