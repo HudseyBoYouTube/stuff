@@ -185,11 +185,18 @@ function App() {
 
   useEffect(() => {
     if (audioRef.current) {
+      // 1. Update the actual volume level
       audioRef.current.volume = volume / 100;
       localStorage.setItem('capy-volume', volume);
-    }
-  }, [volume]);
 
+      // 2. Anti-Pause Shield: If you're sliding the bar and it stops, force it to keep playing
+      if (bgMusic && !performanceMode && audioRef.current.paused) {
+        audioRef.current.play().catch(() => {
+          // Silent catch for browser restrictions
+        });
+      }
+    }
+  }, [volume, bgMusic, performanceMode]);
   useEffect(() => {
     localStorage.setItem('capy-bg-opacity', bgOpacity);
   }, [bgOpacity]);
