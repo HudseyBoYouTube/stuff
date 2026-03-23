@@ -64,7 +64,6 @@ function App() {
   const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
   
   const [bgMusic, setBgMusic] = useState(() => localStorage.getItem('capy-bg-music') || '');
-  const [musicEnabled, setMusicEnabled] = useState(true); 
   const [volume, setVolume] = useState(() => Number(localStorage.getItem('capy-volume')) || 50);
 
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
@@ -557,17 +556,7 @@ function App() {
             <button onClick={() => setSelectedFriend(null)} className="absolute top-4 right-4 text-zinc-500 hover:text-white"><X /></button>
             <div className="text-center space-y-2">
               <div className="w-20 h-20 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20 overflow-hidden">
-                {(() => {
-                    const isMe = selectedFriend.code === friendCode;
-                    if (isMe) {
-                        return profilePic ? (
-                            <img src={profilePic} className="w-full h-full object-cover" style={{ imageRendering: 'auto' }} />
-                        ) : (
-                            <UserCircle className="w-12 h-12 text-[var(--theme)]" />
-                        );
-                    }
-                    return <UserCircle className="w-12 h-12 text-[var(--theme)]" />;
-                })()}
+                <UserCircle className="w-12 h-12 text-[var(--theme)]" />
               </div>
               <h3 className="text-2xl font-black tracking-tighter">{selectedFriend.name}</h3>
               <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Friend Profile</p>
@@ -577,22 +566,13 @@ function App() {
               <div className="grid gap-2">
                 {(() => {
                    try {
-                     const isMe = selectedFriend.code === friendCode;
-                     let displayFavs = [];
-                     let displayTimes = {};
-
-                     if (isMe) {
-                       displayFavs = favorites;
-                       displayTimes = playtimes;
-                     } else {
-                       let base64 = selectedFriend.code.trim();
-                       base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
-                       while (base64.length % 4 !== 0) base64 += '=';
-                       
-                       const decoded = JSON.parse(atob(base64));
-                       displayFavs = decoded.f || [];
-                       displayTimes = decoded.t || {};
-                     }
+                     let base64 = selectedFriend.code.trim();
+                     base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+                     while (base64.length % 4 !== 0) base64 += '=';
+                     
+                     const decoded = JSON.parse(atob(base64));
+                     const displayFavs = decoded.f || [];
+                     const displayTimes = decoded.t || {};
 
                      const validFavs = displayFavs.filter(id => gamesData.find(g => g.id === id));
 
@@ -606,7 +586,6 @@ function App() {
                        ) : null;
                      }) : <p className="text-xs text-zinc-600 text-center py-4 italic">No favorites yet...</p>
                    } catch(e) {
-                     console.error("Profile Load Error:", e);
                      return <p className="text-xs text-red-500 text-center py-4">Error loading favorites</p>
                    }
                 })()}
