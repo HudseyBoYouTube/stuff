@@ -597,6 +597,8 @@ function App() {
         applyTheme={applyTheme}
         panicKey={panicKey}
         setPanicKey={(val) => { setPanicKey(val); localStorage.setItem('capy-panic-key', val); }}
+        panicUrl={panicUrl}
+        setPanicUrl={(val) => { setPanicUrl(val); localStorage.setItem('capy-panic-url', val); }}
         handleBackgroundUpload={handleBackgroundUpload}
         handleResetBackground={handleResetBackground}
         handleAudioUpload={handleAudioUpload}
