@@ -97,6 +97,9 @@ function App() {
   const [friends, setFriends] = useState(() => JSON.parse(localStorage.getItem('capy-friends') || '[]'));
   const [selectedFriend, setSelectedFriend] = useState(null);
 
+  // Stats Sync State
+  const [isSyncing, setIsSyncing] = useState(false);
+
   const [uniqueId] = useState(() => {
     let id = localStorage.getItem('capy-unique-id');
     if (!id) {
@@ -125,6 +128,20 @@ function App() {
     };
     return btoa(JSON.stringify(data)).replace(/=/g, '');
   }, [displayName, uniqueId, favorites, playtimes]);
+
+  // AUTOMATED STATS SYNC LOGIC
+  useEffect(() => {
+    const syncInterval = setInterval(() => {
+      if (friends.length > 0) {
+        setIsSyncing(true);
+        // We trigger a re-render of the friend list to ensure calculations are fresh
+        setFriends([...friends]);
+        setTimeout(() => setIsSyncing(false), 2000);
+      }
+    }, 30000); // Syncs every 30 seconds
+
+    return () => clearInterval(syncInterval);
+  }, [friends]);
 
   useEffect(() => {
     if (notification) {
@@ -567,7 +584,6 @@ function App() {
               <div className="grid gap-2">
                 {(() => {
                    try {
-                     // We find the LATEST code for this friend from the main friends state
                      const currentFriend = friends.find(f => f.name === selectedFriend.name) || selectedFriend;
                      let base64 = currentFriend.code.trim();
                      base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
@@ -631,6 +647,7 @@ function App() {
         setDisplayName={(val) => { setDisplayName(val); localStorage.setItem('capy-display-name', val); }}
         friendCode={friendCode}
         friends={friends}
+        isSyncing={isSyncing}
         disguise={disguise}
         setDisguise={(val) => { setDisguise(val); localStorage.setItem('capy-stealth-type', val); }}
         customTitle={customTitle}
@@ -684,7 +701,6 @@ function App() {
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
         onViewFriend={(friend) => {
-            // Find the most recent version of this friend in our state list
             const latestFriendData = friends.find(f => f.name === friend.name) || friend;
             setSelectedFriend(latestFriendData);
         }}
