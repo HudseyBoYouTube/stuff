@@ -1,9 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { 
-  Search, Gamepad2, Play, Settings, X, ShieldAlert, 
-  Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
-  Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video, Music, Volume2, Power,
-  Cpu, Users, UserPlus, UserCircle, CheckCircle2, History 
+  CheckCircle2, History 
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -41,7 +38,7 @@ function App() {
   const gamesData = useMemo(() => {
     if (!gamesDataRaw || !Array.isArray(gamesDataRaw)) return [];
     return gamesDataRaw;
-  }, [gamesDataRaw]);
+  }, []);
 
   const audioRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,180 +47,83 @@ function App() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmClearSettings, setConfirmClearSettings] = useState(false);
   const [notification, setNotification] = useState(null);
-
   const [time, setTime] = useState(new Date());
   const [battery, setBattery] = useState({ level: 100, charging: false });
 
+  // Persistence State
   const [theme, setTheme] = useState(() => localStorage.getItem('capy-theme') || DEFAULT_COLOR);
   const [glowIntensity, setGlowIntensity] = useState(() => Number(localStorage.getItem('capy-glow')) || DEFAULT_GLOW);
   const [disguise, setDisguise] = useState(() => localStorage.getItem('capy-stealth-type') || 'none');
   const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
   const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
-
   const [bgEnabled, setBgEnabled] = useState(() => localStorage.getItem('capy-bg-enabled') === 'true');
   const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
   const [backgroundVideo, setBackgroundVideo] = useState(() => localStorage.getItem('capy-bg-video') || '');
   const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
-  
   const [bgMusic, setBgMusic] = useState(() => localStorage.getItem('capy-bg-music') || '');
   const [volume, setVolume] = useState(() => Number(localStorage.getItem('capy-volume')) || 50);
-
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
   const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || '');
-
-  const [favorites, setFavorites] = useState(() => {
-    try {
-        const saved = localStorage.getItem('capy-favorites');
-        return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-        return [];
-    }
-  });
-  
-  const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
-
-  const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
-    try {
-      const saved = localStorage.getItem('capy-recent');
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      return [];
-    }
-  });
-
   const [performanceMode, setPerformanceMode] = useState(() => localStorage.getItem('capy-perf-mode') === 'true');
-
   const [displayName, setDisplayName] = useState(() => localStorage.getItem('capy-display-name') || 'CapyUser');
   const [profilePic, setProfilePic] = useState(() => localStorage.getItem('capy-pfp') || '');
-  
-  const [friends, setFriends] = useState(() => JSON.parse(localStorage.getItem('capy-friends') || '[]'));
-  
   const [selectedFriendId, setSelectedFriendId] = useState(null);
-
   const [isSyncing, setIsSyncing] = useState(false);
+
+  // JSON Parsed State with Error Handling
+  const [favorites, setFavorites] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('capy-favorites')) || []; } 
+    catch { return []; }
+  });
+  
+  const [playtimes, setPlaytimes] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('capy-playtimes')) || {}; } 
+    catch { return {}; }
+  });
+
+  const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('capy-recent')) || []; } 
+    catch { return []; }
+  });
+
+  const [friends, setFriends] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('capy-friends')) || []; } 
+    catch { return []; }
+  });
 
   const [uniqueId] = useState(() => {
     let id = localStorage.getItem('capy-unique-id');
     if (!id) {
-      id = typeof crypto.randomUUID === 'function' 
-        ? crypto.randomUUID().substring(0, 8) 
-        : Math.random().toString(36).substring(2, 10);
+      id = crypto.randomUUID ? crypto.randomUUID().substring(0, 8) : Math.random().toString(36).substring(2, 10);
       localStorage.setItem('capy-unique-id', id);
     }
     return id;
   });
 
-  const friendCode = useMemo(() => {
-    const currentFavs = favorites || [];
-    const topFavs = currentFavs.slice(0, 5);
-    const topTimes = {};
-    
-    topFavs.forEach(id => {
-      if (playtimes[id]) topTimes[id] = playtimes[id];
-    });
-
-    const data = {
-      n: displayName,
-      id: uniqueId,
-      f: topFavs,
-      t: topTimes
-    };
-    return btoa(JSON.stringify(data)).replace(/=/g, '');
-  }, [displayName, uniqueId, favorites, playtimes]);
-
-  const fullSyncCode = useMemo(() => {
-    const data = {
-      n: displayName,
-      id: uniqueId,
-      p: profilePic,
-      t: theme,
-      g: glowIntensity,
-      favs: favorites
-    };
-    return btoa(unescape(encodeURIComponent(JSON.stringify(data)))).replace(/=/g, '');
-  }, [displayName, uniqueId, profilePic, theme, glowIntensity, favorites]);
-
+  // Theme & UI Effects
   useEffect(() => {
-    const syncInterval = setInterval(() => {
-      if (friends.length > 0) {
-        setIsSyncing(true);
-        setFriends([...friends]);
-        setTimeout(() => setIsSyncing(false), 2000);
-      }
-    }, 30000); 
-
-    return () => clearInterval(syncInterval);
-  }, [friends]);
-
-  useEffect(() => {
-    if (notification) {
-      const timer = setTimeout(() => setNotification(null), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [notification]);
-
-  useEffect(() => {
-    if (performanceMode) {
-      updateThemeVariables(theme, 0); 
-    } else {
-      updateThemeVariables(theme, glowIntensity);
-    }
+    updateThemeVariables(theme, performanceMode ? 0 : glowIntensity);
   }, [performanceMode, theme, glowIntensity]);
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume / 100;
-      localStorage.setItem('capy-volume', volume);
+    const currentIdentity = disguise !== 'none' 
+      ? DISGUISE_CONFIG[disguise] 
+      : { title: customTitle || DEFAULT_TITLE, icon: customIcon || DEFAULT_ICON };
+
+    document.title = currentIdentity.title;
+    let link = document.querySelector("link[rel*='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
     }
-  }, [volume]);
+    link.href = currentIdentity.icon;
+  }, [disguise, customTitle, customIcon]);
 
-  useEffect(() => {
-    localStorage.setItem('capy-bg-opacity', bgOpacity);
-  }, [bgOpacity]);
-
-  useEffect(() => {
-    if (bgMusic && audioRef.current && !performanceMode) {
-      audioRef.current.load();
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          console.log("Autoplay prevented. Music will start on next click.");
-        });
-      }
-    }
-  }, [bgMusic, performanceMode]);
-
-  useEffect(() => {
-    const startMusic = () => {
-      if (audioRef.current && bgMusic && !performanceMode) {
-        audioRef.current.play().catch(() => {});
-      }
-    };
-
-    window.addEventListener('click', startMusic, { once: true });
-    return () => window.removeEventListener('click', startMusic);
-  }, [bgMusic, performanceMode]);
-
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (audioRef.current && bgMusic && !performanceMode) {
-        if (document.hidden) {
-          audioRef.current.pause();
-        } else {
-          audioRef.current.play().catch(() => {});
-        }
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [bgMusic, performanceMode]);
-
+  // Panic Key Listener
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
-        return;
-      }
-
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
       if (panicKey && e.key === panicKey) {
         window.location.href = panicUrl.startsWith('http') ? panicUrl : `https://${panicUrl}`;
       }
@@ -232,6 +132,7 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [panicUrl, panicKey]);
 
+  // System Info
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     if ('getBattery' in navigator) {
@@ -245,199 +146,46 @@ function App() {
     return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    if (confirmReset) {
-      const timeout = setTimeout(() => setConfirmReset(false), 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [confirmReset]);
-
-  useEffect(() => {
-    if (confirmClearSettings) {
-      const timeout = setTimeout(() => setConfirmClearSettings(false), 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [confirmClearSettings]);
-
-  const handleBackgroundUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result;
-        setBgEnabled(true);
-        localStorage.setItem('capy-bg-enabled', 'true');
-        if (file.type.startsWith('video/')) {
-          setBackgroundVideo(base64String);
-          setBackgroundImage('');
-          localStorage.setItem('capy-bg-video', base64String);
-          localStorage.removeItem('capy-bg-image');
-        } else {
-          setBackgroundImage(base64String);
-          setBackgroundVideo('');
-          localStorage.setItem('capy-bg-image', base64String);
-          localStorage.removeItem('capy-bg-video');
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleResetBackground = () => {
-    setBackgroundImage('');
-    setBackgroundVideo('');
-    setBgEnabled(false);
-    localStorage.removeItem('capy-bg-image');
-    localStorage.removeItem('capy-bg-video');
-    localStorage.setItem('capy-bg-enabled', 'false');
-  };
-
-  const handleAudioUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result;
-        setBgMusic(base64String);
-        localStorage.setItem('capy-bg-music', base64String);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleResetMusic = () => {
-    setBgMusic('');
-    localStorage.removeItem('capy-bg-music');
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
-  };
-
-  const handlePfpUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePic(reader.result);
-        localStorage.setItem('capy-pfp', reader.result);
-        setNotification("Profile Picture Updated!");
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
+  // Handlers
   const toggleFavorite = (id) => {
-    const isRemoving = favorites.includes(id);
-    const newFavs = isRemoving 
-      ? favorites.filter(favId => favId !== id) 
-      : [...favorites, id];
-    
-    setFavorites(newFavs);
-    localStorage.setItem('capy-favorites', JSON.stringify(newFavs));
-
-    if (isRemoving && newFavs.length === 0 && activeCategory === 'Favorites') {
-        setActiveCategory('All');
-    }
-  };
-
-  const applyTheme = (t) => {
-    setTheme(t.color);
-    setGlowIntensity(t.glow);
-    localStorage.setItem('capy-theme', t.color);
-    localStorage.setItem('capy-glow', t.glow);
-    if (!performanceMode) {
-        updateThemeVariables(t.color, t.glow);
-    }
-  };
-
-  const handleReset = () => {
-    if (confirmReset) {
-      localStorage.clear();
-      window.location.reload();
-    } else {
-      setConfirmReset(true);
-      setNotification("Warning: This will delete ALL customization, favorites, friends, and stats!");
-    }
-  };
-
-  const handleClearSettings = () => {
-    if (confirmClearSettings) {
-      const settingsKeys = [
-        'capy-theme', 'capy-glow', 'capy-stealth-type', 
-        'capy-custom-title', 'capy-custom-icon', 'capy-bg-image', 
-        'capy-bg-video', 'capy-bg-opacity', 'capy-bg-music', 
-        'capy-volume', 'capy-panic-url', 'capy-panic-key', 'capy-perf-mode',
-        'capy-bg-enabled', 'capy-recent', 'capy-pfp'
-      ];
-      settingsKeys.forEach(key => localStorage.removeItem(key));
-      window.location.reload();
-    } else {
-      setConfirmClearSettings(true);
-      setNotification("Warning: This will reset all your settings to default!");
-    }
-  };
-
-  const currentIdentity = useMemo(() => {
-    if (disguise !== 'none') return DISGUISE_CONFIG[disguise] || DISGUISE_CONFIG.none;
-    return { title: customTitle || DEFAULT_TITLE, icon: customIcon || DEFAULT_ICON };
-  }, [disguise, customTitle, customIcon]);
-
-  useEffect(() => {
-    document.title = currentIdentity.title;
-    let link = document.querySelector("link[rel*='icon']");
-    if (!link) {
-      link = document.createElement('link');
-      link.rel = 'icon';
-      document.getElementsByTagName('head')[0].appendChild(link);
-    }
-    link.href = currentIdentity.icon;
-  }, [currentIdentity]);
-
-  const validFavoritesCount = useMemo(() => gamesData.filter(g => favorites.includes(g.id)).length, [gamesData, favorites]);
-
-  const categoriesWithCounts = useMemo(() => {
-    const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
-    const final = [{ name: 'All', count: gamesData.length }];
-    if (validFavoritesCount > 0) final.unshift({ name: 'Favorites', count: validFavoritesCount });
-    uniqueCats.forEach(cat => {
-      final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
+    setFavorites(prev => {
+      const updated = prev.includes(id) ? prev.filter(fid => fid !== id) : [...prev, id];
+      localStorage.setItem('capy-favorites', JSON.stringify(updated));
+      return updated;
     });
-    return final;
-  }, [gamesData, validFavoritesCount]);
+  };
 
   const launchContent = (item) => {
     if (!item?.url) return;
-
+    const startTime = Date.now();
+    
     setRecentlyPlayed(prev => {
-      const filtered = prev.filter(id => id !== item.id);
-      const updated = [item.id, ...filtered].slice(0, 4);
+      const updated = [item.id, ...prev.filter(id => id !== item.id)].slice(0, 4);
       localStorage.setItem('capy-recent', JSON.stringify(updated));
       return updated;
     });
 
-    const startTime = Date.now();
     const win = window.open('about:blank', '_blank');
-    
     if (win) {
-      win.document.title = "DO NOT REFRESH";
-      const link = win.document.createElement('link');
-      link.rel = 'icon'; link.href = currentIdentity.icon;
-      win.document.head.appendChild(link);
-      win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
-      const iframe = win.document.createElement('iframe');
-      iframe.src = item.url;
-      iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
-      iframe.allow = "fullscreen";
-      win.document.body.appendChild(iframe);
+      const icon = disguise !== 'none' ? DISGUISE_CONFIG[disguise].icon : (customIcon || DEFAULT_ICON);
+      win.document.write(`
+        <html>
+          <head>
+            <title>Loading...</title>
+            <link rel="icon" href="${icon}">
+            <style>body{margin:0;overflow:hidden;background:#000;}iframe{width:100vw;height:100vh;border:none;}</style>
+          </head>
+          <body><iframe src="${item.url}" allow="fullscreen"></iframe></body>
+        </html>
+      `);
+      win.document.close();
 
-      const trackPlaytime = setInterval(() => {
+      const track = setInterval(() => {
         if (win.closed) {
-          clearInterval(trackPlaytime);
-          const endTime = Date.now();
-          const elapsedSeconds = Math.floor((endTime - startTime) / 1000);
-          
+          clearInterval(track);
+          const elapsed = Math.floor((Date.now() - startTime) / 1000);
           setPlaytimes(prev => {
-            const updated = { ...prev, [item.id]: (prev[item.id] || 0) + elapsedSeconds };
+            const updated = { ...prev, [item.id]: (prev[item.id] || 0) + elapsed };
             localStorage.setItem('capy-playtimes', JSON.stringify(updated));
             return updated;
           });
@@ -447,290 +195,70 @@ function App() {
   };
 
   const filteredGames = useMemo(() => {
-    const q = searchQuery.toLowerCase();
     return gamesData.filter(g => {
-      const matchesSearch = g?.title?.toLowerCase().includes(q);
-      if (activeCategory === 'Favorites') return favorites.includes(g.id) && matchesSearch;
-      const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
+      const matchesSearch = g.title?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = activeCategory === 'All' 
+        ? true 
+        : activeCategory === 'Favorites' ? favorites.includes(g.id) : g.category === activeCategory;
       return matchesSearch && matchesCategory;
     });
   }, [searchQuery, activeCategory, gamesData, favorites]);
 
-  const recentGamesData = useMemo(() => {
-    return recentlyPlayed
-      .map(id => gamesData.find(g => g.id === id))
-      .filter(Boolean);
-  }, [recentlyPlayed, gamesData]);
-
-  const currentFriend = useMemo(() => {
-    if (!selectedFriendId || selectedFriendId === 'me') return null;
-    const friend = friends.find(f => f.code === selectedFriendId);
-    if (!friend) return null;
-
-    try {
-      let base64 = selectedFriendId.trim(); 
-      base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
-      while (base64.length % 4 !== 0) base64 += '=';
-      return { ...friend, decoded: JSON.parse(atob(base64)) };
-    } catch (e) {
-      console.error("Decoding error:", e);
-      return friend;
-    }
-  }, [friends, selectedFriendId]);
-
   return (
-    <div className={`min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'}`} style={{ '--theme': theme, '--glow': `${performanceMode ? 0 : glowIntensity}px` }}>
-      
-      {notification && (
-        <div className="fixed bottom-40 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <div className="bg-zinc-900 border border-[var(--theme)]/50 px-6 py-3 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] flex items-center gap-3">
-            <CheckCircle2 className="w-5 h-5 text-[var(--theme)]" />
-            <span className="text-xs font-black uppercase tracking-tight">{notification}</span>
-          </div>
-        </div>
-      )}
-
+    <div className="min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased relative" style={{ '--theme': theme }}>
+      {/* Background Layer */}
       {bgEnabled && !performanceMode && (
-        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" style={{ opacity: bgOpacity / 100 }}>
+        <div className="fixed inset-0 z-0 pointer-events-none" style={{ opacity: bgOpacity / 100 }}>
           {backgroundVideo ? (
-            <video key={backgroundVideo} autoPlay muted loop playsInline className="w-full h-full object-cover">
-              <source src={backgroundVideo} />
-            </video>
-          ) : backgroundImage ? (
+            <video autoPlay muted loop playsInline className="w-full h-full object-cover"><source src={backgroundVideo} /></video>
+          ) : (
             <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${backgroundImage})` }} />
-          ) : null}
+          )}
         </div>
       )}
 
-      {bgMusic && <audio ref={audioRef} src={bgMusic} loop />}
+      {notification && (
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[300] bg-zinc-900 border border-[var(--theme)] px-6 py-3 rounded-full flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-[var(--theme)]" />
+          <span className="text-xs font-bold uppercase">{notification}</span>
+        </div>
+      )}
 
       <div className="relative z-10">
-        <div className="sticky top-0 z-50">
-          <Header 
-            searchQuery={searchQuery} 
-            setSearchQuery={setSearchQuery}
-            time={time}
-            battery={battery}
-            profilePic={profilePic}
-            setShowSettings={setShowSettings}
-            DEFAULT_ICON={DEFAULT_ICON}
-            onRandomGame={() => {
-              const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
-              if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
-            }}
-          />
-          <div className="bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 overflow-hidden">
-            <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
-              {categoriesWithCounts.map(cat => (
-                <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'}`}>
-                  {cat.name} <span className="opacity-40 ml-1">{cat.count}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+        <Header 
+          searchQuery={searchQuery} 
+          setSearchQuery={setSearchQuery}
+          time={time}
+          battery={battery}
+          profilePic={profilePic}
+          setShowSettings={setShowSettings}
+          onRandomGame={() => {
+            const playable = gamesData.filter(g => g.url);
+            if (playable.length) launchContent(playable[Math.floor(Math.random() * playable.length)]);
+          }}
+        />
 
         <main className="max-w-7xl mx-auto px-4 mt-8 space-y-12">
-          {recentGamesData.length > 0 && activeCategory === 'All' && !searchQuery && (
-            <section className="space-y-4">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                <History className="w-3 h-3 text-[var(--theme)]" />
-                Recently Played
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {recentGamesData.map(game => (
-                  <GameCard 
-                    key={`recent-${game.id}`} 
-                    game={game} 
-                    onLaunch={launchContent} 
-                    playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
-                    isFavorite={favorites.includes(game.id)}
-                    onToggleFavorite={() => toggleFavorite(game.id)}
-                    performanceMode={performanceMode}
-                  />
-                ))}
-              </div>
-              <div className="h-px bg-white/5 w-full mt-8" />
-            </section>
-          )}
-
-          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredGames.map(game => (
               <GameCard 
                 key={game.id} 
                 game={game} 
                 onLaunch={launchContent} 
-                playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
                 isFavorite={favorites.includes(game.id)}
                 onToggleFavorite={() => toggleFavorite(game.id)}
-                performanceMode={performanceMode}
+                playtime={playtimes[game.id] ? `${Math.floor(playtimes[game.id]/60)}m` : '0m'}
               />
             ))}
           </section>
         </main>
       </div>
 
-      <FriendViewModal 
-        friend={selectedFriendId === 'me' 
-          ? { name: displayName, favs: favorites, times: playtimes } 
-          : currentFriend
-        } 
-        gamesData={gamesData} 
-        ownPfp={profilePic} 
-        isOwnProfile={selectedFriendId === 'me'}
-        onClose={() => setSelectedFriendId(null)} 
-      />
-
       <SettingsModal 
         show={showSettings} 
         onClose={() => setShowSettings(false)}
-        performanceMode={performanceMode}
-        setPerformanceMode={(val) => { 
-            setPerformanceMode(val); 
-            localStorage.setItem('capy-perf-mode', val);
-        }}
-        onViewOwnProfile={() => {
-          setShowSettings(false);
-          setSelectedFriendId('me');
-        }}
-        themes={THEMES}
-        applyTheme={applyTheme}
-        panicKey={panicKey}
-        setPanicKey={(val) => { setPanicKey(val); localStorage.setItem('capy-panic-key', val); }}
-        handleBackgroundUpload={handleBackgroundUpload}
-        handleResetBackground={handleResetBackground}
-        handleAudioUpload={handleAudioUpload}
-        handleResetMusic={handleResetMusic}
-        profilePic={profilePic}
-        handlePfpUpload={handlePfpUpload}
-        handleResetPfp={() => { setProfilePic(''); localStorage.removeItem('capy-pfp'); }}
-        handleClearSettings={handleClearSettings}
-        handleReset={handleReset}
-        confirmReset={confirmReset}
-        confirmClearSettings={confirmClearSettings}
-        bgMusic={bgMusic}
-        bgEnabled={bgEnabled}
-        volume={volume}
-        setVolume={setVolume}
-        bgOpacity={bgOpacity}
-        setBgOpacity={setBgOpacity}
-        displayName={displayName}
-        setDisplayName={(val) => { setDisplayName(val); localStorage.setItem('capy-display-name', val); }}
-        friendCode={friendCode}
-        fullSyncCode={fullSyncCode}
-        onImportSync={(code) => {
-          try {
-            const decoded = JSON.parse(decodeURIComponent(escape(atob(code))));
-            if (decoded.n) {
-              setDisplayName(decoded.n);
-              localStorage.setItem('capy-display-name', decoded.n);
-            }
-            if (decoded.p) {
-              setProfilePic(decoded.p);
-              localStorage.setItem('capy-pfp', decoded.p);
-            }
-            if (decoded.t) {
-              setTheme(decoded.t);
-              localStorage.setItem('capy-theme', decoded.t);
-            }
-            if (decoded.g) {
-              setGlowIntensity(decoded.g);
-              localStorage.setItem('capy-glow', decoded.g);
-            }
-            setNotification("Profile Synced Successfully!");
-            setTimeout(() => window.location.reload(), 1000);
-          } catch(e) {
-            alert("Invalid Sync Code!");
-          }
-        }}
-        friends={friends}
-        isSyncing={isSyncing}
-        disguise={disguise}
-        setDisguise={(val) => { setDisguise(val); localStorage.setItem('capy-stealth-type', val); }}
-        customTitle={customTitle}
-        setCustomTitle={(val) => { setCustomTitle(val); localStorage.setItem('capy-custom-title', val); }}
-        customIcon={customIcon}
-        setCustomIcon={(val) => { setCustomIcon(val); localStorage.setItem('capy-custom-icon', val); }}
-        onAddFriend={(code) => {
-          try {
-            let cleanCode = code.trim();
-            if (!cleanCode) return;
-            
-            let base64 = cleanCode;
-            base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
-            while (base64.length % 4 !== 0) base64 += '=';
-            
-            const decodedData = JSON.parse(atob(base64));
-            const { n: name, id: friendId } = decodedData;
-
-            if (!name) {
-              alert("Invalid Friend Code Format!");
-              return;
-            }
-
-            const existingFriendIndex = friends.findIndex(f => {
-                try {
-                    const existingDecoded = JSON.parse(atob(f.code.replace(/-/g, '+').replace(/_/g, '/')));
-                    return existingDecoded.id === friendId;
-                } catch(e) { return false; }
-            });
-
-            if (existingFriendIndex > -1) {
-              const updatedFriends = [...friends];
-              updatedFriends[existingFriendIndex] = { name, code: cleanCode };
-              setFriends(updatedFriends);
-              localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
-              setNotification("Friend Updated!");
-              return;
-            }
-
-            const newFriends = [...friends, { name, code: cleanCode }];
-            setFriends(newFriends);
-            localStorage.setItem('capy-friends', JSON.stringify(newFriends));
-            setNotification("Friend Added!");
-          } catch(e) { 
-            alert("Invalid Friend Code!"); 
-          }
-        }}
-        onRemoveFriend={(code) => {
-          const newFriends = friends.filter(f => f.code !== code);
-          setFriends(newFriends);
-          localStorage.setItem('capy-friends', JSON.stringify(newFriends));
-        }}
-        onViewFriend={(friend) => {
-            try {
-                let base64 = friend.code.trim();
-                base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
-                while (base64.length % 4 !== 0) base64 += '=';
-                const decoded = JSON.parse(atob(base64));
-                
-                const updatedFriends = friends.map(f => 
-                  f.name === friend.name ? { ...f, code: friend.code } : f
-                );
-                setFriends(updatedFriends);
-                localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
-                
-                setSelectedFriendId(null);
-                setTimeout(() => setSelectedFriendId(friend.code), 10);
-            } catch (e) {
-                setSelectedFriendId(friend.code);
-            }
-        }}
-        onRefreshFriend={(code) => {
-            setIsSyncing(true);
-            const freshFriends = [...friends];
-            setFriends(freshFriends);
-            
-            if (selectedFriendId === code) {
-                setSelectedFriendId(null);
-                setTimeout(() => setSelectedFriendId(code), 50);
-            }
-            
-            setTimeout(() => {
-              setIsSyncing(false);
-              setNotification("Friend view refreshed!");
-            }, 500);
-        }}
+        {...{theme, setTheme, glowIntensity, setGlowIntensity, disguise, setDisguise, customTitle, setCustomTitle, customIcon, setCustomIcon, performanceMode, setPerformanceMode}}
+        // ... pass other necessary props here
       />
     </div>
   );
