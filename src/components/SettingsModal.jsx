@@ -216,7 +216,28 @@ export function SettingsModal({
               </button>
             </div>
 
-            {/* FIXED SLIDER LOGIC BELOW */}
+            {/* VOLUME SLIDER - Appears when ANY music is active */}
+            {bgMusic && (
+              <div className="pt-2 border-t border-white/5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-[9px] uppercase font-black text-zinc-400 flex items-center gap-2">
+                    <Volume2 className="w-3 h-3 text-[var(--theme)]" /> Music Volume
+                  </label>
+                  <span className="text-[10px] font-mono text-[var(--theme)]">{Math.round(volume * 100)}%</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="1" 
+                  step="0.01"
+                  value={volume} 
+                  onChange={(e) => setVolume(parseFloat(e.target.value))}
+                  className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[var(--theme)]"
+                />
+              </div>
+            )}
+
+            {/* BG OPACITY SLIDER */}
             {bgEnabled && !performanceMode && !bgMusic.includes('/music/') && (
               <div className="pt-2 border-t border-white/5 space-y-3">
                 <div className="flex items-center justify-between">
@@ -248,7 +269,7 @@ export function SettingsModal({
                   key={index}
                   onClick={(e) => {
                     e.preventDefault();
-                    e.stopPropagation(); // STOPS THE SLIDER FROM POPPING UP
+                    e.stopPropagation();
                     handleAudioUpload({ presetUrl: song.url });
                   }}
                   className="p-2 bg-zinc-800 border border-white/5 rounded-xl text-[9px] font-black uppercase hover:border-[var(--theme)]/50 transition-all text-left flex items-center gap-2 group relative z-10"
