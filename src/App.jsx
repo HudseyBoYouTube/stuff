@@ -507,19 +507,19 @@ function App() {
       <div className="relative z-10">
         <div className="sticky top-0 z-50">
           <Header 
-  searchQuery={searchQuery} 
-  setSearchQuery={setSearchQuery}
-  time={time}
-  battery={battery}
-  profilePic={profilePic}
-  setShowSettings={setShowSettings}
-  DEFAULT_ICON={DEFAULT_ICON}
-  onViewProfile={() => setSelectedFriendId('me')} // This makes the profile modal appear
-  onRandomGame={() => {
-    const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
-    if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
-  }}
-/>
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery}
+            time={time}
+            battery={battery}
+            profilePic={profilePic}
+            setShowSettings={setShowSettings}
+            DEFAULT_ICON={DEFAULT_ICON}
+            onViewProfile={() => setSelectedFriendId('me')} 
+            onRandomGame={() => {
+              const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
+              if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
+            }}
+          />
           <div className="bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 overflow-hidden">
             <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
               {categoriesWithCounts.map(cat => (
@@ -623,6 +623,7 @@ function App() {
         fullSyncCode={fullSyncCode}
         onImportSync={(code) => {
           try {
+            // FIX: Added decodeURIComponent(escape()) to handle complex image strings (GIFs)
             const decoded = JSON.parse(decodeURIComponent(escape(atob(code))));
             if (decoded.n) {
               setDisplayName(decoded.n);
