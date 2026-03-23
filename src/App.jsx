@@ -296,13 +296,16 @@ function App() {
   };
 
   const handleAudioUpload = (e) => {
+  // 1. Check if it's a Preset from the Music Library
   if (e && e.presetUrl) {
     setBgMusic(e.presetUrl);
     setBgEnabled(true);
     localStorage.setItem('capy-bg-music', e.presetUrl);
-    return;
+    return; // Exit early since we handled the preset
   }
-  const file = e.target?.files ? e.target.files[0] : null;
+
+  // 2. Check if it's a manual File Upload
+  const file = e?.target?.files?.[0]; 
   if (file) {
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -314,7 +317,6 @@ function App() {
     reader.readAsDataURL(file);
   }
 };
-
   const handleResetMusic = () => {
     setBgMusic('');
     setBgEnabled(false); 
