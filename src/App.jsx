@@ -502,15 +502,11 @@ function App() {
     const friend = friends.find(f => f.code === selectedFriendId);
     if (!friend) return null;
 
-    try {
-      let base64 = selectedFriendId.trim(); 
-      base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
-      while (base64.length % 4 !== 0) base64 += '=';
-      return { ...friend, decoded: JSON.parse(atob(base64)) };
-    } catch (e) {
-      console.error("Decoding error:", e);
-      return friend;
-    }
+    // Use the safeDecode function you added earlier!
+    const decoded = safeDecode(selectedFriendId);
+    
+    // This part is much safer and cleaner
+    return decoded ? { ...friend, decoded } : friend;
   }, [friends, selectedFriendId]);
 
   return (
