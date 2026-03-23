@@ -454,7 +454,7 @@ function App() {
     if (!friend) return null;
 
     try {
-      let base64 = friend.code.trim();
+      let base64 = selectedFriendId.trim(); // Decode the current selection ID directly
       base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
       while (base64.length % 4 !== 0) base64 += '=';
       return { ...friend, decoded: JSON.parse(atob(base64)) };
@@ -720,20 +720,31 @@ function App() {
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
         onViewFriend={(friend) => {
-            // Close any existing friend view first
-            setSelectedFriendId(null);
-            // Re-trigger the friend selection on the next tick
-            setTimeout(() => {
-              setSelectedFriendId(friend.code);
-            }, 10);
+            // Updated: Force re-sync of the code in the list first
+            try {
+                let base64 = friend.code.trim();
+                base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+                while (base64.length % 4 !== 0) base64 += '=';
+                const decoded = JSON.parse(atob(base64));
+                
+                // Refresh friend in the list to make sure we have the latest data
+                const updatedFriends = friends.map(f => 
+                  f.name === friend.name ? { ...f, code: friend.code } : f
+                );
+                setFriends(updatedFriends);
+                localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
+                
+                setSelectedFriendId(null);
+                setTimeout(() => setSelectedFriendId(friend.code), 10);
+            } catch (e) {
+                setSelectedFriendId(friend.code);
+            }
         }}
         onRefreshFriend={(code) => {
-            // Trigger a manual re-sync and UI refresh
             setIsSyncing(true);
             const freshFriends = [...friends];
             setFriends(freshFriends);
             
-            // If viewing this friend, clear and re-set to force a re-decode
             if (selectedFriendId === code) {
                 setSelectedFriendId(null);
                 setTimeout(() => setSelectedFriendId(code), 50);
