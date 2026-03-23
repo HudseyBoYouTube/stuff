@@ -113,7 +113,6 @@ function App() {
     return id;
   });
 
-  // LIGHTWEIGHT FRIEND CODE (No PFP string here)
   const friendCode = useMemo(() => {
     const currentFavs = favorites || [];
     const topFavs = currentFavs.slice(0, 5);
@@ -132,7 +131,6 @@ function App() {
     return btoa(JSON.stringify(data)).replace(/=/g, '');
   }, [displayName, uniqueId, favorites, playtimes]);
 
-  // FULL SYNC CODE (Contains everything including PFP)
   const fullSyncCode = useMemo(() => {
     const data = {
       n: displayName,
@@ -473,7 +471,6 @@ function App() {
       let base64 = selectedFriendId.trim(); 
       base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
       while (base64.length % 4 !== 0) base64 += '=';
-      // Standard atob because friend codes are small
       return { ...friend, decoded: JSON.parse(atob(base64)) };
     } catch (e) {
       console.error("Decoding error:", e);
@@ -576,7 +573,7 @@ function App() {
       <FriendViewModal 
         friend={currentFriend || (selectedFriendId === 'me' ? { name: displayName, favs: favorites, times: playtimes } : null)} 
         gamesData={gamesData} 
-        ownPfp={profilePic} // This sends your actual GIF/Image to the modal
+        ownPfp={profilePic} 
         isOwnProfile={selectedFriendId === 'me'}
         onClose={() => setSelectedFriendId(null)} 
       />
@@ -588,6 +585,10 @@ function App() {
         setPerformanceMode={(val) => { 
             setPerformanceMode(val); 
             localStorage.setItem('capy-perf-mode', val);
+        }}
+        onViewOwnProfile={() => {
+          setShowSettings(false);
+          setSelectedFriendId('me');
         }}
         themes={THEMES}
         applyTheme={applyTheme}
