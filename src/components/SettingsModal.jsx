@@ -5,22 +5,45 @@ import {
   ImageIcon, RotateCcw, Type, Users, UserPlus, Eye, Copy, Check
 } from 'lucide-react';
 
-export function SettingsModal(props) {
+export function SettingsModal({
+  show, onClose, friendCode, displayName, setDisplayName,
+  friends, onAddFriend, onViewFriend, onRemoveFriend,
+  handlePfpUpload, handleResetPfp,
+  performanceMode, setPerformanceMode,
+  handleBackgroundUpload, handleAudioUpload, 
+  handleResetBackground, handleResetMusic,
+  bgEnabled, bgOpacity, setBgOpacity,
+  bgMusic, volume, setVolume,
+  panicKey, setPanicKey,
+  themes, applyTheme,
+  handleClearSettings, confirmClearSettings,
+  handleReset, confirmReset
+}) {
   const [friendInput, setFriendInput] = useState('');
   const [copied, setCopied] = useState(false);
 
-  if (!props.show) return null;
+  if (!show) return null;
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(props.friendCode);
+    navigator.clipboard.writeText(friendCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleAddFriend = () => {
     if (friendInput.trim()) {
-      props.onAddFriend(friendInput.trim());
+      onAddFriend(friendInput.trim());
       setFriendInput(''); 
+    }
+  };
+
+  // REFINED PANIC KEY LOGIC
+  const handlePanicKeyDown = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Prevents setting vital keys like Escape or Tab as the panic key
+    if (e.key !== 'Escape' && e.key !== 'Tab') {
+      setPanicKey(e.key);
     }
   };
 
@@ -33,7 +56,7 @@ export function SettingsModal(props) {
           <h2 className="text-xl font-bold flex items-center gap-2 text-[var(--theme)]">
             <ShieldAlert className="w-5 h-5" /> System Settings
           </h2>
-          <X onClick={props.onClose} className="cursor-pointer text-zinc-400 hover:text-white transition-colors" />
+          <X onClick={onClose} className="cursor-pointer text-zinc-400 hover:text-white transition-colors" />
         </div>
 
         <div className="space-y-6">
@@ -47,10 +70,10 @@ export function SettingsModal(props) {
                 <label className="p-3 bg-zinc-800 border border-white/10 rounded-xl text-[9px] font-black uppercase text-center cursor-pointer hover:border-[var(--theme)]/50 transition-all">
                   <Upload className="w-3 h-3 mx-auto mb-1 text-[var(--theme)]" />
                   Upload Avatar
-                  <input type="file" accept="image/*" onChange={props.handlePfpUpload} className="hidden" />
+                  <input type="file" accept="image/*" onChange={handlePfpUpload} className="hidden" />
                 </label>
                 <button 
-                  onClick={props.handleResetPfp}
+                  onClick={handleResetPfp}
                   className="p-3 bg-red-500/5 border border-red-500/10 rounded-xl text-[9px] font-black uppercase text-red-500/70 hover:bg-red-500/10 hover:text-red-500 transition-all flex flex-col items-center justify-center gap-1"
                 >
                   <RotateCcw className="w-3 h-3" /> Reset Avatar
@@ -59,8 +82,8 @@ export function SettingsModal(props) {
               <input 
                 type="text" 
                 placeholder="Custom Display Name..." 
-                value={props.displayName} 
-                onChange={(e) => props.setDisplayName(e.target.value)}
+                value={displayName} 
+                onChange={(e) => setDisplayName(e.target.value)}
                 className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)]/50 font-bold"
               />
               <div className="bg-black/20 p-3 rounded-xl border border-white/5 space-y-3">
@@ -76,7 +99,7 @@ export function SettingsModal(props) {
                 </div>
                 <div className="bg-white/5 p-2 rounded-lg border border-white/5 max-h-20 overflow-y-auto no-scrollbar">
                   <p className="text-[10px] font-mono font-black text-[var(--theme)] break-all leading-relaxed tracking-tight">
-                    {props.friendCode}
+                    {friendCode}
                   </p>
                 </div>
               </div>
@@ -106,18 +129,18 @@ export function SettingsModal(props) {
             </div>
 
             <div className="space-y-2 max-h-32 overflow-y-auto custom-scrollbar pr-1">
-              {props.friends && props.friends.length > 0 ? props.friends.map(friend => (
+              {friends && friends.length > 0 ? friends.map(friend => (
                 <div key={friend.code} className="flex items-center justify-between bg-white/5 p-2 rounded-xl border border-white/5">
                   <span title={friend.name} className="text-[10px] font-bold truncate max-w-[120px]">{friend.name}</span>
                   <div className="flex gap-1">
                     <button 
-                      onClick={() => props.onViewFriend(friend)}
+                      onClick={() => onViewFriend(friend)}
                       className="p-1.5 bg-white/5 hover:bg-[var(--theme)] hover:text-black rounded-lg transition-all"
                     >
                       <Eye className="w-3 h-3" />
                     </button>
                     <button 
-                      onClick={() => props.onRemoveFriend(friend.code)}
+                      onClick={() => onRemoveFriend(friend.code)}
                       className="p-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-all"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -137,11 +160,11 @@ export function SettingsModal(props) {
                 <Cpu className="w-3 h-3" /> Performance Mode
               </label>
               <button 
-                onClick={() => props.setPerformanceMode(!props.performanceMode)}
-                className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${props.performanceMode ? 'bg-yellow-500 text-black' : 'bg-white/5 text-zinc-500 border border-white/10'}`}
+                onClick={() => setPerformanceMode(!performanceMode)}
+                className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${performanceMode ? 'bg-yellow-500 text-black' : 'bg-white/5 text-zinc-500 border border-white/10'}`}
               >
                 <Zap className="w-3 h-3" />
-                {props.performanceMode ? 'ON' : 'OFF'}
+                {performanceMode ? 'ON' : 'OFF'}
               </button>
             </div>
           </section>
@@ -155,61 +178,61 @@ export function SettingsModal(props) {
               <label className="p-3 bg-zinc-800 border border-white/10 rounded-xl text-[9px] font-black uppercase text-center cursor-pointer hover:border-[var(--theme)]/50 transition-all">
                 <Upload className="w-3 h-3 mx-auto mb-1 text-[var(--theme)]" />
                 Upload BG
-                <input type="file" accept="image/*,video/*" onChange={props.handleBackgroundUpload} className="hidden" />
+                <input type="file" accept="image/*,video/*" onChange={handleBackgroundUpload} className="hidden" />
               </label>
               <label className="p-3 bg-zinc-800 border border-white/10 rounded-xl text-[9px] font-black uppercase text-center cursor-pointer hover:border-[var(--theme)]/50 transition-all">
                 <Music className="w-3 h-3 mx-auto mb-1 text-[var(--theme)]" />
                 Upload MP3
-                <input type="file" accept="audio/*" onChange={props.handleAudioUpload} className="hidden" />
+                <input type="file" accept="audio/*" onChange={handleAudioUpload} className="hidden" />
               </label>
               
               <button 
-                onClick={props.handleResetBackground}
+                onClick={handleResetBackground}
                 className="p-2 bg-red-500/5 border border-red-500/10 rounded-xl text-[9px] font-black uppercase text-red-500/70 hover:bg-red-500/10 hover:text-red-500 transition-all flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-3 h-3" /> Reset BG
               </button>
               <button 
-                onClick={props.handleResetMusic}
+                onClick={handleResetMusic}
                 className="p-2 bg-red-500/5 border border-red-500/10 rounded-xl text-[9px] font-black uppercase text-red-500/70 hover:bg-red-500/10 hover:text-red-500 transition-all flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-3 h-3" /> Reset Music
               </button>
             </div>
 
-            {props.bgEnabled && !props.performanceMode && (
+            {bgEnabled && !performanceMode && (
               <div className="pt-2 border-t border-white/5 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="flex items-center justify-between">
                   <label className="text-[9px] uppercase font-black text-zinc-400 flex items-center gap-2">
                     <ImageIcon className="w-3 h-3 text-[var(--theme)]" /> BG Opacity
                   </label>
-                  <span className="text-[10px] font-mono text-[var(--theme)]">{props.bgOpacity}%</span>
+                  <span className="text-[10px] font-mono text-[var(--theme)]">{bgOpacity}%</span>
                 </div>
                 <input 
                   type="range" 
                   min="0" 
                   max="100" 
-                  value={props.bgOpacity} 
-                  onChange={(e) => props.setBgOpacity(Number(e.target.value))}
+                  value={bgOpacity} 
+                  onChange={(e) => setBgOpacity(Number(e.target.value))}
                   className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[var(--theme)]"
                 />
               </div>
             )}
 
-            {props.bgMusic && (
+            {bgMusic && (
               <div className="pt-2 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="flex items-center justify-between">
                   <label className="text-[9px] uppercase font-black text-zinc-400 flex items-center gap-2">
                     <Volume2 className="w-3 h-3 text-[var(--theme)]" /> Music Volume
                   </label>
-                  <span className="text-[10px] font-mono text-[var(--theme)]">{props.volume}%</span>
+                  <span className="text-[10px] font-mono text-[var(--theme)]">{volume}%</span>
                 </div>
                 <input 
                   type="range" 
                   min="0" 
                   max="100" 
-                  value={props.volume} 
-                  onChange={(e) => props.setVolume(Number(e.target.value))}
+                  value={volume} 
+                  onChange={(e) => setVolume(Number(e.target.value))}
                   className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[var(--theme)]"
                 />
               </div>
@@ -225,13 +248,13 @@ export function SettingsModal(props) {
               <input 
                 type="text" 
                 placeholder="Press key..." 
-                value={props.panicKey} 
-                onKeyDown={(e) => { e.preventDefault(); e.stopPropagation(); props.setPanicKey(e.key); }}
+                value={panicKey} 
+                onKeyDown={handlePanicKeyDown}
                 className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50 text-center font-mono font-bold" 
                 readOnly 
               />
-              {props.panicKey && (
-                <button onClick={() => props.setPanicKey('')} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+              {panicKey && (
+                <button onClick={() => setPanicKey('')} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
                   <Trash2 className="w-4 h-4 text-red-500" />
                 </button>
               )}
@@ -244,8 +267,8 @@ export function SettingsModal(props) {
               <Palette className="w-3 h-3" /> Themes
             </label>
             <div className="grid grid-cols-2 gap-2">
-              {Object.entries(props.themes).map(([id, t]) => (
-                <button key={id} onClick={() => props.applyTheme(t)} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:border-[var(--theme)] flex items-center gap-2 transition-all">
+              {Object.entries(themes).map(([id, t]) => (
+                <button key={id} onClick={() => applyTheme(t)} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:border-[var(--theme)] flex items-center gap-2 transition-all">
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: t.color }} /> {t.name}
                 </button>
               ))}
@@ -255,27 +278,27 @@ export function SettingsModal(props) {
           {/* RESET BUTTONS */}
           <div className="grid grid-cols-2 gap-3 pt-4">
             <button 
-              onClick={props.handleClearSettings} 
+              onClick={handleClearSettings} 
               className={`p-4 rounded-2xl border transition-all text-[9px] font-black uppercase flex items-center justify-center gap-2 ${
-                props.confirmClearSettings 
+                confirmClearSettings 
                   ? 'bg-orange-500 text-black border-orange-400 animate-pulse' 
                   : 'border-orange-500/20 bg-orange-500/5 text-orange-500 hover:bg-orange-500/10'
               }`}
             >
-              <RotateCcw className={`w-3.5 h-3.5 ${props.confirmClearSettings ? 'animate-spin' : ''}`} /> 
-              {props.confirmClearSettings ? 'ARE YOU SURE?' : 'Clear Settings'}
+              <RotateCcw className={`w-3.5 h-3.5 ${confirmClearSettings ? 'animate-spin' : ''}`} /> 
+              {confirmClearSettings ? 'ARE YOU SURE?' : 'Clear Settings'}
             </button>
 
             <button 
-              onClick={props.handleReset} 
+              onClick={handleReset} 
               className={`p-4 rounded-2xl border transition-all text-[9px] font-black uppercase flex items-center justify-center gap-2 ${
-                props.confirmReset 
+                confirmReset 
                   ? 'bg-red-500 text-black border-red-400 animate-pulse' 
                   : 'border-red-500/20 bg-red-500/5 text-red-500 hover:bg-red-500/10'
               }`}
             >
-              <RotateCcw className={`w-4 h-4 ${props.confirmReset ? 'animate-spin' : ''}`} />
-              {props.confirmReset ? 'ARE YOU SURE?' : 'Factory Reset'}
+              <RotateCcw className={`w-4 h-4 ${confirmReset ? 'animate-spin' : ''}`} />
+              {confirmReset ? 'ARE YOU SURE?' : 'Factory Reset'}
             </button>
           </div>
         </div>
