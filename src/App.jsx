@@ -131,6 +131,19 @@ function App() {
     return btoa(JSON.stringify(data)).replace(/=/g, '');
   }, [displayName, uniqueId, favorites, playtimes]);
 
+  // NEW: Full Sync Code (Includes Theme and Profile Pic)
+  const fullSyncCode = useMemo(() => {
+    const data = {
+      n: displayName,
+      id: uniqueId,
+      p: profilePic, // This includes your PFP!
+      t: theme,
+      g: glowIntensity,
+      favs: favorites
+    };
+    return btoa(unescape(encodeURIComponent(JSON.stringify(data)))).replace(/=/g, '');
+  }, [displayName, uniqueId, profilePic, theme, glowIntensity, favorites]);
+
   useEffect(() => {
     const syncInterval = setInterval(() => {
       if (friends.length > 0) {
@@ -456,7 +469,7 @@ function App() {
     if (!friend) return null;
 
     try {
-      let base64 = selectedFriendId.trim(); // Decode the current selection ID directly
+      let base64 = selectedFriendId.trim(); 
       base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
       while (base64.length % 4 !== 0) base64 += '=';
       return { ...friend, decoded: JSON.parse(atob(base64)) };
@@ -495,18 +508,18 @@ function App() {
       <div className="relative z-10">
         <div className="sticky top-0 z-50">
           <Header 
-  searchQuery={searchQuery} 
-  setSearchQuery={setSearchQuery}
-  time={time}
-  battery={battery}
-  profilePic={profilePic}
-  setShowSettings={setShowSettings}
-  DEFAULT_ICON={DEFAULT_ICON}
-  onRandomGame={() => {
-    const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
-    if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
-  }}
-/>
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery}
+            time={time}
+            battery={battery}
+            profilePic={profilePic}
+            setShowSettings={setShowSettings}
+            DEFAULT_ICON={DEFAULT_ICON}
+            onRandomGame={() => {
+              const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
+              if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
+            }}
+          />
           <div className="bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 overflow-hidden">
             <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
               {categoriesWithCounts.map(cat => (
@@ -559,10 +572,10 @@ function App() {
       </div>
 
       <FriendViewModal 
-  friend={currentFriend} 
-  gamesData={gamesData} 
-  onClose={() => setSelectedFriendId(null)} 
-/>
+        friend={currentFriend} 
+        gamesData={gamesData} 
+        onClose={() => setSelectedFriendId(null)} 
+      />
 
       <SettingsModal 
         show={showSettings} 
@@ -596,6 +609,33 @@ function App() {
         displayName={displayName}
         setDisplayName={(val) => { setDisplayName(val); localStorage.setItem('capy-display-name', val); }}
         friendCode={friendCode}
+        // NEW: Passing fullSyncCode and an Import function to SettingsModal
+        fullSyncCode={fullSyncCode}
+        onImportSync={(code) => {
+          try {
+            const decoded = JSON.parse(decodeURIComponent(escape(atob(code))));
+            if (decoded.n) {
+              setDisplayName(decoded.n);
+              localStorage.setItem('capy-display-name', decoded.n);
+            }
+            if (decoded.p) {
+              setProfilePic(decoded.p);
+              localStorage.setItem('capy-pfp', decoded.p);
+            }
+            if (decoded.t) {
+              setTheme(decoded.t);
+              localStorage.setItem('capy-theme', decoded.t);
+            }
+            if (decoded.g) {
+              setGlowIntensity(decoded.g);
+              localStorage.setItem('capy-glow', decoded.g);
+            }
+            setNotification("Profile Synced Successfully!");
+            setTimeout(() => window.location.reload(), 1000);
+          } catch(e) {
+            alert("Invalid Sync Code!");
+          }
+        }}
         friends={friends}
         isSyncing={isSyncing}
         disguise={disguise}
@@ -651,14 +691,12 @@ function App() {
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
         onViewFriend={(friend) => {
-            // Updated: Force re-sync of the code in the list first
             try {
                 let base64 = friend.code.trim();
                 base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
                 while (base64.length % 4 !== 0) base64 += '=';
                 const decoded = JSON.parse(atob(base64));
                 
-                // Refresh friend in the list to make sure we have the latest data
                 const updatedFriends = friends.map(f => 
                   f.name === friend.name ? { ...f, code: friend.code } : f
                 );
