@@ -1,6 +1,6 @@
 // src/data/tracklist.js
 
-export const myLibrary = [
+export const tracklist = [
   { 
     title: "Time", 
     artist: "Pink Floyd", 
