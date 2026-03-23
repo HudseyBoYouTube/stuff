@@ -17,7 +17,8 @@ export function SettingsModal({
   panicKey, setPanicKey,
   themes, applyTheme,
   handleClearSettings, confirmClearSettings,
-  handleReset, confirmReset
+  handleReset, confirmReset,
+  onViewOwnProfile // <--- New prop to trigger your profile preview
 }) {
   const [friendInput, setFriendInput] = useState('');
   const [copied, setCopied] = useState(false);
@@ -40,7 +41,6 @@ export function SettingsModal({
   const handlePanicKeyDown = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // Prevents setting vital keys like Escape or Tab as the panic key
     if (e.key !== 'Escape' && e.key !== 'Tab') {
       setPanicKey(e.key);
     }
@@ -55,7 +55,6 @@ export function SettingsModal({
           <h2 className="text-xl font-bold flex items-center gap-2 text-[var(--theme)]">
             <ShieldAlert className="w-5 h-5" /> System Settings
           </h2>
-          {/* Accessibility fix: Wrapped X in a button for keyboard navigation */}
           <button 
             onClick={onClose} 
             className="text-zinc-400 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--theme)] rounded-lg"
@@ -68,9 +67,19 @@ export function SettingsModal({
         <div className="space-y-6">
           {/* IDENTITY & SOCIAL */}
           <section className="space-y-4 bg-[var(--theme)]/5 p-4 rounded-2xl border border-[var(--theme)]/10">
-            <label className="text-[10px] uppercase font-black text-[var(--theme)] tracking-widest flex items-center gap-2">
-              <Type className="w-3 h-3" /> Profile Identity
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] uppercase font-black text-[var(--theme)] tracking-widest flex items-center gap-2">
+                <Type className="w-3 h-3" /> Profile Identity
+              </label>
+              {/* PREVIEW BUTTON */}
+              <button 
+                onClick={onViewOwnProfile}
+                className="flex items-center gap-1.5 px-3 py-1 bg-[var(--theme)] text-black rounded-full text-[9px] font-black uppercase hover:opacity-80 transition-all"
+              >
+                <Eye className="w-3 h-3" /> View My Profile
+              </button>
+            </div>
+
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-2">
                 <label className="p-3 bg-zinc-800 border border-white/10 rounded-xl text-[9px] font-black uppercase text-center cursor-pointer hover:border-[var(--theme)]/50 transition-all">
@@ -85,7 +94,6 @@ export function SettingsModal({
                   <RotateCcw className="w-3 h-3" /> Reset Avatar
                 </button>
               </div>
-              {/* Refinement: Added .slice(0, 25) to prevent layout breaking from long names */}
               <input 
                 type="text" 
                 placeholder="Custom Display Name..." 
@@ -176,7 +184,7 @@ export function SettingsModal({
             </div>
           </section>
 
-          {/* MEDIA UPLOADS (BG & MUSIC) */}
+          {/* MEDIA UPLOADS */}
           <section className="space-y-4 bg-white/5 p-4 rounded-2xl border border-white/5">
             <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2">
               <ImageIcon className="w-3 h-3 text-[var(--theme)]" /> Custom Media
@@ -208,7 +216,7 @@ export function SettingsModal({
             </div>
 
             {bgEnabled && !performanceMode && (
-              <div className="pt-2 border-t border-white/5 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="pt-2 border-t border-white/5 space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="text-[9px] uppercase font-black text-zinc-400 flex items-center gap-2">
                     <ImageIcon className="w-3 h-3 text-[var(--theme)]" /> BG Opacity
@@ -221,25 +229,6 @@ export function SettingsModal({
                   max="100" 
                   value={bgOpacity} 
                   onChange={(e) => setBgOpacity(Number(e.target.value))}
-                  className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[var(--theme)]"
-                />
-              </div>
-            )}
-
-            {bgMusic && (
-              <div className="pt-2 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                <div className="flex items-center justify-between">
-                  <label className="text-[9px] uppercase font-black text-zinc-400 flex items-center gap-2">
-                    <Volume2 className="w-3 h-3 text-[var(--theme)]" /> Music Volume
-                  </label>
-                  <span className="text-[10px] font-mono text-[var(--theme)]">{volume}%</span>
-                </div>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="100" 
-                  value={volume} 
-                  onChange={(e) => setVolume(Number(e.target.value))}
                   className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[var(--theme)]"
                 />
               </div>
@@ -274,7 +263,6 @@ export function SettingsModal({
               <Palette className="w-3 h-3" /> Themes
             </label>
             <div className="grid grid-cols-2 gap-2">
-              {/* Refinement: Added optional chaining for themes safety */}
               {Object.entries(themes || {}).map(([id, t]) => (
                 <button 
                   key={id} 
