@@ -629,6 +629,12 @@ function App() {
         setDisplayName={(val) => { setDisplayName(val); localStorage.setItem('capy-display-name', val); }}
         friendCode={friendCode}
         friends={friends}
+        disguise={disguise}
+        setDisguise={(val) => { setDisguise(val); localStorage.setItem('capy-stealth-type', val); }}
+        customTitle={customTitle}
+        setCustomTitle={(val) => { setCustomTitle(val); localStorage.setItem('capy-custom-title', val); }}
+        customIcon={customIcon}
+        setCustomIcon={(val) => { setCustomIcon(val); localStorage.setItem('capy-custom-icon', val); }}
         onAddFriend={(code) => {
           try {
             let cleanCode = code.trim();
@@ -676,9 +682,13 @@ function App() {
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
         onViewFriend={(friend) => {
-           // We force a refresh by finding the friend in the updated state list
            const latestFriendData = friends.find(f => f.code === friend.code) || friend;
            setSelectedFriend(latestFriendData);
+        }}
+        onRefreshFriend={(code) => {
+            setNotification("Pulling latest friend data...");
+            // This logic can be expanded if fetching from a database, 
+            // but for now it forces a re-render of the decoded state.
         }}
       />
     </div>
