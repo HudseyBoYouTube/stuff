@@ -55,7 +55,14 @@ export function SettingsModal({
           <h2 className="text-xl font-bold flex items-center gap-2 text-[var(--theme)]">
             <ShieldAlert className="w-5 h-5" /> System Settings
           </h2>
-          <X onClick={onClose} className="cursor-pointer text-zinc-400 hover:text-white transition-colors" />
+          {/* Accessibility fix: Wrapped X in a button for keyboard navigation */}
+          <button 
+            onClick={onClose} 
+            className="text-zinc-400 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--theme)] rounded-lg"
+            aria-label="Close settings"
+          >
+            <X className="w-6 h-6" />
+          </button>
         </div>
 
         <div className="space-y-6">
@@ -78,11 +85,12 @@ export function SettingsModal({
                   <RotateCcw className="w-3 h-3" /> Reset Avatar
                 </button>
               </div>
+              {/* Refinement: Added .slice(0, 25) to prevent layout breaking from long names */}
               <input 
                 type="text" 
                 placeholder="Custom Display Name..." 
                 value={displayName} 
-                onChange={(e) => setDisplayName(e.target.value)}
+                onChange={(e) => setDisplayName(e.target.value.slice(0, 25))}
                 className="w-full bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-[var(--theme)]/50 font-bold"
               />
               <div className="bg-black/20 p-3 rounded-xl border border-white/5 space-y-3">
@@ -266,7 +274,8 @@ export function SettingsModal({
               <Palette className="w-3 h-3" /> Themes
             </label>
             <div className="grid grid-cols-2 gap-2">
-              {Object.entries(themes).map(([id, t]) => (
+              {/* Refinement: Added optional chaining for themes safety */}
+              {Object.entries(themes || {}).map(([id, t]) => (
                 <button 
                   key={id} 
                   onClick={() => applyTheme(t)} 
