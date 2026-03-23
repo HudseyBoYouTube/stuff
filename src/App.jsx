@@ -433,8 +433,17 @@ function App() {
   }, [recentlyPlayed, gamesData]);
 
   const currentFriend = useMemo(() => {
-    // We use selectedFriendId which contains the full code to identify which friend is open
-    return friends.find(f => f.code === selectedFriendId);
+    const friend = friends.find(f => f.code === selectedFriendId);
+    if (!friend) return null;
+
+    try {
+      let base64 = friend.code.trim();
+      base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+      while (base64.length % 4 !== 0) base64 += '=';
+      return { ...friend, decoded: JSON.parse(atob(base64)) };
+    } catch (e) {
+      return friend;
+    }
   }, [friends, selectedFriendId]);
 
   return (
@@ -571,7 +580,7 @@ function App() {
         </main>
       </div>
 
-      {currentFriend && (
+      {currentFriend && currentFriend.decoded && (
         <div key={`profile-${currentFriend.code}`} className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
           <div className="bg-zinc-900 border border-[var(--theme)]/30 p-8 rounded-3xl max-w-sm w-full relative shadow-[0_0_50px_rgba(0,0,0,0.5)] space-y-6">
             <button onClick={() => setSelectedFriendId(null)} className="absolute top-4 right-4 text-zinc-500 hover:text-white"><X /></button>
@@ -579,36 +588,26 @@ function App() {
               <div className="w-20 h-20 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20 overflow-hidden">
                 <UserCircle className="w-12 h-12 text-[var(--theme)]" />
               </div>
-              <h3 className="text-2xl font-black tracking-tighter">{currentFriend.name}</h3>
+              <h3 className="text-2xl font-black tracking-tighter">{currentFriend.decoded.n || currentFriend.name}</h3>
               <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Friend Profile</p>
             </div>
             <div className="space-y-4">
               <label className="text-[10px] font-black text-[var(--theme)] uppercase tracking-widest flex items-center gap-2"><Heart className="w-3 h-3" /> Favorite Games</label>
               <div className="grid gap-2">
                 {(() => {
-                   try {
-                     let base64 = currentFriend.code.trim();
-                     base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
-                     while (base64.length % 4 !== 0) base64 += '=';
-                     
-                     const decoded = JSON.parse(atob(base64));
-                     const displayFavs = decoded.f || [];
-                     const displayTimes = decoded.t || {};
+                   const displayFavs = currentFriend.decoded.f || [];
+                   const displayTimes = currentFriend.decoded.t || {};
+                   const validFavs = displayFavs.filter(id => gamesData.find(g => g.id === id));
 
-                     const validFavs = displayFavs.filter(id => gamesData.find(g => g.id === id));
-
-                     return (validFavs.length > 0) ? validFavs.map(gameId => {
-                       const game = gamesData.find(g => g.id === gameId);
-                       return game ? (
-                         <div key={gameId} className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
-                           <span className="text-xs font-bold">{game.title}</span>
-                           <span className="text-[10px] font-mono text-zinc-500">{displayTimes[gameId] ? Math.floor(displayTimes[gameId]/60) : 0}m played</span>
-                         </div>
-                       ) : null;
-                     }) : <p className="text-xs text-zinc-600 text-center py-4 italic">No favorites yet...</p>
-                   } catch(e) {
-                     return <p className="text-xs text-red-500 text-center py-4">Error loading favorites</p>
-                   }
+                   return (validFavs.length > 0) ? validFavs.map(gameId => {
+                     const game = gamesData.find(g => g.id === gameId);
+                     return game ? (
+                       <div key={gameId} className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
+                         <span className="text-xs font-bold">{game.title}</span>
+                         <span className="text-[10px] font-mono text-zinc-500">{displayTimes[gameId] ? Math.floor(displayTimes[gameId]/60) : 0}m played</span>
+                       </div>
+                     ) : null;
+                   }) : <p className="text-xs text-zinc-600 text-center py-4 italic">No favorites yet...</p>
                 })()}
               </div>
             </div>
