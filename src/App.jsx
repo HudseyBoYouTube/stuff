@@ -295,7 +295,16 @@ function App() {
   };
 
   const handleAudioUpload = (e) => {
-    const file = e.target.files[0];
+    // 1. Check if we clicked a PRESET button from tracklist.js
+    if (e.presetUrl) {
+      setBgMusic(e.presetUrl);
+      setBgEnabled(true);
+      localStorage.setItem('capy-bg-music', e.presetUrl);
+      return;
+    }
+
+    // 2. Otherwise, handle the normal FILE UPLOAD
+    const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -309,9 +318,14 @@ function App() {
 
   const handleResetMusic = () => {
     setBgMusic('');
+    setBgEnabled(false); // This stops the "Auto-Play" logic
     localStorage.removeItem('capy-bg-music');
+    localStorage.setItem('capy-bg-enabled', 'false');
+    
+    // This physically stops the sound immediately
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current.currentTime = 0;
     }
   };
 
