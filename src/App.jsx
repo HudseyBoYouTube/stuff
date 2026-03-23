@@ -11,6 +11,7 @@ import { GameCard } from './components/GameCard';
 import { SettingsModal } from './components/SettingsModal';
 import { Header } from './components/Header';
 import { FriendViewModal } from './components/FriendViewModal';
+import { tracklist } from './tracklist'; // Added import for the music library
 
 const DEFAULT_COLOR = '#10A5F5';
 const DEFAULT_GLOW = 50;
@@ -295,7 +296,6 @@ function App() {
   };
 
   const handleAudioUpload = (e) => {
-    // 1. Check if we clicked a PRESET button from tracklist.js
     if (e.presetUrl) {
       setBgMusic(e.presetUrl);
       setBgEnabled(true);
@@ -303,7 +303,6 @@ function App() {
       return;
     }
 
-    // 2. Otherwise, handle the normal FILE UPLOAD
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       const reader = new FileReader();
@@ -318,11 +317,10 @@ function App() {
 
   const handleResetMusic = () => {
     setBgMusic('');
-    setBgEnabled(false); // This stops the "Auto-Play" logic
+    setBgEnabled(false); 
     localStorage.removeItem('capy-bg-music');
     localStorage.setItem('capy-bg-enabled', 'false');
     
-    // This physically stops the sound immediately
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
@@ -608,6 +606,7 @@ function App() {
       <SettingsModal 
         show={showSettings} 
         onClose={() => setShowSettings(false)}
+        tracklist={tracklist} // Added tracklist prop
         performanceMode={performanceMode}
         setPerformanceMode={(val) => { 
             setPerformanceMode(val); 
@@ -703,7 +702,6 @@ function App() {
               return;
             }
 
-            // NEW: Check if the friend's name matches your own displayName
             if (name.toLowerCase() === displayName.toLowerCase()) {
               alert("You cannot add a friend with the same name as you!");
               return;
