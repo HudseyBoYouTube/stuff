@@ -530,13 +530,17 @@ function App() {
       )}
 
       {bgMusic && (
-        <audio 
-          ref={audioRef} 
-          src={bgMusic === 'preset-time' ? "/time.mp3" : bgMusic} 
-          loop 
-          preload="auto"
-        />
-      )}
+  <audio 
+    key={bgMusic} 
+    ref={audioRef}
+    src={bgMusic} 
+    loop 
+    autoPlay 
+    preload="auto"
+    onPlay={() => console.log("Audio started playing:", bgMusic)}
+    onError={(e) => console.error("Audio Error:", e)}
+  />
+)}
 
       <div className="relative z-10">
         <div className="sticky top-0 z-50">
