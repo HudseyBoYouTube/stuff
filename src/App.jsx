@@ -12,7 +12,6 @@ import { SettingsModal } from './components/SettingsModal';
 import { Header } from './components/Header';
 import { FriendViewModal } from './components/FriendViewModal';
 import { tracklist } from './components/tracklist'; 
-import timeSong from './assets/time.mp3'; // <--- ADD THIS LINE HERE
 
 const DEFAULT_COLOR = '#10A5F5';
 const DEFAULT_GLOW = 50;
@@ -725,11 +724,11 @@ function App() {
       {/* Put the audio tag right here, before the very last </div> */}
       {bgMusic && (
         <audio 
-          ref={audioRef} 
-          src={timeSong} 
-          loop 
-          preload="auto"
-        />
+  ref={audioRef} 
+  src="/time.mp3"  // Notice the quotes and the slash!
+  loop 
+  preload="auto"
+/>
       )}
     </div>
   );
