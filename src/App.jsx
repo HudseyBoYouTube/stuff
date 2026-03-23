@@ -533,16 +533,18 @@ function App() {
                   </div>
                 </div>
                 
-                <button onClick={() => setShowSettings(true)} className="flex items-center gap-2 group">
-                   <div className="w-8 h-8 rounded-full border border-white/10 overflow-hidden bg-white/5 group-hover:border-[var(--theme)]/50 transition-all">
-                    {profilePic ? (
-                      <img src={profilePic} className="w-full h-full object-cover" />
-                    ) : (
-                      <UserCircle className="w-full h-full p-1 text-zinc-600 group-hover:text-[var(--theme)]" />
-                    )}
-                   </div>
-                   <Settings className="w-5 h-5 text-zinc-500 group-hover:text-[var(--theme)] transition-colors" />
-                </button>
+                // Find this section in your Header (around line 430) and replace it with this:
+
+<button onClick={() => setShowSettings(true)} className="flex items-center gap-2 group">
+  <div className="w-8 h-8 rounded-full border border-[var(--theme)]/50 overflow-hidden bg-white/5 transition-all">
+    {profilePic ? (
+      <img src={profilePic} className="w-full h-full object-cover" alt="Profile" />
+    ) : (
+      <UserCircle className="w-full h-full p-1 text-[var(--theme)]" />
+    )}
+  </div>
+  <Settings className="w-5 h-5 text-[var(--theme)] transition-colors" />
+</button>
               </div>
             </div>
           </header>
