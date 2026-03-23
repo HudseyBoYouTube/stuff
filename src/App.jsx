@@ -720,21 +720,29 @@ function App() {
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
         onViewFriend={(friend) => {
-            // First clear it to force a full re-render of the modal data
+            // Close any existing friend view first
             setSelectedFriendId(null);
+            // Re-trigger the friend selection on the next tick
             setTimeout(() => {
               setSelectedFriendId(friend.code);
-            }, 0);
+            }, 10);
         }}
         onRefreshFriend={(code) => {
-            // Force a list reference update
-            setFriends([...friends]);
-            setNotification("Friend data refreshed!");
-            // If we are currently viewing this specific friend, toggle the view state to refresh
+            // Trigger a manual re-sync and UI refresh
+            setIsSyncing(true);
+            const freshFriends = [...friends];
+            setFriends(freshFriends);
+            
+            // If viewing this friend, clear and re-set to force a re-decode
             if (selectedFriendId === code) {
                 setSelectedFriendId(null);
-                setTimeout(() => setSelectedFriendId(code), 0);
+                setTimeout(() => setSelectedFriendId(code), 50);
             }
+            
+            setTimeout(() => {
+              setIsSyncing(false);
+              setNotification("Friend view refreshed!");
+            }, 500);
         }}
       />
     </div>
