@@ -11,8 +11,7 @@ import { GameCard } from './components/GameCard';
 import { SettingsModal } from './components/SettingsModal';
 import { Header } from './components/Header';
 import { FriendViewModal } from './components/FriendViewModal';
-import { tracklist } from './tracklist'; // Added import for the music library
-
+import { tracklist } from './components/tracklist'; // Added /components/ to the path
 const DEFAULT_COLOR = '#10A5F5';
 const DEFAULT_GLOW = 50;
 const DEFAULT_TITLE = "Capybara Science";
