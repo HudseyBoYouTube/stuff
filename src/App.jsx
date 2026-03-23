@@ -552,7 +552,7 @@ function App() {
       </div>
 
       {selectedFriend && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+        <div key={selectedFriend.code} className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
           <div className="bg-zinc-900 border border-[var(--theme)]/30 p-8 rounded-3xl max-w-sm w-full relative shadow-[0_0_50px_rgba(0,0,0,0.5)] space-y-6">
             <button onClick={() => setSelectedFriend(null)} className="absolute top-4 right-4 text-zinc-500 hover:text-white"><X /></button>
             <div className="text-center space-y-2">
@@ -646,7 +646,6 @@ function App() {
               return;
             }
 
-            // FIXED: We check for existing friend ID, but update the CODE if it is new
             const existingFriendIndex = friends.findIndex(f => {
                 try {
                     const existingDecoded = JSON.parse(atob(f.code.replace(/-/g, '+').replace(/_/g, '/')));
@@ -677,8 +676,9 @@ function App() {
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
         onViewFriend={(friend) => {
-           // We decode the friend code first to ensure we have the absolute latest data from the code provided
-           setSelectedFriend(friend);
+           // We force a refresh by finding the friend in the updated state list
+           const latestFriendData = friends.find(f => f.code === friend.code) || friend;
+           setSelectedFriend(latestFriendData);
         }}
       />
     </div>
