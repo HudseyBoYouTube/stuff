@@ -286,7 +286,6 @@ function App() {
   const handlePfpUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Logic supports GIF, PNG, JPG natively via FileReader
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfilePic(reader.result);
@@ -485,7 +484,18 @@ function App() {
                     <span>{battery.level}%</span>
                   </div>
                 </div>
-                <button onClick={() => setShowSettings(true)} className="p-2 text-[var(--theme)] hover:opacity-70 transition-all"><Settings className="w-6 h-6" /></button>
+                
+                {/* Header Profile Circle */}
+                <button onClick={() => setShowSettings(true)} className="flex items-center gap-2 group">
+                   <div className="w-8 h-8 rounded-full border border-white/10 overflow-hidden bg-white/5 group-hover:border-[var(--theme)]/50 transition-all">
+                    {profilePic ? (
+                      <img src={profilePic} className="w-full h-full object-cover" />
+                    ) : (
+                      <UserCircle className="w-full h-full p-1 text-zinc-600 group-hover:text-[var(--theme)]" />
+                    )}
+                   </div>
+                   <Settings className="w-5 h-5 text-zinc-500 group-hover:text-[var(--theme)] transition-colors" />
+                </button>
               </div>
             </div>
           </header>
@@ -623,7 +633,7 @@ function App() {
         handleAudioUpload={handleAudioUpload}
         handleResetMusic={handleResetMusic}
         profilePic={profilePic}
-        handlePfpUpload={handlePfpUpload} // GIF support included here
+        handlePfpUpload={handlePfpUpload}
         handleResetPfp={() => { setProfilePic(''); localStorage.removeItem('capy-pfp'); }}
         handleClearSettings={handleClearSettings}
         handleReset={handleReset}
