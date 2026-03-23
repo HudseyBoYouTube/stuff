@@ -315,16 +315,17 @@ function App() {
     setBgMusic(testPath);
     setBgEnabled(true);
     localStorage.setItem('capy-bg-music', testPath);
-    return; 
+    return; // This exits the function if it's a preset
   }
 
-  // MAKE SURE THE CODE BELOW THIS LINE STAYS:
-  const file = e.target.files[0];
-  if (file) {
-    const url = URL.createObjectURL(file);
-    // ... etc ...
+  // Make sure there is NO "}" right here! 
+  // The function should continue to your file upload logic:
+
+  if (e.target && e.target.files) {
+     const file = e.target.files[0];
+     // ... rest of your upload code ...
   }
-};
+}; // This is the ONLY brace that should close the handleAudioUpload function.
 
   // 2. Manual File Upload
   const file = e?.target?.files?.[0]; 
