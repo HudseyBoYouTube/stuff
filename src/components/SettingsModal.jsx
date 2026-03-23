@@ -108,7 +108,7 @@ export function SettingsModal(props) {
             <div className="space-y-2 max-h-32 overflow-y-auto custom-scrollbar pr-1">
               {props.friends && props.friends.length > 0 ? props.friends.map(friend => (
                 <div key={friend.code} className="flex items-center justify-between bg-white/5 p-2 rounded-xl border border-white/5">
-                  <span className="text-[10px] font-bold truncate max-w-[120px]">{friend.name}</span>
+                  <span title={friend.name} className="text-[10px] font-bold truncate max-w-[120px]">{friend.name}</span>
                   <div className="flex gap-1">
                     <button 
                       onClick={() => props.onViewFriend(friend)}
@@ -226,7 +226,7 @@ export function SettingsModal(props) {
                 type="text" 
                 placeholder="Press key..." 
                 value={props.panicKey} 
-                onKeyDown={(e) => { e.preventDefault(); props.setPanicKey(e.key); }}
+                onKeyDown={(e) => { e.preventDefault(); e.stopPropagation(); props.setPanicKey(e.key); }}
                 className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-3 text-xs outline-none focus:border-red-500/50 text-center font-mono font-bold" 
                 readOnly 
               />
