@@ -108,7 +108,6 @@ function App() {
     return id;
   });
 
-  // Updated Friend Code Logic to ensure it refreshes correctly when favorites are added/removed
   const friendCode = useMemo(() => {
     const currentFavs = favorites || [];
     const topFavs = currentFavs.slice(0, 5);
@@ -487,7 +486,6 @@ function App() {
                   </div>
                 </div>
                 
-                {/* Header Profile Circle */}
                 <button onClick={() => setShowSettings(true)} className="flex items-center gap-2 group">
                    <div className="w-8 h-8 rounded-full border border-white/10 overflow-hidden bg-white/5 group-hover:border-[var(--theme)]/50 transition-all">
                     {profilePic ? (
