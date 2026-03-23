@@ -295,24 +295,27 @@ function App() {
   };
 
   const handleAudioUpload = (e) => {
-    if (e.presetUrl) {
-      setBgMusic(e.presetUrl);
-      setBgEnabled(true);
-      localStorage.setItem('capy-bg-music', e.presetUrl);
-      return;
-    }
+  // If it's a preset from the Music Library
+  if (e && e.presetUrl) {
+    setBgMusic(e.presetUrl);
+    setBgEnabled(true); // Ensures the player is "ON"
+    localStorage.setItem('capy-bg-music', e.presetUrl);
+    return;
+  }
 
-    const file = e.target.files ? e.target.files[0] : null;
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result;
-        setBgMusic(base64String);
-        localStorage.setItem('capy-bg-music', base64String);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // If it's a manual file upload
+  const file = e.target?.files ? e.target.files[0] : null;
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result;
+      setBgMusic(base64String);
+      setBgEnabled(true); // Ensures the player is "ON"
+      localStorage.setItem('capy-bg-music', base64String);
+    };
+    reader.readAsDataURL(file);
+  }
+};
 
   const handleResetMusic = () => {
     setBgMusic('');
