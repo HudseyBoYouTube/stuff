@@ -19,7 +19,7 @@ export function SettingsModal({
   handleClearSettings, confirmClearSettings,
   handleReset, confirmReset,
   onViewOwnProfile,
-  tracklist // <--- Added this prop to sync with your song list
+  tracklist 
 }) {
   const [friendInput, setFriendInput] = useState('');
   const [copied, setCopied] = useState(false);
@@ -216,7 +216,7 @@ export function SettingsModal({
               </button>
             </div>
 
-            {/* VOLUME SLIDER - Appears when ANY music is active */}
+            {/* VOLUME SLIDER */}
             {bgMusic && (
               <div className="pt-2 border-t border-white/5 space-y-3">
                 <div className="flex items-center justify-between">
@@ -238,7 +238,7 @@ export function SettingsModal({
             )}
 
             {/* BG OPACITY SLIDER */}
-            {bgEnabled && !performanceMode && !bgMusic.includes('/music/') && (
+            {bgEnabled && !performanceMode && !bgMusic?.includes('/music/') && (
               <div className="pt-2 border-t border-white/5 space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="text-[9px] uppercase font-black text-zinc-400 flex items-center gap-2">
