@@ -120,10 +120,11 @@ function App() {
       n: displayName,
       id: uniqueId,
       f: topFavs,
-      t: topTimes
+      t: topTimes,
+      p: profilePic // Added pfp to the encoded data
     };
     return btoa(JSON.stringify(data)).replace(/=/g, '');
-  }, [displayName, uniqueId, favorites, playtimes]);
+  }, [displayName, uniqueId, favorites, playtimes, profilePic]);
 
   useEffect(() => {
     if (notification) {
@@ -561,11 +562,24 @@ function App() {
                     const isMe = selectedFriend.code === friendCode;
                     if (isMe) {
                         return profilePic ? (
-                            <img src={profilePic} className="w-full h-full object-cover" style={{ imageRendering: 'auto' }} />
+                            <img src={profilePic} className="w-full h-full object-cover" />
                         ) : (
                             <UserCircle className="w-12 h-12 text-[var(--theme)]" />
                         );
                     }
+                    
+                    try {
+                      let base64 = selectedFriend.code.trim();
+                      base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+                      while (base64.length % 4 !== 0) base64 += '=';
+                      const decoded = JSON.parse(atob(base64));
+                      
+                      // Check if decoded data has a pfp
+                      if (decoded.p) {
+                        return <img src={decoded.p} className="w-full h-full object-cover" />;
+                      }
+                    } catch(e) {}
+
                     return <UserCircle className="w-12 h-12 text-[var(--theme)]" />;
                 })()}
               </div>
