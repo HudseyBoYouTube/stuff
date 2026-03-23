@@ -37,7 +37,6 @@ export function SettingsModal({
     }
   };
 
-  // REFINED PANIC KEY LOGIC
   const handlePanicKeyDown = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -129,7 +128,7 @@ export function SettingsModal({
             </div>
 
             <div className="space-y-2 max-h-32 overflow-y-auto custom-scrollbar pr-1">
-              {friends && friends.length > 0 ? friends.map(friend => (
+              {friends?.length > 0 ? friends.map(friend => (
                 <div key={friend.code} className="flex items-center justify-between bg-white/5 p-2 rounded-xl border border-white/5">
                   <span title={friend.name} className="text-[10px] font-bold truncate max-w-[120px]">{friend.name}</span>
                   <div className="flex gap-1">
@@ -268,7 +267,11 @@ export function SettingsModal({
             </label>
             <div className="grid grid-cols-2 gap-2">
               {Object.entries(themes).map(([id, t]) => (
-                <button key={id} onClick={() => applyTheme(t)} className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:border-[var(--theme)] flex items-center gap-2 transition-all">
+                <button 
+                  key={id} 
+                  onClick={() => applyTheme(t)} 
+                  className="p-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold hover:border-[var(--theme)] flex items-center gap-2 transition-all"
+                >
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: t.color }} /> {t.name}
                 </button>
               ))}
