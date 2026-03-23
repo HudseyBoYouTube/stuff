@@ -597,7 +597,7 @@ function App() {
       </div>
 
       {currentFriend && currentFriend.decoded && (
-        <div key={`profile-${currentFriend.code}`} className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+        <div key={`profile-modal-${currentFriend.code}`} className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
           <div className="bg-zinc-900 border border-[var(--theme)]/30 p-8 rounded-3xl max-w-sm w-full relative shadow-[0_0_50px_rgba(0,0,0,0.5)] space-y-6">
             <button onClick={() => setSelectedFriendId(null)} className="absolute top-4 right-4 text-zinc-500 hover:text-white"><X /></button>
             <div className="text-center space-y-2">
@@ -718,7 +718,9 @@ function App() {
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
         onViewFriend={(friend) => {
-            setSelectedFriendId(friend.code);
+            // This ensures we have a fresh reference to the code
+            setSelectedFriendId(null);
+            setTimeout(() => setSelectedFriendId(friend.code), 10);
         }}
         onRefreshFriend={(code) => {
             setFriends([...friends]);
