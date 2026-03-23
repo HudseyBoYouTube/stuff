@@ -671,40 +671,45 @@ function App() {
             let cleanCode = code.trim();
             if (!cleanCode) return;
             
-            let base64 = cleanCode;
-            base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+            // 1. Prepare for decoding
+            let base64 = cleanCode.replace(/-/g, '+').replace(/_/g, '/');
             while (base64.length % 4 !== 0) base64 += '=';
             
+            // 2. Extract info from the NEW code
             const decodedData = JSON.parse(atob(base64));
             const { n: name, id: friendId } = decodedData;
 
-            if (!name) {
+            if (!friendId) {
               alert("Invalid Friend Code Format!");
               return;
             }
 
+            // 3. Look for a friend that matches the ID (not just the name)
             const existingFriendIndex = friends.findIndex(f => {
                 try {
-                    const existingDecoded = JSON.parse(atob(f.code.replace(/-/g, '+').replace(/_/g, '/')));
+                    let fBase = f.code.replace(/-/g, '+').replace(/_/g, '/');
+                    while (fBase.length % 4 !== 0) fBase += '=';
+                    const existingDecoded = JSON.parse(atob(fBase));
                     return existingDecoded.id === friendId;
                 } catch(e) { return false; }
             });
 
+            // 4. Either update the existing friend or add as new
+            const updatedFriends = [...friends];
             if (existingFriendIndex > -1) {
-              const updatedFriends = [...friends];
               updatedFriends[existingFriendIndex] = { name, code: cleanCode };
-              setFriends(updatedFriends);
-              localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
-              setNotification("Friend Updated!");
-              return;
+              setNotification(`Updated ${name}'s Profile!`);
+            } else {
+              updatedFriends.push({ name, code: cleanCode });
+              setNotification(`Added ${name} to Friends!`);
             }
 
-            const newFriends = [...friends, { name, code: cleanCode }];
-            setFriends(newFriends);
-            localStorage.setItem('capy-friends', JSON.stringify(newFriends));
-            setNotification("Friend Added!");
+            // 5. Save everything
+            setFriends(updatedFriends);
+            localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
           } catch(e) { 
             alert("Invalid Friend Code!"); 
+            console.error(e);
           }
         }}
         onRemoveFriend={(code) => {
