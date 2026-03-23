@@ -113,6 +113,7 @@ function App() {
     return id;
   });
 
+  // UPDATED: Now includes profilePic in the data and dependency array
   const friendCode = useMemo(() => {
     const currentFavs = favorites || [];
     const topFavs = currentFavs.slice(0, 5);
@@ -125,18 +126,19 @@ function App() {
     const data = {
       n: displayName,
       id: uniqueId,
+      p: profilePic, // Added PFP to standard friend code
       f: topFavs,
       t: topTimes
     };
-    return btoa(JSON.stringify(data)).replace(/=/g, '');
-  }, [displayName, uniqueId, favorites, playtimes]);
+    // Using safer encoding to handle large Base64 strings (PFP)
+    return btoa(unescape(encodeURIComponent(JSON.stringify(data)))).replace(/=/g, '');
+  }, [displayName, uniqueId, favorites, playtimes, profilePic]);
 
-  // NEW: Full Sync Code (Includes Theme and Profile Pic)
   const fullSyncCode = useMemo(() => {
     const data = {
       n: displayName,
       id: uniqueId,
-      p: profilePic, // This includes your PFP!
+      p: profilePic,
       t: theme,
       g: glowIntensity,
       favs: favorites
@@ -472,7 +474,7 @@ function App() {
       let base64 = selectedFriendId.trim(); 
       base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
       while (base64.length % 4 !== 0) base64 += '=';
-      return { ...friend, decoded: JSON.parse(atob(base64)) };
+      return { ...friend, decoded: JSON.parse(decodeURIComponent(escape(atob(base64)))) };
     } catch (e) {
       console.error("Decoding error:", e);
       return friend;
@@ -609,7 +611,6 @@ function App() {
         displayName={displayName}
         setDisplayName={(val) => { setDisplayName(val); localStorage.setItem('capy-display-name', val); }}
         friendCode={friendCode}
-        // NEW: Passing fullSyncCode and an Import function to SettingsModal
         fullSyncCode={fullSyncCode}
         onImportSync={(code) => {
           try {
@@ -653,7 +654,7 @@ function App() {
             base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
             while (base64.length % 4 !== 0) base64 += '=';
             
-            const decodedData = JSON.parse(atob(base64));
+            const decodedData = JSON.parse(decodeURIComponent(escape(atob(base64))));
             const { n: name, id: friendId } = decodedData;
 
             if (!name) {
@@ -663,7 +664,7 @@ function App() {
 
             const existingFriendIndex = friends.findIndex(f => {
                 try {
-                    const existingDecoded = JSON.parse(atob(f.code.replace(/-/g, '+').replace(/_/g, '/')));
+                    const existingDecoded = JSON.parse(decodeURIComponent(escape(atob(f.code.replace(/-/g, '+').replace(/_/g, '/')))));
                     return existingDecoded.id === friendId;
                 } catch(e) { return false; }
             });
@@ -695,7 +696,7 @@ function App() {
                 let base64 = friend.code.trim();
                 base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
                 while (base64.length % 4 !== 0) base64 += '=';
-                const decoded = JSON.parse(atob(base64));
+                const decoded = JSON.parse(decodeURIComponent(escape(atob(base64))));
                 
                 const updatedFriends = friends.map(f => 
                   f.name === friend.name ? { ...f, code: friend.code } : f
