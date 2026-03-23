@@ -47,16 +47,20 @@ export function Header({
             </div>
           </div>
           
-          <button onClick={() => setShowSettings(true)} className="flex items-center gap-2 group">
-              {/* REMOVED 'border' BELOW TO ELIMINATE THE SECOND RING */}
+          {/* UPDATED: Added hover background and transition to match the dice button */}
+          <button 
+            onClick={() => setShowSettings(true)} 
+            className="flex items-center gap-2 group hover:bg-[var(--theme)] p-1.5 px-2.5 rounded-full transition-all"
+          >
               <div className="w-8 h-8 rounded-full border-[var(--theme)]/50 overflow-hidden bg-white/5 transition-all">
                {profilePic ? (
                  <img src={profilePic} className="w-full h-full object-cover" alt="Profile" />
                ) : (
-                 <UserCircle className="w-full h-full p-1 text-[var(--theme)]" />
+                 <UserCircle className="w-full h-full p-1 text-[var(--theme)] group-hover:text-black transition-colors" />
                )}
               </div>
-              <Settings className="w-5 h-5 text-[var(--theme)] transition-colors" />
+              {/* UPDATED: Added group-hover:text-black to the Settings icon */}
+              <Settings className="w-5 h-5 text-[var(--theme)] group-hover:text-black transition-colors" />
           </button>
         </div>
       </div>
