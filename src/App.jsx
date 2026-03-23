@@ -525,7 +525,7 @@ function App() {
         </div>
       )}
 
-      {bgMusic && <audio ref={audioRef} src={bgMusic} loop />}
+      {bgMusic && <audio ref={audioRef} src={bgMusic} loop volume={volume / 100} />}
 
       <div className="relative z-10">
         <div className="sticky top-0 z-50">
