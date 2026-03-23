@@ -515,7 +515,14 @@ function App() {
         </div>
       )}
 
-      {bgMusic && <audio ref={audioRef} src={bgMusic} loop volume={volume / 100} />}
+      {bgMusic && (
+        <audio 
+          ref={audioRef} 
+          src={bgMusic === 'preset-time' ? "/time.mp3" : bgMusic} 
+          loop 
+          preload="auto"
+        />
+      )}
 
       <div className="relative z-10">
         <div className="sticky top-0 z-50">
@@ -720,16 +727,6 @@ function App() {
             }, 500);
         }}
       />
-
-      {/* Put the audio tag right here, before the very last </div> */}
-      {bgMusic && (
-        <audio 
-  ref={audioRef} 
-  src="/time.mp3"  // Notice the quotes and the slash!
-  loop 
-  preload="auto"
-/>
-      )}
     </div>
   );
 }
