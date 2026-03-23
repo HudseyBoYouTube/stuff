@@ -727,6 +727,11 @@ function App() {
         onRefreshFriend={(code) => {
             setFriends([...friends]);
             setNotification("Friend data refreshed!");
+            // Force modal refresh if currently viewing this friend
+            if (selectedFriendId === code) {
+                setSelectedFriendId(null);
+                setTimeout(() => setSelectedFriendId(code), 10);
+            }
         }}
       />
     </div>
