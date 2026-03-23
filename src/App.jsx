@@ -320,6 +320,14 @@ function App() {
   const handlePfpUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // LIMIT: 500KB (This keeps your Friend Code from getting too laggy)
+      const maxSize = 500 * 1024; 
+
+      if (file.size > maxSize) {
+        alert("File too large! Please use a GIF under 500KB so the site doesn't lag.");
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfilePic(reader.result);
