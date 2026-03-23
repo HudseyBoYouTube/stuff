@@ -96,10 +96,8 @@ function App() {
   
   const [friends, setFriends] = useState(() => JSON.parse(localStorage.getItem('capy-friends') || '[]'));
   
-  // CHANGED: selectedFriendId instead of the whole object to ensure reactivity
   const [selectedFriendId, setSelectedFriendId] = useState(null);
 
-  // Stats Sync State
   const [isSyncing, setIsSyncing] = useState(false);
 
   const [uniqueId] = useState(() => {
@@ -434,7 +432,6 @@ function App() {
       .filter(Boolean);
   }, [recentlyPlayed, gamesData]);
 
-  // CHANGED: Added currentFriend lookup for the View Profile Modal
   const currentFriend = useMemo(() => {
     return friends.find(f => f.code === selectedFriendId);
   }, [friends, selectedFriendId]);
@@ -574,7 +571,7 @@ function App() {
       </div>
 
       {currentFriend && (
-        <div key={currentFriend.code} className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+        <div key={`profile-${selectedFriendId}`} className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
           <div className="bg-zinc-900 border border-[var(--theme)]/30 p-8 rounded-3xl max-w-sm w-full relative shadow-[0_0_50px_rgba(0,0,0,0.5)] space-y-6">
             <button onClick={() => setSelectedFriendId(null)} className="absolute top-4 right-4 text-zinc-500 hover:text-white"><X /></button>
             <div className="text-center space-y-2">
@@ -705,7 +702,6 @@ function App() {
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
         onViewFriend={(friend) => {
-            // CHANGED: Use unique code/ID to set selected state
             setSelectedFriendId(friend.code);
         }}
         onRefreshFriend={(code) => {
