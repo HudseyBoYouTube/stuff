@@ -298,14 +298,17 @@ function App() {
   const handleAudioUpload = (e) => {
   // 1. Check if it's a Preset from the Music Library
   if (e && e.presetUrl) {
+    console.log("Loading preset music:", e.presetUrl); // DEBUG LOG
     setBgMusic(e.presetUrl);
     setBgEnabled(true);
     localStorage.setItem('capy-bg-music', e.presetUrl);
-    return; // Exit early since we handled the preset
+    return; 
   }
 
   // 2. Check if it's a manual File Upload
+  // Fixed the syntax error below (added [0])
   const file = e?.target?.files?.[0]; 
+  
   if (file) {
     const reader = new FileReader();
     reader.onloadend = () => {
