@@ -113,6 +113,18 @@ function App() {
     return id;
   });
 
+  const safeDecode = (str) => {
+    try {
+      let base64 = str.trim().replace(/-/g, '+').replace(/_/g, '/');
+      while (base64.length % 4 !== 0) base64 += '=';
+      // This part handles special characters like emojis or profile pics
+      return JSON.parse(decodeURIComponent(escape(atob(base64))));
+    } catch (e) {
+      console.error("Decode failed", e);
+      return null;
+    }
+  };
+
   const friendCode = useMemo(() => {
     const currentFavs = favorites || [];
     const topFavs = currentFavs.slice(0, 5);
