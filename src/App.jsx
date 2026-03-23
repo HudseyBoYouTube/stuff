@@ -113,7 +113,6 @@ function App() {
     return id;
   });
 
-  // --- UPDATED FRIEND CODE LOGIC ---
   const friendCode = useMemo(() => {
     const currentFavs = favorites || [];
     const topFavs = currentFavs.slice(0, 5);
@@ -128,10 +127,9 @@ function App() {
       id: uniqueId,
       f: topFavs,
       t: topTimes,
-      p: profilePic // Now includes your PFP/GIF in the code
+      p: profilePic 
     };
     
-    // Note: We do NOT replace the '=' padding because image data needs it!
     return btoa(JSON.stringify(data));
   }, [displayName, uniqueId, favorites, playtimes, profilePic]);
 
@@ -320,7 +318,6 @@ function App() {
   const handlePfpUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // LIMIT: 500KB (This keeps your Friend Code from getting too laggy)
       const maxSize = 500 * 1024; 
 
       if (file.size > maxSize) {
@@ -630,7 +627,17 @@ function App() {
         bgOpacity={bgOpacity}
         setBgOpacity={setBgOpacity}
         displayName={displayName}
-        setDisplayName={(val) => { setDisplayName(val); localStorage.setItem('capy-display-name', val); }}
+        setDisplayName={(val) => {
+          const nameExists = friends.some(f => f.name.toLowerCase() === val.trim().toLowerCase());
+          
+          if (nameExists) {
+            alert("Name is already taken by a friend! Please choose a unique name.");
+            return;
+          }
+
+          setDisplayName(val); 
+          localStorage.setItem('capy-display-name', val); 
+        }}
         friendCode={friendCode}
         fullSyncCode={fullSyncCode}
         onImportSync={(code) => {
@@ -671,11 +678,9 @@ function App() {
             let cleanCode = code.trim();
             if (!cleanCode) return;
             
-            // 1. Prepare for decoding
             let base64 = cleanCode.replace(/-/g, '+').replace(/_/g, '/');
             while (base64.length % 4 !== 0) base64 += '=';
             
-            // 2. Extract info from the NEW code
             const decodedData = JSON.parse(atob(base64));
             const { n: name, id: friendId } = decodedData;
 
@@ -684,7 +689,6 @@ function App() {
               return;
             }
 
-            // 3. Look for a friend that matches the ID (not just the name)
             const existingFriendIndex = friends.findIndex(f => {
                 try {
                     let fBase = f.code.replace(/-/g, '+').replace(/_/g, '/');
@@ -694,7 +698,6 @@ function App() {
                 } catch(e) { return false; }
             });
 
-            // 4. Either update the existing friend or add as new
             const updatedFriends = [...friends];
             if (existingFriendIndex > -1) {
               updatedFriends[existingFriendIndex] = { name, code: cleanCode };
@@ -704,7 +707,6 @@ function App() {
               setNotification(`Added ${name} to Friends!`);
             }
 
-            // 5. Save everything
             setFriends(updatedFriends);
             localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
           } catch(e) { 
