@@ -433,6 +433,7 @@ function App() {
   }, [recentlyPlayed, gamesData]);
 
   const currentFriend = useMemo(() => {
+    // We use selectedFriendId which contains the full code to identify which friend is open
     return friends.find(f => f.code === selectedFriendId);
   }, [friends, selectedFriendId]);
 
@@ -571,7 +572,7 @@ function App() {
       </div>
 
       {currentFriend && (
-        <div key={`profile-${selectedFriendId}`} className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+        <div key={`profile-${currentFriend.code}`} className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
           <div className="bg-zinc-900 border border-[var(--theme)]/30 p-8 rounded-3xl max-w-sm w-full relative shadow-[0_0_50px_rgba(0,0,0,0.5)] space-y-6">
             <button onClick={() => setSelectedFriendId(null)} className="absolute top-4 right-4 text-zinc-500 hover:text-white"><X /></button>
             <div className="text-center space-y-2">
