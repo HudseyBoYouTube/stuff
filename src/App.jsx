@@ -35,18 +35,6 @@ const updateThemeVariables = (color, glow) => {
   root.style.setProperty('--glow', `${glow}px`);
 };
 
-// Helper to safely decode custom friend codes
-const decodeFriendData = (code) => {
-  try {
-    let base64 = code.trim().replace(/-/g, '+').replace(/_/g, '/');
-    while (base64.length % 4 !== 0) base64 += '=';
-    return JSON.parse(atob(base64));
-  } catch (e) {
-    console.error("Failed to decode friend code", e);
-    return null;
-  }
-};
-
 function App() {
   const gamesData = useMemo(() => {
     if (!gamesDataRaw || !Array.isArray(gamesDataRaw)) return [];
@@ -417,7 +405,7 @@ function App() {
     const win = window.open('about:blank', '_blank');
     
     if (win) {
-      win.document.title = currentIdentity.title;
+      win.document.title = "DO NOT REFRESH";
       const link = win.document.createElement('link');
       link.rel = 'icon'; link.href = currentIdentity.icon;
       win.document.head.appendChild(link);
@@ -464,8 +452,16 @@ function App() {
     if (!selectedFriendId) return null;
     const friend = friends.find(f => f.code === selectedFriendId);
     if (!friend) return null;
-    const decoded = decodeFriendData(friend.code);
-    return decoded ? { ...friend, decoded } : friend;
+
+    try {
+      let base64 = selectedFriendId.trim(); // Decode the current selection ID directly
+      base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+      while (base64.length % 4 !== 0) base64 += '=';
+      return { ...friend, decoded: JSON.parse(atob(base64)) };
+    } catch (e) {
+      console.error("Decoding error:", e);
+      return friend;
+    }
   }, [friends, selectedFriendId]);
 
   return (
@@ -678,31 +674,45 @@ function App() {
         customIcon={customIcon}
         setCustomIcon={(val) => { setCustomIcon(val); localStorage.setItem('capy-custom-icon', val); }}
         onAddFriend={(code) => {
-          const decodedData = decodeFriendData(code);
-          if (!decodedData || !decodedData.n) {
-            alert("Invalid Friend Code!");
-            return;
+          try {
+            let cleanCode = code.trim();
+            if (!cleanCode) return;
+            
+            let base64 = cleanCode;
+            base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+            while (base64.length % 4 !== 0) base64 += '=';
+            
+            const decodedData = JSON.parse(atob(base64));
+            const { n: name, id: friendId } = decodedData;
+
+            if (!name) {
+              alert("Invalid Friend Code Format!");
+              return;
+            }
+
+            const existingFriendIndex = friends.findIndex(f => {
+                try {
+                    const existingDecoded = JSON.parse(atob(f.code.replace(/-/g, '+').replace(/_/g, '/')));
+                    return existingDecoded.id === friendId;
+                } catch(e) { return false; }
+            });
+
+            if (existingFriendIndex > -1) {
+              const updatedFriends = [...friends];
+              updatedFriends[existingFriendIndex] = { name, code: cleanCode };
+              setFriends(updatedFriends);
+              localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
+              setNotification("Friend Updated!");
+              return;
+            }
+
+            const newFriends = [...friends, { name, code: cleanCode }];
+            setFriends(newFriends);
+            localStorage.setItem('capy-friends', JSON.stringify(newFriends));
+            setNotification("Friend Added!");
+          } catch(e) { 
+            alert("Invalid Friend Code!"); 
           }
-          const { n: name, id: friendId } = decodedData;
-
-          const existingFriendIndex = friends.findIndex(f => {
-              const d = decodeFriendData(f.code);
-              return d && d.id === friendId;
-          });
-
-          if (existingFriendIndex > -1) {
-            const updatedFriends = [...friends];
-            updatedFriends[existingFriendIndex] = { name, code: code.trim() };
-            setFriends(updatedFriends);
-            localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
-            setNotification("Friend Updated!");
-            return;
-          }
-
-          const newFriends = [...friends, { name, code: code.trim() }];
-          setFriends(newFriends);
-          localStorage.setItem('capy-friends', JSON.stringify(newFriends));
-          setNotification("Friend Added!");
         }}
         onRemoveFriend={(code) => {
           const newFriends = friends.filter(f => f.code !== code);
@@ -710,16 +720,36 @@ function App() {
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
         onViewFriend={(friend) => {
-            setSelectedFriendId(null);
-            setTimeout(() => setSelectedFriendId(friend.code), 10);
+            // Updated: Force re-sync of the code in the list first
+            try {
+                let base64 = friend.code.trim();
+                base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+                while (base64.length % 4 !== 0) base64 += '=';
+                const decoded = JSON.parse(atob(base64));
+                
+                // Refresh friend in the list to make sure we have the latest data
+                const updatedFriends = friends.map(f => 
+                  f.name === friend.name ? { ...f, code: friend.code } : f
+                );
+                setFriends(updatedFriends);
+                localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
+                
+                setSelectedFriendId(null);
+                setTimeout(() => setSelectedFriendId(friend.code), 10);
+            } catch (e) {
+                setSelectedFriendId(friend.code);
+            }
         }}
         onRefreshFriend={(code) => {
             setIsSyncing(true);
-            setFriends([...friends]);
+            const freshFriends = [...friends];
+            setFriends(freshFriends);
+            
             if (selectedFriendId === code) {
                 setSelectedFriendId(null);
                 setTimeout(() => setSelectedFriendId(code), 50);
             }
+            
             setTimeout(() => {
               setIsSyncing(false);
               setNotification("Friend view refreshed!");
