@@ -18,7 +18,8 @@ export function SettingsModal({
   themes, applyTheme,
   handleClearSettings, confirmClearSettings,
   handleReset, confirmReset,
-  onViewOwnProfile // <--- New prop to trigger your profile preview
+  onViewOwnProfile,
+  tracklist // <--- Added this prop to sync with your song list
 }) {
   const [friendInput, setFriendInput] = useState('');
   const [copied, setCopied] = useState(false);
@@ -71,7 +72,6 @@ export function SettingsModal({
               <label className="text-[10px] uppercase font-black text-[var(--theme)] tracking-widest flex items-center gap-2">
                 <Type className="w-3 h-3" /> Profile Identity
               </label>
-              {/* PREVIEW BUTTON */}
               <button 
                 onClick={onViewOwnProfile}
                 className="flex items-center gap-1.5 px-3 py-1 bg-[var(--theme)] text-black rounded-full text-[9px] font-black uppercase hover:opacity-80 transition-all"
@@ -152,6 +152,7 @@ export function SettingsModal({
                       onClick={() => onViewFriend(friend)}
                       className="p-1.5 bg-white/5 hover:bg-[var(--theme)] hover:text-black rounded-lg transition-all"
                     >
+                      <span className="sr-only">View</span>
                       <Eye className="w-3 h-3" />
                     </button>
                     <button 
@@ -233,6 +234,25 @@ export function SettingsModal({
                 />
               </div>
             )}
+          </section>
+
+          {/* MUSIC LIBRARY PRESETS */}
+          <section className="space-y-4 bg-[var(--theme)]/5 p-4 rounded-2xl border border-[var(--theme)]/10">
+            <label className="text-[10px] uppercase font-black text-[var(--theme)] tracking-widest flex items-center gap-2">
+              <Music className="w-3 h-3" /> Music Library
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {tracklist?.map((song) => (
+                <button
+                  key={song.name}
+                  onClick={() => handleAudioUpload({ presetUrl: song.url })}
+                  className="p-2 bg-zinc-800 border border-white/5 rounded-xl text-[9px] font-black uppercase hover:border-[var(--theme)]/50 transition-all text-left flex items-center gap-2"
+                >
+                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--theme)]" />
+                  <span className="truncate">{song.name}</span>
+                </button>
+              ))}
+            </div>
           </section>
 
           {/* PANIC PROTOCOL */}
