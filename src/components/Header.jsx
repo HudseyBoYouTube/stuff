@@ -48,14 +48,15 @@ export function Header({
           </div>
           
           <button onClick={() => setShowSettings(true)} className="flex items-center gap-2 group">
-             <div className="w-8 h-8 rounded-full border border-[var(--theme)]/50 overflow-hidden bg-white/5 transition-all">
-              {profilePic ? (
-                <img src={profilePic} className="w-full h-full object-cover" alt="Profile" />
-              ) : (
-                <UserCircle className="w-full h-full p-1 text-[var(--theme)]" />
-              )}
-             </div>
-             <Settings className="w-5 h-5 text-[var(--theme)] transition-colors" />
+              {/* REMOVED 'border' BELOW TO ELIMINATE THE SECOND RING */}
+              <div className="w-8 h-8 rounded-full border-[var(--theme)]/50 overflow-hidden bg-white/5 transition-all">
+               {profilePic ? (
+                 <img src={profilePic} className="w-full h-full object-cover" alt="Profile" />
+               ) : (
+                 <UserCircle className="w-full h-full p-1 text-[var(--theme)]" />
+               )}
+              </div>
+              <Settings className="w-5 h-5 text-[var(--theme)] transition-colors" />
           </button>
         </div>
       </div>
