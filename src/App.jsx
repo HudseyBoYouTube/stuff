@@ -298,17 +298,26 @@ function App() {
   const handleAudioUpload = (e) => {
   // 1. Check if it's a Preset from the Music Library
   if (e && e.presetUrl) {
-    console.log("Loading preset music:", e.presetUrl); // DEBUG LOG
+    console.log("Loading preset:", e.presetUrl);
     setBgMusic(e.presetUrl);
     setBgEnabled(true);
     localStorage.setItem('capy-bg-music', e.presetUrl);
+
+    // FORCE PLAY LOGIC:
+    // We wait a tiny bit for the state to update, then find the audio element and play it.
+    setTimeout(() => {
+      const audioEl = document.querySelector('audio');
+      if (audioEl) {
+        audioEl.load(); // Reloads the source to handle the .mp4 vs .mp3 switch
+        audioEl.play().catch(err => console.log("Playback blocked:", err));
+      }
+    }, 100);
+    
     return; 
   }
 
-  // 2. Check if it's a manual File Upload
-  // Fixed the syntax error below (added [0])
+  // 2. Manual File Upload
   const file = e?.target?.files?.[0]; 
-  
   if (file) {
     const reader = new FileReader();
     reader.onloadend = () => {
