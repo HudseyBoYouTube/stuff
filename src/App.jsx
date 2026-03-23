@@ -187,33 +187,15 @@ function App() {
 
   useEffect(() => {
     if (audioRef.current) {
-      // 1. Update the actual volume level
       audioRef.current.volume = volume / 100;
       localStorage.setItem('capy-volume', volume);
 
-      // 2. Anti-Pause Shield: If you're sliding the bar and it stops, force it to keep playing
+      // This part prevents the "Turning Off" bug
       if (bgMusic && !performanceMode && audioRef.current.paused) {
-        audioRef.current.play().catch(() => {
-          // Silent catch for browser restrictions
-        });
+        audioRef.current.play().catch(() => {});
       }
     }
   }, [volume, bgMusic, performanceMode]);
-  useEffect(() => {
-    localStorage.setItem('capy-bg-opacity', bgOpacity);
-  }, [bgOpacity]);
-
-  useEffect(() => {
-    if (bgMusic && audioRef.current && !performanceMode) {
-      audioRef.current.load();
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          console.log("Autoplay prevented. Music will start on next click.");
-        });
-      }
-    }
-  }, [bgMusic, performanceMode]);
 
   useEffect(() => {
     const startMusic = () => {
@@ -739,6 +721,16 @@ function App() {
             }, 500);
         }}
       />
+
+      {/* Put the audio tag right here, before the very last </div> */}
+      {bgMusic && (
+        <audio 
+          ref={audioRef} 
+          src={timeSong} 
+          loop 
+          preload="auto"
+        />
+      )}
     </div>
   );
 }
