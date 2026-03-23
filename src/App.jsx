@@ -108,9 +108,12 @@ function App() {
     return id;
   });
 
+  // Updated Friend Code Logic to ensure it refreshes correctly when favorites are added/removed
   const friendCode = useMemo(() => {
-    const topFavs = favorites.slice(0, 5);
+    const currentFavs = favorites || [];
+    const topFavs = currentFavs.slice(0, 5);
     const topTimes = {};
+    
     topFavs.forEach(id => {
       if (playtimes[id]) topTimes[id] = playtimes[id];
     });
@@ -574,6 +577,7 @@ function App() {
                      const displayFavs = decoded.f || [];
                      const displayTimes = decoded.t || {};
 
+                     // Ensure we only try to display favorites that actually exist in our current game database
                      const validFavs = displayFavs.filter(id => gamesData.find(g => g.id === id));
 
                      return (validFavs.length > 0) ? validFavs.map(gameId => {
