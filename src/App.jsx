@@ -95,7 +95,9 @@ function App() {
   const [profilePic, setProfilePic] = useState(() => localStorage.getItem('capy-pfp') || '');
   
   const [friends, setFriends] = useState(() => JSON.parse(localStorage.getItem('capy-friends') || '[]'));
-  const [selectedFriend, setSelectedFriend] = useState(null);
+  
+  // CHANGED: selectedFriendId instead of the whole object to ensure reactivity
+  const [selectedFriendId, setSelectedFriendId] = useState(null);
 
   // Stats Sync State
   const [isSyncing, setIsSyncing] = useState(false);
@@ -129,16 +131,14 @@ function App() {
     return btoa(JSON.stringify(data)).replace(/=/g, '');
   }, [displayName, uniqueId, favorites, playtimes]);
 
-  // AUTOMATED STATS SYNC LOGIC
   useEffect(() => {
     const syncInterval = setInterval(() => {
       if (friends.length > 0) {
         setIsSyncing(true);
-        // We trigger a re-render of the friend list to ensure calculations are fresh
         setFriends([...friends]);
         setTimeout(() => setIsSyncing(false), 2000);
       }
-    }, 30000); // Syncs every 30 seconds
+    }, 30000); 
 
     return () => clearInterval(syncInterval);
   }, [friends]);
@@ -434,6 +434,11 @@ function App() {
       .filter(Boolean);
   }, [recentlyPlayed, gamesData]);
 
+  // CHANGED: Added currentFriend lookup for the View Profile Modal
+  const currentFriend = useMemo(() => {
+    return friends.find(f => f.code === selectedFriendId);
+  }, [friends, selectedFriendId]);
+
   return (
     <div className={`min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'}`} style={{ '--theme': theme, '--glow': `${performanceMode ? 0 : glowIntensity}px` }}>
       
@@ -568,15 +573,15 @@ function App() {
         </main>
       </div>
 
-      {selectedFriend && (
-        <div key={selectedFriend.code} className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+      {currentFriend && (
+        <div key={currentFriend.code} className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
           <div className="bg-zinc-900 border border-[var(--theme)]/30 p-8 rounded-3xl max-w-sm w-full relative shadow-[0_0_50px_rgba(0,0,0,0.5)] space-y-6">
-            <button onClick={() => setSelectedFriend(null)} className="absolute top-4 right-4 text-zinc-500 hover:text-white"><X /></button>
+            <button onClick={() => setSelectedFriendId(null)} className="absolute top-4 right-4 text-zinc-500 hover:text-white"><X /></button>
             <div className="text-center space-y-2">
               <div className="w-20 h-20 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20 overflow-hidden">
                 <UserCircle className="w-12 h-12 text-[var(--theme)]" />
               </div>
-              <h3 className="text-2xl font-black tracking-tighter">{selectedFriend.name}</h3>
+              <h3 className="text-2xl font-black tracking-tighter">{currentFriend.name}</h3>
               <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Friend Profile</p>
             </div>
             <div className="space-y-4">
@@ -584,7 +589,6 @@ function App() {
               <div className="grid gap-2">
                 {(() => {
                    try {
-                     const currentFriend = friends.find(f => f.name === selectedFriend.name) || selectedFriend;
                      let base64 = currentFriend.code.trim();
                      base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
                      while (base64.length % 4 !== 0) base64 += '=';
@@ -701,8 +705,8 @@ function App() {
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
         onViewFriend={(friend) => {
-            const latestFriendData = friends.find(f => f.name === friend.name) || friend;
-            setSelectedFriend(latestFriendData);
+            // CHANGED: Use unique code/ID to set selected state
+            setSelectedFriendId(friend.code);
         }}
         onRefreshFriend={(code) => {
             setFriends([...friends]);
