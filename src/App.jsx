@@ -449,6 +449,7 @@ function App() {
   }, [recentlyPlayed, gamesData]);
 
   const currentFriend = useMemo(() => {
+    if (!selectedFriendId) return null;
     const friend = friends.find(f => f.code === selectedFriendId);
     if (!friend) return null;
 
@@ -458,6 +459,7 @@ function App() {
       while (base64.length % 4 !== 0) base64 += '=';
       return { ...friend, decoded: JSON.parse(atob(base64)) };
     } catch (e) {
+      console.error("Decoding error:", e);
       return friend;
     }
   }, [friends, selectedFriendId]);
@@ -596,8 +598,8 @@ function App() {
         </main>
       </div>
 
-      {currentFriend && currentFriend.decoded && (
-        <div key={`profile-modal-${currentFriend.code}`} className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+      {selectedFriendId && currentFriend && currentFriend.decoded && (
+        <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
           <div className="bg-zinc-900 border border-[var(--theme)]/30 p-8 rounded-3xl max-w-sm w-full relative shadow-[0_0_50px_rgba(0,0,0,0.5)] space-y-6">
             <button onClick={() => setSelectedFriendId(null)} className="absolute top-4 right-4 text-zinc-500 hover:text-white"><X /></button>
             <div className="text-center space-y-2">
@@ -718,9 +720,7 @@ function App() {
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
         onViewFriend={(friend) => {
-            // This ensures we have a fresh reference to the code
-            setSelectedFriendId(null);
-            setTimeout(() => setSelectedFriendId(friend.code), 10);
+            setSelectedFriendId(friend.code);
         }}
         onRefreshFriend={(code) => {
             setFriends([...friends]);
