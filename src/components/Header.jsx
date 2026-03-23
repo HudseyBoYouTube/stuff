@@ -68,9 +68,12 @@ export function Header({
              {/* Settings Gear Button */}
              <button 
                onClick={() => setShowSettings(true)} 
-               className="p-1.5 text-zinc-500 hover:text-[var(--theme)] transition-colors"
+               className="p-1.5 transition-all hover:scale-110 active:rotate-90 group"
              >
-               <Settings className="w-5 h-5" />
+               <Settings 
+                 className="w-5 h-5 drop-shadow-[0_0_8px_rgba(16,165,245,0.6)]" 
+                 style={{ color: '#10A5F5' }}
+               />
              </button>
           </div>
         </div>
