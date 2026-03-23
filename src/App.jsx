@@ -36,10 +36,11 @@ const updateThemeVariables = (color, glow) => {
 };
 
 function App() {
+  // FIXED: Added gamesDataRaw to the dependency array so it updates when the JSON changes
   const gamesData = useMemo(() => {
     if (!gamesDataRaw || !Array.isArray(gamesDataRaw)) return [];
     return gamesDataRaw;
-  }, []);
+  }, [gamesDataRaw]);
 
   const audioRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -575,7 +576,6 @@ function App() {
                      const displayFavs = decoded.f || [];
                      const displayTimes = decoded.t || {};
 
-                     // Ensure we only try to display favorites that actually exist in our current game database
                      const validFavs = displayFavs.filter(id => gamesData.find(g => g.id === id));
 
                      return (validFavs.length > 0) ? validFavs.map(gameId => {
