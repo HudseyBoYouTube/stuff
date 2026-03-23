@@ -113,6 +113,7 @@ function App() {
     return id;
   });
 
+  // --- UPDATED FRIEND CODE LOGIC ---
   const friendCode = useMemo(() => {
     const currentFavs = favorites || [];
     const topFavs = currentFavs.slice(0, 5);
@@ -126,10 +127,13 @@ function App() {
       n: displayName,
       id: uniqueId,
       f: topFavs,
-      t: topTimes
+      t: topTimes,
+      p: profilePic // Now includes your PFP/GIF in the code
     };
-    return btoa(JSON.stringify(data)).replace(/=/g, '');
-  }, [displayName, uniqueId, favorites, playtimes]);
+    
+    // Note: We do NOT replace the '=' padding because image data needs it!
+    return btoa(JSON.stringify(data));
+  }, [displayName, uniqueId, favorites, playtimes, profilePic]);
 
   const fullSyncCode = useMemo(() => {
     const data = {
@@ -623,7 +627,6 @@ function App() {
         fullSyncCode={fullSyncCode}
         onImportSync={(code) => {
           try {
-            // FIX: Added decodeURIComponent(escape()) to handle complex image strings (GIFs)
             const decoded = JSON.parse(decodeURIComponent(escape(atob(code))));
             if (decoded.n) {
               setDisplayName(decoded.n);
