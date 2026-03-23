@@ -309,19 +309,20 @@ function App() {
   };
 
   const handleAudioUpload = (e) => {
+  // 1. THIS HANDLES THE PRESET (TIME)
   if (e && e.presetUrl) {
-    const testPath = "music/Time-Pink-Floyd-(Official-Audio).mp4";
-    console.log("Testing Path:", testPath);
+    // Make sure your file in public/music/ is actually named time.mp3
+    const testPath = "music/time.mp3"; 
+    
+    console.log("Testing MP3 Path:", testPath);
     setBgMusic(testPath);
     setBgEnabled(true);
     localStorage.setItem('capy-bg-music', testPath);
-    return; // This exits the function if it's a preset
+    return; // Stops here so it doesn't try to "upload" a file
   }
 
-  // Make sure there is NO "}" right here! 
-  // The function should continue to your file upload logic:
-
- if (e.target && e.target.files) {
+  // 2. THIS HANDLES MANUAL UPLOADS (THE STEERING WHEEL)
+  if (e.target && e.target.files) {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -334,7 +335,7 @@ function App() {
       reader.readAsDataURL(file);
     }
   }
-}; // The "Main" Closing Bracket
+};
   const handleResetMusic = () => {
     setBgMusic('');
     setBgEnabled(false); 
