@@ -185,17 +185,22 @@ function App() {
   }, [performanceMode, theme, glowIntensity]);
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume / 100;
-      localStorage.setItem('capy-volume', volume);
+  if (audioRef.current) {
+    // Keep your volume math!
+    audioRef.current.volume = volume / 100;
+    localStorage.setItem('capy-volume', volume);
 
-      // This part prevents the "Turning Off" bug
-      if (bgMusic && !performanceMode && audioRef.current.paused) {
-        audioRef.current.play().catch(() => {});
-      }
+    // Improved "Force Play" logic
+    if (bgMusic && !performanceMode) {
+      // We load and play to ensure the .mp4 switches correctly
+      audioRef.current.load(); 
+      audioRef.current.play().catch((err) => {
+        console.log("Autoplay blocked or file missing:", err);
+      });
     }
-  }, [volume, bgMusic, performanceMode]);
-
+  }
+}, [volume, bgMusic, performanceMode]);
+  
   useEffect(() => {
     const startMusic = () => {
       if (audioRef.current && bgMusic && !performanceMode) {
