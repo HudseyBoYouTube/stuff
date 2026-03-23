@@ -686,9 +686,9 @@ function App() {
            setSelectedFriend(latestFriendData);
         }}
         onRefreshFriend={(code) => {
-            setNotification("Pulling latest friend data...");
-            // This logic can be expanded if fetching from a database, 
-            // but for now it forces a re-render of the decoded state.
+            // Force a state re-read to ensure the friend card re-renders with the latest local array
+            setFriends([...friends]);
+            setNotification("Friend data refreshed!");
         }}
       />
     </div>
