@@ -697,34 +697,34 @@ function App() {
         customIcon={customIcon}
         setCustomIcon={(val) => { setCustomIcon(val); localStorage.setItem('capy-custom-icon', val); }}
         onAddFriend={(code) => {
-          try {
-            let cleanCode = code.trim();
-            if (!cleanCode) return;
-            
-            let base64 = cleanCode.replace(/-/g, '+').replace(/_/g, '/');
-            while (base64.length % 4 !== 0) base64 += '=';
-            
-            const decodedData = JSON.parse(atob(base64));
+          // Use the safeDecode helper we added earlier
+          const decodedData = safeDecode(code);
+          
+          if (decodedData && decodedData.id) {
             const { n: name, id: friendId } = decodedData;
 
-            if (!friendId) {
-              alert("Invalid Friend Code Format!");
-              return;
-            }
-
+            // 1. Check if it's you
             if (name.toLowerCase() === displayName.toLowerCase()) {
-              alert("You cannot add a friend with the same name as you!");
+              alert("You cannot add yourself!");
               return;
             }
 
-            const existingFriendIndex = friends.findIndex(f => {
-                try {
-                    let fBase = f.code.replace(/-/g, '+').replace(/_/g, '/');
-                    while (fBase.length % 4 !== 0) fBase += '=';
-                    const existingDecoded = JSON.parse(atob(fBase));
-                    return existingDecoded.id === friendId;
-                } catch(e) { return false; }
+            // 2. Filter out the old version of this friend if they already exist
+            const otherFriends = friends.filter(f => {
+              const existingData = safeDecode(f.code);
+              return existingData?.id !== friendId;
             });
+
+            // 3. Add the new friend code to the list
+            const updatedFriends = [...otherFriends, { name, code: code.trim() }];
+            
+            setFriends(updatedFriends);
+            localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
+            setNotification(`Added ${name}!`);
+          } else {
+            alert("Invalid Friend Code!");
+          }
+        }}
 
             const updatedFriends = [...friends];
             if (existingFriendIndex > -1) {
