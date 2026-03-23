@@ -720,17 +720,20 @@ function App() {
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
         onViewFriend={(friend) => {
-            // Re-set selected ID to trigger the useMemo refresh
+            // First clear it to force a full re-render of the modal data
             setSelectedFriendId(null);
-            setTimeout(() => setSelectedFriendId(friend.code), 10);
+            setTimeout(() => {
+              setSelectedFriendId(friend.code);
+            }, 0);
         }}
         onRefreshFriend={(code) => {
+            // Force a list reference update
             setFriends([...friends]);
             setNotification("Friend data refreshed!");
-            // Force modal refresh if currently viewing this friend
+            // If we are currently viewing this specific friend, toggle the view state to refresh
             if (selectedFriendId === code) {
                 setSelectedFriendId(null);
-                setTimeout(() => setSelectedFriendId(code), 10);
+                setTimeout(() => setSelectedFriendId(code), 0);
             }
         }}
       />
