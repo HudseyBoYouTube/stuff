@@ -533,7 +533,7 @@ function App() {
                   </div>
                 </div>
                 
-                // Find this section in your Header (around line 430) and replace it with this:
+             
 
 <button onClick={() => setShowSettings(true)} className="flex items-center gap-2 group">
   <div className="w-8 h-8 rounded-full border border-[var(--theme)]/50 overflow-hidden bg-white/5 transition-all">
