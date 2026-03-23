@@ -574,8 +574,10 @@ function App() {
       </div>
 
       <FriendViewModal 
-        friend={currentFriend} 
+        friend={currentFriend || (selectedFriendId === 'me' ? { name: displayName, favs: favorites, times: playtimes } : null)} 
         gamesData={gamesData} 
+        ownPfp={profilePic} // This sends your actual GIF/Image to the modal
+        isOwnProfile={selectedFriendId === 'me'}
         onClose={() => setSelectedFriendId(null)} 
       />
 
