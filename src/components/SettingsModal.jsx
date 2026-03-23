@@ -76,6 +76,7 @@ export function SettingsModal({
                 onClick={onViewOwnProfile}
                 className="flex items-center gap-1.5 px-3 py-1 bg-[var(--theme)] text-black rounded-full text-[9px] font-black uppercase hover:opacity-80 transition-all"
               >
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-[var(--theme)] text-black rounded-full text-[9px] font-black uppercase hover:opacity-80 transition-all" />
                 <Eye className="w-3 h-3" /> View My Profile
               </button>
             </div>
@@ -242,14 +243,17 @@ export function SettingsModal({
               <Music className="w-3 h-3" /> Music Library
             </label>
             <div className="grid grid-cols-2 gap-2">
-              {tracklist?.map((song) => (
+              {tracklist?.map((song, index) => (
                 <button
-                  key={song.name}
-                  onClick={() => handleAudioUpload({ presetUrl: song.url })}
-                  className="p-2 bg-zinc-800 border border-white/5 rounded-xl text-[9px] font-black uppercase hover:border-[var(--theme)]/50 transition-all text-left flex items-center gap-2"
+                  key={index}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleAudioUpload({ presetUrl: song.url });
+                  }}
+                  className="p-2 bg-zinc-800 border border-white/5 rounded-xl text-[9px] font-black uppercase hover:border-[var(--theme)]/50 transition-all text-left flex items-center gap-2 group"
                 >
-                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--theme)]" />
-                  <span className="truncate">{song.name}</span>
+                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--theme)] group-hover:shadow-[0_0_8px_var(--theme)] transition-all" />
+                  <span className="truncate">{song.title || song.name}</span>
                 </button>
               ))}
             </div>
