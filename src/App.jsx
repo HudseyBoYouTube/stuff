@@ -321,25 +321,20 @@ function App() {
   // Make sure there is NO "}" right here! 
   // The function should continue to your file upload logic:
 
-  if (e.target && e.target.files) {
-     const file = e.target.files[0];
-     // ... rest of your upload code ...
+ if (e.target && e.target.files) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const url = event.target.result;
+        setBgMusic(url);
+        setBgEnabled(true);
+        localStorage.setItem('capy-bg-music', url);
+      };
+      reader.readAsDataURL(file);
+    }
   }
-}; // This is the ONLY brace that should close the handleAudioUpload function.
-
-  // 2. Manual File Upload
-  const file = e?.target?.files?.[0]; 
-  if (file) {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = reader.result;
-      setBgMusic(base64String);
-      setBgEnabled(true);
-      localStorage.setItem('capy-bg-music', base64String);
-    };
-    reader.readAsDataURL(file);
-  }
-};
+}; // The "Main" Closing Bracket
   const handleResetMusic = () => {
     setBgMusic('');
     setBgEnabled(false); 
