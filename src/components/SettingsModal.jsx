@@ -76,7 +76,6 @@ export function SettingsModal({
                 onClick={onViewOwnProfile}
                 className="flex items-center gap-1.5 px-3 py-1 bg-[var(--theme)] text-black rounded-full text-[9px] font-black uppercase hover:opacity-80 transition-all"
               >
-                <div className="flex items-center gap-1.5 px-3 py-1 bg-[var(--theme)] text-black rounded-full text-[9px] font-black uppercase hover:opacity-80 transition-all" />
                 <Eye className="w-3 h-3" /> View My Profile
               </button>
             </div>
@@ -217,7 +216,8 @@ export function SettingsModal({
               </button>
             </div>
 
-            {bgEnabled && !performanceMode && (
+            {/* FIXED SLIDER LOGIC BELOW */}
+            {bgEnabled && !performanceMode && !bgMusic.includes('/music/') && (
               <div className="pt-2 border-t border-white/5 space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="text-[9px] uppercase font-black text-zinc-400 flex items-center gap-2">
@@ -248,12 +248,13 @@ export function SettingsModal({
                   key={index}
                   onClick={(e) => {
                     e.preventDefault();
+                    e.stopPropagation(); // STOPS THE SLIDER FROM POPPING UP
                     handleAudioUpload({ presetUrl: song.url });
                   }}
-                  className="p-2 bg-zinc-800 border border-white/5 rounded-xl text-[9px] font-black uppercase hover:border-[var(--theme)]/50 transition-all text-left flex items-center gap-2 group"
+                  className="p-2 bg-zinc-800 border border-white/5 rounded-xl text-[9px] font-black uppercase hover:border-[var(--theme)]/50 transition-all text-left flex items-center gap-2 group relative z-10"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-[var(--theme)] group-hover:shadow-[0_0_8px_var(--theme)] transition-all" />
-                  <span className="truncate">{song.title || song.name}</span>
+                  <span className="truncate pointer-events-none">{song.title || song.name}</span>
                 </button>
               ))}
             </div>
