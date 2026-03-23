@@ -186,17 +186,25 @@ function App() {
 
   useEffect(() => {
   if (audioRef.current) {
-    // Keep your volume math!
     audioRef.current.volume = volume / 100;
     localStorage.setItem('capy-volume', volume);
 
-    // Improved "Force Play" logic
     if (bgMusic && !performanceMode) {
-      // We load and play to ensure the .mp4 switches correctly
+      // 1. Reset the player for the new file
+      audioRef.current.pause(); 
       audioRef.current.load(); 
-      audioRef.current.play().catch((err) => {
-        console.log("Autoplay blocked or file missing:", err);
-      });
+      
+      // 2. We use a Promise to play it
+      const playPromise = audioRef.current.play();
+
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => console.log("Time is playing successfully!"))
+          .catch((err) => {
+            console.log("Play failed, waiting for user click:", err);
+            // This happens if the browser is still being stingy
+          });
+      }
     }
   }
 }, [volume, bgMusic, performanceMode]);
