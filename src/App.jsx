@@ -567,7 +567,9 @@ function App() {
               <div className="grid gap-2">
                 {(() => {
                    try {
-                     let base64 = selectedFriend.code.trim();
+                     // We find the LATEST code for this friend from the main friends state
+                     const currentFriend = friends.find(f => f.name === selectedFriend.name) || selectedFriend;
+                     let base64 = currentFriend.code.trim();
                      base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
                      while (base64.length % 4 !== 0) base64 += '=';
                      
@@ -682,11 +684,11 @@ function App() {
           localStorage.setItem('capy-friends', JSON.stringify(newFriends));
         }}
         onViewFriend={(friend) => {
-           const latestFriendData = friends.find(f => f.code === friend.code) || friend;
-           setSelectedFriend(latestFriendData);
+            // Find the most recent version of this friend in our state list
+            const latestFriendData = friends.find(f => f.name === friend.name) || friend;
+            setSelectedFriend(latestFriendData);
         }}
         onRefreshFriend={(code) => {
-            // Force a state re-read to ensure the friend card re-renders with the latest local array
             setFriends([...friends]);
             setNotification("Friend data refreshed!");
         }}
