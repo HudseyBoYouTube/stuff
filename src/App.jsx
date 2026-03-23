@@ -463,7 +463,7 @@ function App() {
   }, [recentlyPlayed, gamesData]);
 
   const currentFriend = useMemo(() => {
-    if (!selectedFriendId) return null;
+    if (!selectedFriendId || selectedFriendId === 'me') return null;
     const friend = friends.find(f => f.code === selectedFriendId);
     if (!friend) return null;
 
@@ -571,7 +571,10 @@ function App() {
       </div>
 
       <FriendViewModal 
-        friend={currentFriend || (selectedFriendId === 'me' ? { name: displayName, favs: favorites, times: playtimes } : null)} 
+        friend={selectedFriendId === 'me' 
+          ? { name: displayName, favs: favorites, times: playtimes } 
+          : currentFriend
+        } 
         gamesData={gamesData} 
         ownPfp={profilePic} 
         isOwnProfile={selectedFriendId === 'me'}
