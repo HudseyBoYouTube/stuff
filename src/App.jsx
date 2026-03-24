@@ -161,50 +161,45 @@ function App() {
   }, [displayName, uniqueId, profilePic, theme, glowIntensity, favorites]);
 
   useEffect(() => {
-  // We are pausing the sync interval to stop the 'players' 500 errors
-  /*
-  const syncInterval = setInterval(() => {
-    if (friends.length > 0) {
-      setIsSyncing(true);
-      setFriends([...friends]);
-      setTimeout(() => setIsSyncing(false), 2000);
-    }
-  }, 30000);
-  return () => clearInterval(syncInterval);
-  */
-}, [friends]); // This closing line is very important!
+}, [friends]); 
 
-  // This saves the volume to your browser's memory whenever you change it
-useEffect(() => {
+  useEffect(() => {
   localStorage.setItem('capy-volume', volume.toString());
 }, [volume]);
 
-  // ... existing code above ...
-
-// 1. THIS ONLY UPDATES THE LOUDNESS (No stopping/starting)
+// 1. UPDATES VOLUME AND HANDLES PERFORMANCE MODE TOGGLE
 useEffect(() => {
   if (audioRef.current) {
     audioRef.current.volume = volume;
     localStorage.setItem('capy-volume', volume.toString());
-  }
-}, [volume]);
 
-// 2. THIS ONLY HANDLES SWITCHING THE ACTUAL SONG
+    // Kill audio immediately if Performance Mode is turned on
+    if (performanceMode) {
+      audioRef.current.pause();
+    } else if (bgMusic) {
+      // Resume if music exists and we just turned Performance Mode off
+      audioRef.current.play().catch(() => {});
+    }
+  }
+}, [volume, performanceMode, bgMusic]);
+
+// 2. HANDLES SWITCHING THE ACTUAL SONG
 useEffect(() => {
-  if (audioRef.current && bgMusic && !performanceMode) {
+  if (audioRef.current && bgMusic) {
     audioRef.current.pause();
     audioRef.current.load();
     
-    const playPromise = audioRef.current.play();
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => console.log("Song loaded and playing!"))
-        .catch((err) => console.log("Autoplay check:", err));
+    // Only play if Performance Mode is OFF
+    if (!performanceMode) {
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => console.log("Song loaded and playing!"))
+          .catch((err) => console.log("Autoplay check:", err));
+      }
     }
   }
 }, [bgMusic, performanceMode]);
-
-// ... existing code below (notifications, click listeners, etc.) ...
 
   useEffect(() => {
     if (notification) {
@@ -321,15 +316,13 @@ useEffect(() => {
   };
 
  const handleAudioUpload = (e) => {
-  // 1. Check if we clicked a preset song from the library
   if (e && e.presetUrl) {
     setBgMusic(e.presetUrl);
-    setBgEnabled(true); // Keeps the music player visible
+    setBgEnabled(true); 
     localStorage.setItem('capy-bg-music', e.presetUrl);
     return;
   }
 
-  // 2. Otherwise, handle a manual file upload (steering wheel/upload button)
   if (e.target && e.target.files) {
     const file = e.target.files[0];
     if (file) {
@@ -552,7 +545,7 @@ useEffect(() => {
   loop 
   autoPlay 
   onLoadedData={(e) => {
-    e.target.volume = volume; // No "/ 100" here either
+    e.target.volume = volume; 
   }}
 />
       )}
@@ -638,7 +631,7 @@ useEffect(() => {
       <SettingsModal 
         show={showSettings} 
         onClose={() => setShowSettings(false)}
-        tracklist={tracklist} // Added tracklist prop
+        tracklist={tracklist} 
         performanceMode={performanceMode}
         setPerformanceMode={(val) => { 
             setPerformanceMode(val); 
