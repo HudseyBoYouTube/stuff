@@ -179,25 +179,32 @@ useEffect(() => {
   localStorage.setItem('capy-volume', volume.toString());
 }, [volume]);
 
-  // THIS IS THE ONE YOU ACTUALLY WANTED TO UPDATE:
-  useEffect(() => {
-    if (audioRef.current) {
-      // Corrected: No "/ 100" because your slider is 0 to 1
-      audioRef.current.volume = volume; 
+  // ... existing code above ...
 
-      if (bgMusic && !performanceMode) {
-        audioRef.current.pause(); 
-        audioRef.current.load(); 
-        
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => console.log("Music playing successfully!"))
-            .catch((err) => console.log("Autoplay blocked, waiting for click"));
-        }
-      }
+// 1. THIS ONLY UPDATES THE LOUDNESS (No stopping/starting)
+useEffect(() => {
+  if (audioRef.current) {
+    audioRef.current.volume = volume;
+    localStorage.setItem('capy-volume', volume.toString());
+  }
+}, [volume]);
+
+// 2. THIS ONLY HANDLES SWITCHING THE ACTUAL SONG
+useEffect(() => {
+  if (audioRef.current && bgMusic && !performanceMode) {
+    audioRef.current.pause();
+    audioRef.current.load();
+    
+    const playPromise = audioRef.current.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => console.log("Song loaded and playing!"))
+        .catch((err) => console.log("Autoplay check:", err));
     }
-  }, [volume, bgMusic, performanceMode]);
+  }
+}, [bgMusic, performanceMode]);
+
+// ... existing code below (notifications, click listeners, etc.) ...
 
   useEffect(() => {
     if (notification) {
