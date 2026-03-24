@@ -67,7 +67,10 @@ function App() {
   const [bgOpacity, setBgOpacity] = useState(() => Number(localStorage.getItem('capy-bg-opacity')) || 50);
   
   const [bgMusic, setBgMusic] = useState(() => localStorage.getItem('capy-bg-music') || '');
-  const [volume, setVolume] = useState(() => Number(localStorage.getItem('capy-volume')) || 0.5);
+  const [volume, setVolume] = useState(() => {
+  const saved = localStorage.getItem('capy-volume');
+  return saved !== null ? Number(saved) : 0.5;
+});
 
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
   const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || '');
