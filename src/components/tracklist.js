@@ -9,7 +9,7 @@ export const tracklist = [
     isClean: false 
   },
   { 
-    title: "Back In Black", 
+    title: "Back In Black",
     artist: "AC/DC", 
     album: "Back In Black",
     url: "/music/back-in-black.mp3",
