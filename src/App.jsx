@@ -318,29 +318,25 @@ useEffect(() => {
     localStorage.setItem('capy-bg-enabled', 'false');
   };
 
-  const handleAudioUpload = (e) => {
-  // 1. THIS HANDLES THE PRESET (TIME)
+ const handleAudioUpload = (e) => {
+  // 1. Check if we clicked a preset song from the library
   if (e && e.presetUrl) {
-    // Make sure your file in public/music/ is actually named time.mp3
-    const testPath = "music/time.mp3"; 
-    
-    console.log("Testing MP3 Path:", testPath);
-    setBgMusic(testPath);
-    setBgEnabled(true);
-    localStorage.setItem('capy-bg-music', testPath);
-    return; // Stops here so it doesn't try to "upload" a file
+    setBgMusic(e.presetUrl);
+    setBgEnabled(true); // Keeps the music player visible
+    localStorage.setItem('capy-bg-music', e.presetUrl);
+    return;
   }
 
-  // 2. THIS HANDLES MANUAL UPLOADS (THE STEERING WHEEL)
+  // 2. Otherwise, handle a manual file upload (steering wheel/upload button)
   if (e.target && e.target.files) {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        const url = event.target.result;
-        setBgMusic(url);
+        const audioData = event.target.result;
+        setBgMusic(audioData);
         setBgEnabled(true);
-        localStorage.setItem('capy-bg-music', url);
+        localStorage.setItem('capy-bg-music', audioData);
       };
       reader.readAsDataURL(file);
     }
