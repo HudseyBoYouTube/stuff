@@ -2,11 +2,11 @@
 
 export const tracklist = [
   { 
-    title: "American Idiot", 
-    artist: "Green Day", 
-    album: "American Idiot",
-    url: "/music/american-idiot.mp3", 
-    isClean: false 
+    title: "Crazy Train",
+    artist: "Ozzy Osbourne",
+    album: "Blizzard of Ozz",
+    url: "/music/crazy-train.mp3",
+    isClean: true
   },
   { 
     title: "Back In Black",
@@ -16,18 +16,26 @@ export const tracklist = [
     isClean: true
   },
   {
-    title: "Crazy Train",
-    artist: "Ozzy Osbourne",
-    album: "Blizzard of Ozz",
-    url: "/music/crazy-train.mp3",
-    isClean: true
-  },
-  {
     title: "Loser", 
     artist: "Beck", 
     album: "Mellow Gold",
     url: "/music/loser.mp3", 
     isClean: true 
+  {,
+  {
+    title: "Welcome to Paradise (1994)", 
+    artist: "Green Day", 
+    album: "Dookie",
+    url: "/music/welcome-to-paradise-1994.mp3", 
+    isClean: true 
+  {,
+  {
+    title: "American Idiot",
+    artist: "Green Day",
+    album: "American Idiot",
+    url: "/music/american-idiot.mp3",
+    isClean: false
   }
 ];
+    
     
