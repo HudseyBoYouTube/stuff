@@ -167,17 +167,15 @@ function App() {
   localStorage.setItem('capy-volume', volume.toString());
 }, [volume]);
 
-// 1. UPDATES VOLUME AND HANDLES PERFORMANCE MODE TOGGLE
+// 1. UPDATES VOLUME AND IMMEDIATELY KILLS SOUND ON PERF MODE TOGGLE
 useEffect(() => {
   if (audioRef.current) {
     audioRef.current.volume = volume;
     localStorage.setItem('capy-volume', volume.toString());
 
-    // Kill audio immediately if Performance Mode is turned on
     if (performanceMode) {
       audioRef.current.pause();
     } else if (bgMusic) {
-      // Resume if music exists and we just turned Performance Mode off
       audioRef.current.play().catch(() => {});
     }
   }
@@ -189,7 +187,7 @@ useEffect(() => {
     audioRef.current.pause();
     audioRef.current.load();
     
-    // Only play if Performance Mode is OFF
+    // Strict block: Only play if Performance Mode is OFF
     if (!performanceMode) {
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
@@ -218,6 +216,7 @@ useEffect(() => {
   
     useEffect(() => {
     const startMusic = () => {
+      // FIX: Added !performanceMode check to the click listener
       if (audioRef.current && bgMusic && !performanceMode) {
         audioRef.current.play().catch(() => {});
       }
@@ -229,8 +228,9 @@ useEffect(() => {
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (audioRef.current && bgMusic && !performanceMode) {
-        if (document.hidden) {
+      // FIX: Added strict pause if performanceMode is toggled while hidden
+      if (audioRef.current && bgMusic) {
+        if (document.hidden || performanceMode) {
           audioRef.current.pause();
         } else {
           audioRef.current.play().catch(() => {});
@@ -539,15 +539,15 @@ useEffect(() => {
 
       {bgMusic && (
         <audio 
-  key={bgMusic} 
-  ref={audioRef}
-  src={bgMusic} 
-  loop 
-  autoPlay 
-  onLoadedData={(e) => {
-    e.target.volume = volume; 
-  }}
-/>
+          key={bgMusic} 
+          ref={audioRef}
+          src={bgMusic} 
+          loop 
+          autoPlay 
+          onLoadedData={(e) => {
+            e.target.volume = volume; 
+          }}
+        />
       )}
 
       <div className="relative z-10">
