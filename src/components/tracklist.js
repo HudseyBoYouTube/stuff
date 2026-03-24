@@ -21,6 +21,14 @@ export const tracklist = [
     album: "Blizzard of Ozz",
     url: "/music/crazy-train.mp3",
     isClean: true
+  },
+  {
+    { 
+    title: "Loser", 
+    artist: "Beck", 
+    album: "Mellow Gold",
+    url: "/music/loser.mp3", 
+    isClean: true 
   }
-];                                      
+];
     
