@@ -246,7 +246,7 @@ export function SettingsModal({
             )}
 
             {/* BG OPACITY SLIDER */}
-            {bgEnabled && !performanceMode && !bgMusic?.includes('/music/') && (
+            {bgEnabled && !performanceMode && !bgMusic?.includes('/music/') && !bgMusic?.startsWith('data:') && (
               <div className="pt-2 border-t border-white/5 space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="text-[9px] uppercase font-black text-zinc-400 flex items-center gap-2">
