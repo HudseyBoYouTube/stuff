@@ -265,19 +265,21 @@ export function SettingsModal({
             </label>
             <div className="grid grid-cols-2 gap-2">
               {tracklist?.map((song, index) => (
-  <button
-    key={index}
-    onClick={(e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      handleAudioUpload({ presetUrl: song.url });
-    }}
-    className="..."
-  >
-    <div className="..." />
-    <span className="truncate pointer-events-none">{song.title || song.name}</span>
-  </button>
-))}
+                <button
+                  key={index}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAudioUpload({ presetUrl: song.url });
+                  }}
+                  className="p-2 bg-zinc-800 border border-white/5 rounded-xl text-[10px] font-bold hover:border-[var(--theme)]/50 transition-all text-left flex items-center gap-2 group relative z-10"
+                >
+                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--theme)] group-hover:shadow-[0_0_8px_var(--theme)] transition-all" />
+                  <span className="truncate pointer-events-none text-zinc-300">
+                    {song.title || song.name}
+                  </span>
+                </button>
+              ))}
             </div>
           </section>
 
