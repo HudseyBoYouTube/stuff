@@ -15,4 +15,12 @@ export const tracklist = [
     url: "/music/back-in-black.mp3",
     isClean: true
   },
-  ];
+  {
+    title: "Crazy Train",
+    artist: "Ozzy Osbourne",
+    album: "Blizzard of Ozz",
+    url: "/music/crazy-train.mp3",
+    isClean: true
+  }
+];                                      
+    
