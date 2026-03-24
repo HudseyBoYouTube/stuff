@@ -261,9 +261,9 @@ export function SettingsModal({
           {/* MUSIC LIBRARY PRESETS */}
           <section className="space-y-4 bg-[var(--theme)]/5 p-4 rounded-2xl border border-[var(--theme)]/10">
             <label className="text-[10px] uppercase font-black text-[var(--theme)] tracking-widest flex items-center gap-2">
-              <Music className="w-3 h-3" /> Music Library
+              <Music className="w-3 h-3 text-[var(--theme)]" /> Music Library
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2">
               {tracklist?.map((song, index) => (
                 <button
                   key={index}
@@ -272,12 +272,24 @@ export function SettingsModal({
                     e.stopPropagation();
                     handleAudioUpload({ presetUrl: song.url });
                   }}
-                  className="p-2 bg-zinc-800 border border-white/5 rounded-xl text-[10px] font-bold hover:border-[var(--theme)]/50 transition-all text-left flex items-center gap-2 group relative z-10"
+                  className="p-3 bg-zinc-800/50 border border-white/5 rounded-xl hover:border-[var(--theme)]/50 transition-all text-left flex items-center justify-between group relative z-10"
                 >
-                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--theme)] group-hover:shadow-[0_0_8px_var(--theme)] transition-all" />
-                  <span className="truncate pointer-events-none text-zinc-300">
-                    {song.title || song.name}
-                  </span>
+                  <div className="flex items-center gap-3 truncate">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[var(--theme)] group-hover:shadow-[0_0_8px_var(--theme)] transition-all flex-shrink-0" />
+                    <div className="flex flex-col truncate">
+                      <span className="text-[11px] font-bold text-zinc-200 truncate">
+                        {song.title}
+                      </span>
+                      <span className="text-[9px] font-medium text-zinc-500 uppercase tracking-tight truncate">
+                        {song.artist || "Unknown Artist"}
+                      </span>
+                    </div>
+                  </div>
+                  {song.isClean && (
+                    <span className="text-[8px] font-black bg-zinc-700 text-zinc-400 px-1.5 py-0.5 rounded uppercase flex-shrink-0">
+                      Clean
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
