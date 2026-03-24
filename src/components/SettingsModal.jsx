@@ -159,6 +159,7 @@ export function SettingsModal({
                       onClick={() => onRemoveFriend(friend.code)}
                       className="p-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-all"
                     >
+                      <span className="sr-only">Delete</span>
                       <Trash2 className="w-3 h-3" />
                     </button>
                   </div>
@@ -171,17 +172,24 @@ export function SettingsModal({
 
           {/* PERFORMANCE MODE */}
           <section className="space-y-4 bg-yellow-500/5 p-4 rounded-2xl border border-yellow-500/10">
-            <div className="flex items-center justify-between">
-              <label className="text-[10px] uppercase font-black text-yellow-500 tracking-widest flex items-center gap-2">
-                <Cpu className="w-3 h-3" /> Performance Mode
-              </label>
-              <button 
-                onClick={() => setPerformanceMode(!performanceMode)}
-                className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${performanceMode ? 'bg-yellow-500 text-black' : 'bg-white/5 text-zinc-500 border border-white/10'}`}
-              >
-                <Zap className="w-3 h-3" />
-                {performanceMode ? 'ON' : 'OFF'}
-              </button>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] uppercase font-black text-yellow-500 tracking-widest flex items-center gap-2">
+                  <Cpu className="w-3 h-3" /> Performance Mode
+                </label>
+                <button 
+                  onClick={() => setPerformanceMode(!performanceMode)}
+                  className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all ${performanceMode ? 'bg-yellow-500 text-black' : 'bg-white/5 text-zinc-500 border border-white/10'}`}
+                >
+                  <Zap className="w-3 h-3" />
+                  {performanceMode ? 'ON' : 'OFF'}
+                </button>
+              </div>
+              <p className="text-[8px] uppercase font-bold text-yellow-500/60 leading-tight tracking-tighter">
+                {performanceMode 
+                  ? "Music and heavy effects disabled to maximize CPU/RAM speed." 
+                  : "Standard mode active. Music and visuals are enabled."}
+              </p>
             </div>
           </section>
 
