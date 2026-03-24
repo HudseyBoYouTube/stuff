@@ -171,6 +171,11 @@ function App() {
   */
 }, [friends]); // This closing line is very important!
 
+  // This saves the volume to your browser's memory whenever you change it
+useEffect(() => {
+  localStorage.setItem('capy-volume', volume.toString());
+}, [volume]);
+
   useEffect(() => {
     if (notification) {
       const timer = setTimeout(() => setNotification(null), 3000);
