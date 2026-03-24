@@ -543,17 +543,21 @@ useEffect(() => {
       )}
 
       {bgMusic && (
-  <audio 
-    key={bgMusic} 
-    ref={audioRef}
-    src={bgMusic} 
-    loop 
-    autoPlay 
-    preload="auto"
-    onPlay={() => console.log("Audio started playing:", bgMusic)}
-    onError={(e) => console.error("Audio Error:", e)}
-  />
-)}
+        <audio 
+          key={bgMusic} 
+          ref={audioRef}
+          src={bgMusic} 
+          loop 
+          autoPlay 
+          preload="auto"
+          onPlay={() => console.log("Audio started playing:", bgMusic)}
+          onError={(e) => console.error("Audio Error:", e)}
+          onLoadedData={(e) => {
+            // This fix ensures the volume is a decimal between 0 and 1
+            e.target.volume = volume / 100;
+          }}
+        />
+      )}
 
       <div className="relative z-10">
         <div className="sticky top-0 z-50">
