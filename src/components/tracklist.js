@@ -21,14 +21,14 @@ export const tracklist = [
     album: "Mellow Gold",
     url: "/music/loser.mp3", 
     isClean: true 
-  {,
+  }, 
   {
     title: "Welcome to Paradise (1994)", 
     artist: "Green Day", 
     album: "Dookie",
     url: "/music/welcome-to-paradise-1994.mp3", 
     isClean: true 
-  {,
+  }, 
   {
     title: "American Idiot",
     artist: "Green Day",
@@ -37,5 +37,3 @@ export const tracklist = [
     isClean: false
   }
 ];
-    
-    
