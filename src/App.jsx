@@ -179,6 +179,26 @@ useEffect(() => {
   localStorage.setItem('capy-volume', volume.toString());
 }, [volume]);
 
+  // THIS IS THE ONE YOU ACTUALLY WANTED TO UPDATE:
+  useEffect(() => {
+    if (audioRef.current) {
+      // Corrected: No "/ 100" because your slider is 0 to 1
+      audioRef.current.volume = volume; 
+
+      if (bgMusic && !performanceMode) {
+        audioRef.current.pause(); 
+        audioRef.current.load(); 
+        
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => console.log("Music playing successfully!"))
+            .catch((err) => console.log("Autoplay blocked, waiting for click"));
+        }
+      }
+    }
+  }, [volume, bgMusic, performanceMode]);
+
   useEffect(() => {
     if (notification) {
       const timer = setTimeout(() => setNotification(null), 3000);
@@ -193,33 +213,8 @@ useEffect(() => {
       updateThemeVariables(theme, glowIntensity);
     }
   }, [performanceMode, theme, glowIntensity]);
-
-  useEffect(() => {
-  if (audioRef.current) {
-    audioRef.current.volume = volume / 100;
-    localStorage.setItem('capy-volume', volume);
-
-    if (bgMusic && !performanceMode) {
-      // 1. Reset the player for the new file
-      audioRef.current.pause(); 
-      audioRef.current.load(); 
-      
-      // 2. We use a Promise to play it
-      const playPromise = audioRef.current.play();
-
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => console.log("Time is playing successfully!"))
-          .catch((err) => {
-            console.log("Play failed, waiting for user click:", err);
-            // This happens if the browser is still being stingy
-          });
-      }
-    }
-  }
-}, [volume, bgMusic, performanceMode]);
   
-  useEffect(() => {
+    useEffect(() => {
     const startMusic = () => {
       if (audioRef.current && bgMusic && !performanceMode) {
         audioRef.current.play().catch(() => {});
@@ -544,19 +539,15 @@ useEffect(() => {
 
       {bgMusic && (
         <audio 
-          key={bgMusic} 
-          ref={audioRef}
-          src={bgMusic} 
-          loop 
-          autoPlay 
-          preload="auto"
-          onPlay={() => console.log("Audio started playing:", bgMusic)}
-          onError={(e) => console.error("Audio Error:", e)}
-          onLoadedData={(e) => {
-            // This fix ensures the volume is a decimal between 0 and 1
-            e.target.volume = volume / 100;
-          }}
-        />
+  key={bgMusic} 
+  ref={audioRef}
+  src={bgMusic} 
+  loop 
+  autoPlay 
+  onLoadedData={(e) => {
+    e.target.volume = volume; // No "/ 100" here either
+  }}
+/>
       )}
 
       <div className="relative z-10">
