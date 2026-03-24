@@ -68,9 +68,9 @@ function App() {
   
   const [bgMusic, setBgMusic] = useState(() => localStorage.getItem('capy-bg-music') || '');
   const [volume, setVolume] = useState(() => {
-  const saved = localStorage.getItem('capy-volume');
-  return saved !== null ? Number(saved) : 0.5;
-});
+    const saved = localStorage.getItem('capy-volume');
+    return saved !== null ? Number(saved) : 0.5;
+  });
 
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
   const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || '');
@@ -161,43 +161,40 @@ function App() {
   }, [displayName, uniqueId, profilePic, theme, glowIntensity, favorites]);
 
   useEffect(() => {
-}, [friends]); 
+  }, [friends]); 
 
   useEffect(() => {
-  localStorage.setItem('capy-volume', volume.toString());
-}, [volume]);
-
-// 1. UPDATES VOLUME AND IMMEDIATELY KILLS SOUND ON PERF MODE TOGGLE
-useEffect(() => {
-  if (audioRef.current) {
-    audioRef.current.volume = volume;
     localStorage.setItem('capy-volume', volume.toString());
+  }, [volume]);
 
-    if (performanceMode) {
-      audioRef.current.pause();
-    } else if (bgMusic) {
-      audioRef.current.play().catch(() => {});
-    }
-  }
-}, [volume, performanceMode, bgMusic]);
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+      localStorage.setItem('capy-volume', volume.toString());
 
-// 2. HANDLES SWITCHING THE ACTUAL SONG
-useEffect(() => {
-  if (audioRef.current && bgMusic) {
-    audioRef.current.pause();
-    audioRef.current.load();
-    
-    // Strict block: Only play if Performance Mode is OFF
-    if (!performanceMode) {
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => console.log("Song loaded and playing!"))
-          .catch((err) => console.log("Autoplay check:", err));
+      if (performanceMode) {
+        audioRef.current.pause();
+      } else if (bgMusic) {
+        audioRef.current.play().catch(() => {});
       }
     }
-  }
-}, [bgMusic, performanceMode]);
+  }, [volume, performanceMode, bgMusic]);
+
+  useEffect(() => {
+    if (audioRef.current && bgMusic) {
+      audioRef.current.pause();
+      audioRef.current.load();
+      
+      if (!performanceMode) {
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => console.log("Song loaded and playing!"))
+            .catch((err) => console.log("Autoplay check:", err));
+        }
+      }
+    }
+  }, [bgMusic, performanceMode]);
 
   useEffect(() => {
     if (notification) {
@@ -214,9 +211,8 @@ useEffect(() => {
     }
   }, [performanceMode, theme, glowIntensity]);
   
-    useEffect(() => {
+  useEffect(() => {
     const startMusic = () => {
-      // FIX: Added !performanceMode check to the click listener
       if (audioRef.current && bgMusic && !performanceMode) {
         audioRef.current.play().catch(() => {});
       }
@@ -228,7 +224,6 @@ useEffect(() => {
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      // FIX: Added strict pause if performanceMode is toggled while hidden
       if (audioRef.current && bgMusic) {
         if (document.hidden || performanceMode) {
           audioRef.current.pause();
@@ -315,28 +310,29 @@ useEffect(() => {
     localStorage.setItem('capy-bg-enabled', 'false');
   };
 
- const handleAudioUpload = (e) => {
-  if (e && e.presetUrl) {
-    setBgMusic(e.presetUrl);
-    setBgEnabled(true); 
-    localStorage.setItem('capy-bg-music', e.presetUrl);
-    return;
-  }
-
-  if (e.target && e.target.files) {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const audioData = event.target.result;
-        setBgMusic(audioData);
-        setBgEnabled(true);
-        localStorage.setItem('capy-bg-music', audioData);
-      };
-      reader.readAsDataURL(file);
+  const handleAudioUpload = (e) => {
+    if (e && e.presetUrl) {
+      setBgMusic(e.presetUrl);
+      setBgEnabled(true); 
+      localStorage.setItem('capy-bg-music', e.presetUrl);
+      return;
     }
-  }
-};
+
+    if (e.target && e.target.files) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const audioData = event.target.result;
+          setBgMusic(audioData);
+          setBgEnabled(true);
+          localStorage.setItem('capy-bg-music', audioData);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  };
+
   const handleResetMusic = () => {
     setBgMusic('');
     setBgEnabled(false); 
@@ -537,7 +533,8 @@ useEffect(() => {
         </div>
       )}
 
-      {bgMusic && (
+      {/* AUDIO BLOCK: Only renders if bgMusic exists AND performanceMode is OFF */}
+      {bgMusic && !performanceMode && (
         <audio 
           key={bgMusic} 
           ref={audioRef}
