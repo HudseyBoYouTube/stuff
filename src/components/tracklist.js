@@ -23,7 +23,6 @@ export const tracklist = [
     isClean: true
   },
   {
-    { 
     title: "Loser", 
     artist: "Beck", 
     album: "Mellow Gold",
