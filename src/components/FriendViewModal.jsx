@@ -18,8 +18,8 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
           <X />
         </button>
         
-        {/* Main Wrapper to allow the WHOLE modal to scroll if needed */}
-        <div className="overflow-y-auto space-y-6 pr-1 custom-scrollbar">
+        {/* Main Wrapper: Added overflow-x-hidden to kill the horizontal scroll bar */}
+        <div className="overflow-y-auto overflow-x-hidden space-y-6 pr-1 custom-scrollbar">
           <div className="text-center space-y-2">
             {/* Container for the Profile Pic/GIF */}
             <div className="w-24 h-24 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20 overflow-hidden shadow-[0_0_20px_rgba(var(--theme-rgb),0.1)]">
@@ -47,7 +47,6 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
             <label className="text-[10px] font-black text-[var(--theme)] uppercase tracking-widest flex items-center gap-2">
               <Heart className="w-3 h-3" /> Favorite Games
             </label>
-            {/* REMOVED no-scrollbar here so the bar appears */}
             <div className="grid gap-2 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
               {(() => {
                 const validFavs = displayFavs.filter(id => gamesData.find(g => g.id === id));
@@ -71,12 +70,11 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
             </div>
           </div>
 
-          {/* ADDED BACK the Friend Code section from your screenshot */}
+          {/* Friend Code section: Added break-all and fixed height for the Up/Down bar */}
           {isOwnProfile && friend?.code && (
             <div className="space-y-2 pt-4 border-t border-white/5">
               <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Your Friend Code</label>
-              <div className="bg-black/40 border border-white/10 rounded-xl p-3 max-h-32 overflow-y-auto custom-scrollbar">
-                {/* break-all and whitespace-pre-wrap FORCES the vertical scroll bar to appear */}
+              <div className="bg-black/40 border border-white/10 rounded-xl p-3 h-24 overflow-y-auto overflow-x-hidden custom-scrollbar">
                 <p className="text-[9px] font-mono text-blue-400 break-all whitespace-pre-wrap leading-tight">
                   {friend.code}
                 </p>
