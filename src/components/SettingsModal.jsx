@@ -50,7 +50,8 @@ export function SettingsModal({
   };
 
   // Helper variables to keep the code clean
-  const modalBg = isLightMode ? "bg-white border-black/10 text-black" : "bg-zinc-900 border-white/10 text-white";
+  // Changed bg-white to use the specific class that triggers our CSS override
+  const modalBg = isLightMode ? "bg-[#09090b]/95 border-black/10 text-black" : "bg-zinc-900 border-white/10 text-white";
   const sectionBg = isLightMode ? "bg-black/5 border-black/5" : "bg-white/5 border-white/5";
   const inputBg = isLightMode ? "bg-black/5 border-black/10 text-black placeholder:text-zinc-500" : "bg-zinc-800 border-white/10 text-white";
 
