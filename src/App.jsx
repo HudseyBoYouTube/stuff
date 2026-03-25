@@ -585,8 +585,9 @@ function App() {
               const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
               if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
             }}
+            isLightMode={isLightMode}
           />
-          <div className="bg-[#09090b]/90 backdrop-blur-md border-b border-white/5 px-4 pt-1.5 overflow-hidden">
+          <div className={`${isLightMode ? 'bg-white/90' : 'bg-[#09090b]/90'} backdrop-blur-md border-b ${isLightMode ? 'border-black/5' : 'border-white/5'} px-4 pt-1.5 overflow-hidden`}>
             <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
               {categoriesWithCounts.map(cat => (
                 <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${activeCategory === cat.name ? 'bg-[var(--theme)] border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'}`}>
