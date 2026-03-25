@@ -59,7 +59,7 @@ export function SettingsModal({
       <div className={`${modalBg} border p-6 rounded-3xl max-w-md w-full relative shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar`}>
         
         {/* HEADER */}
-        <div className={`flex items-center justify-between border-b ${isLightMode ? 'border-black/5' : 'border-white/5'} pb-4`}>
+        <div className={`flex items-center justify-between border-b ${isLightMode ? 'border-black/5 bg-zinc-50/50' : 'border-white/5 bg-zinc-900/50'} p-4 -mx-6 -mt-6 mb-4 rounded-t-3xl`}>
           <h2 className="text-xl font-bold flex items-center gap-2 text-[var(--theme)]">
             <ShieldAlert className="w-5 h-5" /> System Settings
           </h2>
