@@ -138,20 +138,29 @@
 
 /* Vertical Scrollbar Helper for the Friend Code Box */
 .show-vertical-bar {
-  overflow-y: auto !important;
+  overflow-y: scroll !important; /* Changed to scroll to force the gutter to exist */
   overflow-x: hidden !important;
   scrollbar-width: thin !important;
-}
-
-.show-vertical-bar::-webkit-scrollbar {
-  width: 6px !important;
   display: block !important;
 }
 
-/* Added visibility for the track so you can see it's there */
+.show-vertical-bar::-webkit-scrollbar {
+  width: 8px !important; /* Made slightly wider to be visible */
+  display: block !important;
+}
+
+/* Visible track for debugging */
 .show-vertical-bar::-webkit-scrollbar-track {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+}
+
+/* Forced thumb visibility */
+.show-vertical-bar::-webkit-scrollbar-thumb {
+  background-color: var(--theme) !important;
+  border-radius: 10px !important;
+  min-height: 40px !important; /* Forces the handle to be big enough to see */
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
 }
 
 .no-scrollbar::-webkit-scrollbar-button {
