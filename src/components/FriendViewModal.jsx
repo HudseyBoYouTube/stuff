@@ -18,7 +18,7 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
           <X />
         </button>
         
-        {/* Main Wrapper: Added overflow-x-hidden to kill the horizontal scroll bar */}
+        {/* Main Wrapper: overflow-x-hidden kills the horizontal scroll bar */}
         <div className="overflow-y-auto overflow-x-hidden space-y-6 pr-1 custom-scrollbar">
           <div className="text-center space-y-2">
             {/* Container for the Profile Pic/GIF */}
@@ -70,13 +70,13 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
             </div>
           </div>
 
-          {/* Friend Code Section: Forced vertical scroll bar visibility */}
+          {/* Friend Code section: Switched to standard scrollbar for testing */}
           {isOwnProfile && friend?.code && (
             <div className="space-y-2 pt-4 border-t border-white/5">
               <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Your Friend Code</label>
               <div 
-                className="bg-black/40 border border-white/10 rounded-xl p-3 h-24 overflow-y-scroll overflow-x-hidden custom-scrollbar"
-                style={{ scrollbarGutter: 'stable' }}
+                className="bg-black/40 border border-white/10 rounded-xl p-3 block overflow-y-scroll overflow-x-hidden"
+                style={{ height: '100px' }}
               >
                 <p className="text-[9px] font-mono text-blue-400 break-all whitespace-pre-wrap leading-tight">
                   {friend.code}
