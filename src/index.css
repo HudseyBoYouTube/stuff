@@ -7,64 +7,61 @@
   --bg-main: #0a0a0a;
   --text-main: #f4f4f5; /* zinc-100 */
   --card-bg: #18181b;   /* zinc-900 */
+  --border-main: rgba(255, 255, 255, 0.1);
 }
 
-/* Light Mode Overrides - PURE WHITE */
-:root.light-mode {
-  --bg-main: #ffffff;    /* Pure White Background */
-  --text-main: #000000;  /* Pure Black Text */
-  --card-bg: #ffffff;    /* Pure White Cards */
+/* Light Mode Overrides - FORCED PURE WHITE */
+.light-mode {
+  --bg-main: #ffffff !important;
+  --text-main: #18181b !important;
+  --card-bg: #f4f4f5 !important;
+  --border-main: rgba(0, 0, 0, 0.1) !important;
   background-color: #ffffff !important;
+  color: #18181b !important;
 }
 
-/* Specific Component Overrides for Light Mode */
-/* This forces any element with a dark background to flip to pure white */
-.light-mode .bg-\[\#09090b\],
+/* Force Fix for Tailwind Dark Classes */
+.light-mode .bg-\[#09090b\],
 .light-mode .bg-zinc-900,
 .light-mode .bg-zinc-950,
-.light-mode .bg-black {
+.light-mode .bg-black,
+.light-mode .bg-\[#09090b\]\/90 {
   background-color: #ffffff !important;
-  color: #000000 !important;
+  color: #18181b !important;
 }
 
-/* Force text visibility for Light Mode */
+/* Make Game Cards look good on white */
+.light-mode .bg-white\/5, 
+.light-mode .bg-zinc-900\/50 {
+  background-color: #f4f4f5 !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Force text visibility */
 .light-mode .text-white,
 .light-mode .text-zinc-100,
-.light-mode .text-zinc-200 {
-  color: #000000 !important;
+.light-mode .text-zinc-200,
+.light-mode .text-zinc-300 {
+  color: #18181b !important;
 }
 
-/* Ensure secondary text is visible but distinct */
 .light-mode .text-zinc-400,
 .light-mode .text-zinc-500 {
-  color: #52525b !important; /* zinc-600 */
+  color: #71717a !important; /* zinc-500 */
 }
 
-/* Borders need to be dark enough to see on white */
+/* Fix Borders */
 .light-mode .border-white\/5,
 .light-mode .border-white\/10,
 .light-mode .border-zinc-800 {
   border-color: rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Semi-transparent overlays for light mode (subtle tint) */
-.light-mode .bg-white\/5,
-.light-mode .bg-black\/20 {
-  background-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-/* Header & Category Bar - Solid White to prevent gray bleed-through */
-.light-mode .bg-\[\#09090b\]\/90,
-.light-mode .bg-\[\#09090b\]\/95 {
-  background-color: #ffffff !important;
-  backdrop-filter: none !important;
-}
-
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   
-  /* Maps Tailwind's default colors to your variables */
   --color-background: var(--bg-main);
   --color-foreground: var(--text-main);
 }
