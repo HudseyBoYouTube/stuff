@@ -12,16 +12,26 @@
 /* Light Mode Overrides - PURE WHITE */
 :root.light-mode {
   --bg-main: #ffffff;    /* Pure White Background */
-  --text-main: #09090b;  /* zinc-950 Text */
-  --card-bg: #f4f4f5;    /* zinc-100 for subtle card contrast */
+  --text-main: #000000;  /* Pure Black Text */
+  --card-bg: #ffffff;    /* Pure White Cards */
+  background-color: #ffffff !important;
 }
 
 /* Specific Component Overrides for Light Mode */
+/* This forces any element with a dark background to flip to pure white */
 .light-mode .bg-\[\#09090b\],
 .light-mode .bg-zinc-900,
+.light-mode .bg-zinc-950,
 .light-mode .bg-black {
   background-color: #ffffff !important;
-  color: #09090b !important;
+  color: #000000 !important;
+}
+
+/* Force text visibility for Light Mode */
+.light-mode .text-white,
+.light-mode .text-zinc-100,
+.light-mode .text-zinc-200 {
+  color: #000000 !important;
 }
 
 /* Ensure secondary text is visible but distinct */
@@ -32,13 +42,15 @@
 
 /* Borders need to be dark enough to see on white */
 .light-mode .border-white\/5,
-.light-mode .border-white\/10 {
+.light-mode .border-white\/10,
+.light-mode .border-zinc-800 {
   border-color: rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Semi-transparent overlays for light mode */
-.light-mode .bg-white\/5 {
-  background-color: rgba(0, 0, 0, 0.03) !important;
+/* Semi-transparent overlays for light mode (subtle tint) */
+.light-mode .bg-white\/5,
+.light-mode .bg-black\/20 {
+  background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
 /* Header transparency effect for light mode */
