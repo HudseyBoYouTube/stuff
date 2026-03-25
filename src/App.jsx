@@ -591,7 +591,7 @@ return (
   }}
   isLightMode={isLightMode} 
 />
-          <div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md border-b ${isLightMode ? 'border-black/5' : 'border-white/5'} px-4 pt-1.5 overflow-hidden`}>
+         <div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md border-b ${isLightMode ? 'border-zinc-200' : 'border-white/5'} px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors`}>
   <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
     {categoriesWithCounts.map(cat => (
       <button 
@@ -611,45 +611,44 @@ return (
   </div>
 </div>
 
-        <main className="max-w-7xl mx-auto px-4 mt-8 space-y-12">
-          {recentGamesData.length > 0 && activeCategory === 'All' && !searchQuery && (
-            <section className="space-y-4">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                <History className="w-3 h-3 text-[var(--theme)]" />
-                Recently On
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {recentGamesData.map(game => (
-                  <GameCard 
-                    key={`recent-${game.id}`} 
-                    game={game} 
-                    onLaunch={launchContent} 
-                    playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
-                    isFavorite={favorites.includes(game.id)}
-                    onToggleFavorite={() => toggleFavorite(game.id)}
-                    performanceMode={performanceMode}
-                  />
-                ))}
-              </div>
-              <div className="h-px bg-white/5 w-full mt-8" />
-            </section>
-          )}
-
-          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {filteredGames.map(game => (
-              <GameCard 
-                key={game.id} 
-                game={game} 
-                onLaunch={launchContent} 
-                playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
-                isFavorite={favorites.includes(game.id)}
-                onToggleFavorite={() => toggleFavorite(game.id)}
-                performanceMode={performanceMode}
-              />
-            ))}
-          </section>
-        </main>
+<main className="max-w-7xl mx-auto px-4 mt-8 space-y-12">
+  {recentGamesData.length > 0 && activeCategory === 'All' && !searchQuery && (
+    <section className="space-y-4">
+      <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${isLightMode ? 'text-zinc-500' : 'text-zinc-400'}`}>
+        <History className="w-3 h-3 text-[var(--theme)]" />
+        Recently On
       </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {recentGamesData.map(game => (
+          <GameCard 
+            key={`recent-${game.id}`} 
+            game={game} 
+            onLaunch={launchContent} 
+            playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
+            isFavorite={favorites.includes(game.id)}
+            onToggleFavorite={() => toggleFavorite(game.id)}
+            performanceMode={performanceMode}
+          />
+        ))}
+      </div>
+      <div className={`h-px ${isLightMode ? 'bg-zinc-200' : 'bg-white/5'} w-full mt-8`} />
+    </section>
+  )}
+
+  <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    {filteredGames.map(game => (
+      <GameCard 
+        key={game.id} 
+        game={game} 
+        onLaunch={launchContent} 
+        playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
+        isFavorite={favorites.includes(game.id)}
+        onToggleFavorite={() => toggleFavorite(game.id)}
+        performanceMode={performanceMode}
+      />
+    ))}
+  </section>
+</main>
 
       <FriendViewModal 
         friend={selectedFriendId === 'me' 
