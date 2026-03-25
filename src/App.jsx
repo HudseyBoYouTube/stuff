@@ -574,9 +574,7 @@ return (
         />
       )}
 
-      <div className="relative z-10">
-        <div className="sticky top-0 z-50">
-         <Header 
+     <Header 
   searchQuery={searchQuery} 
   setSearchQuery={setSearchQuery}
   time={time}
@@ -587,9 +585,10 @@ return (
   onViewProfile={() => setSelectedFriendId('me')} 
   onRandomGame={() => {
     const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
-    if (playable.length > 0) launchContent(playable[Math.floor(Math.random() * playable.length)]);
+    if (playable.length > 0) {
+      launchContent(playable[Math.floor(Math.random() * playable.length)]);
+    }
   }}
-  // MAKE SURE THIS LINE IS HERE:
   isLightMode={isLightMode} 
 />
           <div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'}'} backdrop-blur-md border-b ${isLightMode ? 'border-black/5' : 'border-white/5'} px-4 pt-1.5 overflow-hidden`}>
