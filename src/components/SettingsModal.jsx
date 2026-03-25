@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { 
   X, ShieldAlert, Cpu, Palette, Ghost, Zap, Video, Music, 
   Volume2, Power, Trash2, Link as LinkIcon, Upload, 
-  ImageIcon, RotateCcw, Type, Users, UserPlus, Eye, Copy, Check
+  ImageIcon, RotateCcw, Type, Users, UserPlus, Eye, Copy, Check,
+  Sun, Moon
 } from 'lucide-react';
 
 export function SettingsModal({
@@ -19,7 +20,8 @@ export function SettingsModal({
   handleClearSettings, confirmClearSettings,
   handleReset, confirmReset,
   onViewOwnProfile,
-  tracklist 
+  tracklist,
+  isLightMode, setIsLightMode
 }) {
   const [friendInput, setFriendInput] = useState('');
   const [copied, setCopied] = useState(false);
@@ -330,6 +332,16 @@ export function SettingsModal({
             <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2">
               <Palette className="w-3 h-3" /> Themes
             </label>
+            
+            {/* LIGHT MODE TOGGLE */}
+            <button 
+              onClick={() => setIsLightMode(!isLightMode)}
+              className="w-full p-3 mb-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase hover:border-[var(--theme)] flex items-center justify-center gap-2 transition-all"
+            >
+              {isLightMode ? <Sun className="w-3.5 h-3.5 text-yellow-500" /> : <Moon className="w-3.5 h-3.5 text-blue-400" />} 
+              {isLightMode ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            </button>
+
             <div className="grid grid-cols-2 gap-2">
               {Object.entries(themes || {}).map(([id, t]) => (
                 <button 
