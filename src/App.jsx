@@ -531,7 +531,10 @@ function App() {
   }, [friends, selectedFriendId]);
 
   return (
-    <div className={`min-h-screen bg-[#09090b] text-zinc-100 pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'}`} style={{ '--theme': theme, '--glow': `${performanceMode ? 0 : glowIntensity}px` }}>
+    <div 
+  className={`min-h-screen ${isLightMode ? 'bg-white text-black' : 'bg-[#09090b] text-zinc-100'} pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'}`} 
+  style={{ '--theme': theme, '--glow': `${performanceMode ? 0 : glowIntensity}px` }}
+>
       
       {notification && (
         <div className="fixed bottom-40 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
