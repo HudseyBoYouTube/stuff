@@ -35,5 +35,12 @@ export const tracklist = [
     album: "American Idiot",
     url: "/music/american-idiot.mp3",
     isClean: false
-  }
+  },
+  {
+    title: "Good Riddance (Time of Your Life)",
+    artist: "Green Day",
+    album: "Nimrod",
+    url: "/music/good-riddance-time-of-your-life,
+    isClean: false
+ }
 ];
