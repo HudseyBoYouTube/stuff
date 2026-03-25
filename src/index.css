@@ -35,7 +35,8 @@
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -43,11 +44,20 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  /* Capybara Blue Branding */
-  background-color: #10A5F5;
+  /* Dynamic Theme Color */
+  background-color: var(--theme);
+  /* Creates a gap between the thumb and the track edge */
+  border: 3px solid var(--bg-main);
   @apply rounded-full transition-colors;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #0d84c4;
+  /* Subtle brightness boost on hover using a filter */
+  filter: brightness(1.2);
+}
+
+/* Firefox Support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme) var(--bg-main);
 }
