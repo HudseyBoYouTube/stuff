@@ -160,6 +160,12 @@ function App() {
     return btoa(unescape(encodeURIComponent(JSON.stringify(data)))).replace(/=/g, '');
   }, [displayName, uniqueId, profilePic, theme, glowIntensity, favorites]);
 
+  // Initial Boot: Set CSS variable from localStorage
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('capy-theme') || DEFAULT_COLOR;
+    document.documentElement.style.setProperty('--theme', savedTheme);
+  }, []);
+
   useEffect(() => {
   }, [friends]); 
 
@@ -380,9 +386,7 @@ function App() {
   };
 
   const applyTheme = (t) => {
-    // ADD THIS LINE FIRST - It tells the CSS (index.css) to update the scrollbars
     document.documentElement.style.setProperty('--theme', t.color);
-
     setTheme(t.color);
     setGlowIntensity(t.glow);
     localStorage.setItem('capy-theme', t.color);
@@ -391,7 +395,7 @@ function App() {
     if (!performanceMode) {
         updateThemeVariables(t.color, t.glow);
     }
-};
+  };
 
   const handleReset = () => {
     if (confirmReset) {
@@ -537,7 +541,6 @@ function App() {
         </div>
       )}
 
-      {/* AUDIO BLOCK: Only renders if bgMusic exists AND performanceMode is OFF */}
       {bgMusic && !performanceMode && (
         <audio 
           key={bgMusic} 
