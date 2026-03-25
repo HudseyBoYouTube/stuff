@@ -55,17 +55,14 @@ export function SettingsModal({
   const inputBg = isLightMode ? "bg-black/5 border-black/10 text-black placeholder:text-zinc-500" : "bg-zinc-800 border-white/10 text-white";
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div className={`${modalBg} border p-6 rounded-3xl max-w-md w-full relative shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar`}>
-        
-        {/* HEADER */}
-        <div className={`flex items-center justify-between border-b ${isLightMode ? 'border-black/5' : 'border-white/5'} pb-4`}>
-          <h2 className="text-xl font-bold flex items-center gap-2 text-[var(--theme)]">
-            <ShieldAlert className="w-5 h-5" /> System Settings
+    {/* HEADER */}
+        <div className={`flex items-center justify-between border-b ${isLightMode ? 'border-black/10' : 'border-white/5'} pb-4`}>
+          <h2 className={`text-xl font-bold flex items-center gap-2 ${isLightMode ? 'text-black' : 'text-[var(--theme)]'}`}>
+            <ShieldAlert className={`w-5 h-5 ${isLightMode ? 'text-[var(--theme)]' : ''}`} /> System Settings
           </h2>
           <button 
             onClick={onClose} 
-            className={`${isLightMode ? 'text-zinc-600 hover:text-black' : 'text-zinc-400 hover:text-white'} transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--theme)] rounded-lg`}
+            className={`${isLightMode ? 'text-zinc-500 hover:text-black hover:bg-black/5' : 'text-zinc-400 hover:text-white hover:bg-white/5'} p-1 transition-all focus:outline-none focus:ring-2 focus:ring-[var(--theme)] rounded-lg`}
             aria-label="Close settings"
           >
             <X className="w-6 h-6" />
