@@ -4,8 +4,6 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
   // FIXED GUARD: Allow the modal to show if it's your own profile, even if 'friend' is null
   if (!isOwnProfile && (!friend || !friend.decoded)) return null;
 
-  // Decide which data to use based on if it's "Me" or a "Friend"
-  // If isOwnProfile is true, we strictly use your local state
   const displayPfp = isOwnProfile ? ownPfp : friend?.decoded?.p;
   const displayName = isOwnProfile ? "You" : (friend?.decoded?.n || friend?.name);
   const displayFavs = isOwnProfile ? (friend?.favs || []) : (friend?.decoded?.f || []);
@@ -18,26 +16,18 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
           <X />
         </button>
         
-        {/* Main Wrapper: overflow-x-hidden kills the horizontal scroll bar */}
+        {/* Main Wrapper: Added overflow-x-hidden to kill the horizontal scroll bar */}
         <div className="overflow-y-auto overflow-x-hidden space-y-6 pr-1 custom-scrollbar">
           <div className="text-center space-y-2">
-            {/* Container for the Profile Pic/GIF */}
             <div className="w-24 h-24 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20 overflow-hidden shadow-[0_0_20px_rgba(var(--theme-rgb),0.1)]">
               {displayPfp ? (
-                <img 
-                  src={displayPfp} 
-                  alt={displayName} 
-                  className="w-full h-full object-cover"
-                  key={displayPfp.substring(0, 20)} 
-                />
+                <img src={displayPfp} alt={displayName} className="w-full h-full object-cover" key={displayPfp.substring(0, 20)} />
               ) : (
                 <UserCircle className="w-14 h-14 text-[var(--theme)]" />
               )}
             </div>
             
-            <h3 className="text-2xl font-black tracking-tighter">
-              {displayName}
-            </h3>
+            <h3 className="text-2xl font-black tracking-tighter">{displayName}</h3>
             <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">
               {isOwnProfile ? "Your Profile" : "Friend Profile"}
             </p>
@@ -50,7 +40,6 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
             <div className="grid gap-2 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
               {(() => {
                 const validFavs = displayFavs.filter(id => gamesData.find(g => g.id === id));
-
                 return (validFavs.length > 0) ? validFavs.map(gameId => {
                   const game = gamesData.find(g => g.id === gameId);
                   return game ? (
@@ -62,21 +51,24 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
                     </div>
                   ) : null;
                 }) : (
-                  <p className="text-xs text-zinc-600 text-center py-4 italic">
-                    No favorites yet...
-                  </p>
+                  <p className="text-xs text-zinc-600 text-center py-4 italic">No favorites yet...</p>
                 );
               })()}
             </div>
           </div>
 
-          {/* Friend Code section: Switched to standard scrollbar for testing */}
+          {/* Friend Code section: Inline styles to force the bar visibility */}
           {isOwnProfile && friend?.code && (
             <div className="space-y-2 pt-4 border-t border-white/5">
               <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Your Friend Code</label>
               <div 
-                className="bg-black/40 border border-white/10 rounded-xl p-3 block overflow-y-scroll overflow-x-hidden"
-                style={{ height: '100px' }}
+                className="bg-black/40 border border-white/10 rounded-xl p-3 overflow-y-scroll overflow-x-hidden"
+                style={{ 
+                  height: '100px',
+                  scrollbarWidth: 'thin', /* For Firefox */
+                  scrollbarColor: 'var(--theme) transparent', /* For Firefox */
+                  msOverflowStyle: 'scrollbar' /* For Edge/IE */
+                }}
               >
                 <p className="text-[9px] font-mono text-blue-400 break-all whitespace-pre-wrap leading-tight">
                   {friend.code}
