@@ -571,7 +571,7 @@ function App() {
       )}
 
       <div className="relative z-10">
-        <div className="sticky top-0 z-50">
+        <div className={`sticky top-0 z-50 ${isLightMode ? 'bg-[#09090b]/95 border-b border-black/5' : 'bg-[#09090b]/90 border-b border-white/5'} backdrop-blur-md`}>
           <Header 
             searchQuery={searchQuery} 
             setSearchQuery={setSearchQuery}
