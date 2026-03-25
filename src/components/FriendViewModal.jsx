@@ -70,11 +70,14 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
             </div>
           </div>
 
-          {/* Friend Code section: Added break-all and fixed height for the Up/Down bar */}
+          {/* Friend Code Section: Forced vertical scroll bar visibility */}
           {isOwnProfile && friend?.code && (
             <div className="space-y-2 pt-4 border-t border-white/5">
               <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Your Friend Code</label>
-              <div className="bg-black/40 border border-white/10 rounded-xl p-3 h-24 overflow-y-auto overflow-x-hidden custom-scrollbar">
+              <div 
+                className="bg-black/40 border border-white/10 rounded-xl p-3 h-24 overflow-y-scroll overflow-x-hidden custom-scrollbar"
+                style={{ scrollbarGutter: 'stable' }}
+              >
                 <p className="text-[9px] font-mono text-blue-400 break-all whitespace-pre-wrap leading-tight">
                   {friend.code}
                 </p>
