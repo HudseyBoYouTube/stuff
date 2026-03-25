@@ -380,14 +380,18 @@ function App() {
   };
 
   const applyTheme = (t) => {
+    // ADD THIS LINE FIRST - It tells the CSS (index.css) to update the scrollbars
+    document.documentElement.style.setProperty('--theme', t.color);
+
     setTheme(t.color);
     setGlowIntensity(t.glow);
     localStorage.setItem('capy-theme', t.color);
     localStorage.setItem('capy-glow', t.glow);
+    
     if (!performanceMode) {
         updateThemeVariables(t.color, t.glow);
     }
-  };
+};
 
   const handleReset = () => {
     if (confirmReset) {
