@@ -9,37 +9,41 @@
   --card-bg: #18181b;   /* zinc-900 */
 }
 
-/* Light Mode Overrides */
+/* Light Mode Overrides - PURE WHITE */
 :root.light-mode {
-  --bg-main: #f4f4f5;
-  --text-main: #09090b; /* zinc-950 */
-  --card-bg: #ffffff;
+  --bg-main: #ffffff;    /* Pure White Background */
+  --text-main: #09090b;  /* zinc-950 Text */
+  --card-bg: #f4f4f5;    /* zinc-100 for subtle card contrast */
 }
 
-/* Light Mode Component Overrides */
+/* Specific Component Overrides for Light Mode */
 .light-mode .bg-\[\#09090b\],
 .light-mode .bg-zinc-900,
 .light-mode .bg-black {
   background-color: #ffffff !important;
+  color: #09090b !important;
 }
 
-.light-mode .text-zinc-100,
+/* Ensure secondary text is visible but distinct */
 .light-mode .text-zinc-400,
-.light-mode .text-white {
-  color: #18181b !important;
+.light-mode .text-zinc-500 {
+  color: #52525b !important; /* zinc-600 */
 }
 
+/* Borders need to be dark enough to see on white */
 .light-mode .border-white\/5,
 .light-mode .border-white\/10 {
   border-color: rgba(0, 0, 0, 0.1) !important;
 }
 
+/* Semi-transparent overlays for light mode */
 .light-mode .bg-white\/5 {
-  background-color: rgba(0, 0, 0, 0.05) !important;
+  background-color: rgba(0, 0, 0, 0.03) !important;
 }
 
+/* Header transparency effect for light mode */
 .light-mode .bg-\[\#09090b\]\/90 {
-  background-color: rgba(244, 244, 245, 0.9) !important;
+  background-color: rgba(255, 255, 255, 0.9) !important;
 }
 
 @theme {
@@ -70,15 +74,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  /* Dynamic Theme Color */
   background-color: var(--theme);
-  /* Creates a gap between the thumb and the track edge */
   border: 3px solid var(--bg-main);
   @apply rounded-full transition-colors;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  /* Subtle brightness boost on hover using a filter */
   filter: brightness(1.2);
 }
 
