@@ -112,14 +112,22 @@
 }
 
 /* Chromebook Fix: Forces the category scrollbar to stay visible */
+.no-scrollbar {
+  overflow-x: auto !important;
+  scrollbar-width: thin !important;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: block !important;
-  height: 6px !important;
+  height: 8px !important;
+  background-color: transparent !important;
 }
 
 .no-scrollbar::-webkit-scrollbar-thumb {
   background-color: #d4d4d8 !important; /* Light grey handle */
   border-radius: 10px !important;
+  border: 2px solid white !important; /* Makes it look cleaner */
+  min-width: 40px !important;
 }
 
 .no-scrollbar::-webkit-scrollbar-track {
