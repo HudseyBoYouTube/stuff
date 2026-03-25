@@ -45,7 +45,7 @@ function App() {
   }, [gamesDataRaw]);
 
   const audioRef = useRef(null);
-  const categoryScrollRef = useRef(null); // Ref for the category scroll
+  const categoryScrollRef = useRef(null); 
   
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
@@ -121,6 +121,18 @@ function App() {
     return id;
   });
 
+  // --- Scroll Visibility Logic ---
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScroll = () => {
+    if (categoryScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = categoryScrollRef.current;
+      setCanScrollLeft(scrollLeft > 5);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 5);
+    }
+  };
+
   const scrollCategories = (direction) => {
     if (categoryScrollRef.current) {
       const scrollAmount = 250;
@@ -128,8 +140,27 @@ function App() {
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth'
       });
+      setTimeout(checkScroll, 350);
     }
   };
+
+  const validFavoritesCount = useMemo(() => gamesData.filter(g => favorites.includes(g.id)).length, [gamesData, favorites]);
+
+  const categoriesWithCounts = useMemo(() => {
+    const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
+    const final = [{ name: 'All', count: gamesData.length }];
+    if (validFavoritesCount > 0) final.unshift({ name: 'Favorites', count: validFavoritesCount });
+    uniqueCats.forEach(cat => {
+      final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
+    });
+    return final;
+  }, [gamesData, validFavoritesCount]);
+
+  useEffect(() => {
+    checkScroll();
+    window.addEventListener('resize', checkScroll);
+    return () => window.removeEventListener('resize', checkScroll);
+  }, [categoriesWithCounts]);
 
   const safeDecode = (str) => {
     try {
@@ -459,18 +490,6 @@ function App() {
     link.href = currentIdentity.icon;
   }, [currentIdentity]);
 
-  const validFavoritesCount = useMemo(() => gamesData.filter(g => favorites.includes(g.id)).length, [gamesData, favorites]);
-
-  const categoriesWithCounts = useMemo(() => {
-    const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
-    const final = [{ name: 'All', count: gamesData.length }];
-    if (validFavoritesCount > 0) final.unshift({ name: 'Favorites', count: validFavoritesCount });
-    uniqueCats.forEach(cat => {
-      final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
-    });
-    return final;
-  }, [gamesData, validFavoritesCount]);
-
   const launchContent = (item) => {
     if (!item?.url) return;
 
@@ -597,20 +616,23 @@ return (
   }}
   isLightMode={isLightMode} 
 />
-          <div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors group`}>
+<div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors group`}>
   <div className="max-w-7xl mx-auto relative flex items-center">
     
     {/* Left Scroll Button */}
-    <button 
-      onClick={() => scrollCategories('left')}
-      className="absolute left-0 z-50 p-1.5 bg-[var(--theme)] rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hidden md:block hover:scale-110 active:scale-95"
-    >
-      <ChevronLeft className="w-4 h-4 text-black" />
-    </button>
+    {canScrollLeft && (
+      <button 
+        onClick={() => scrollCategories('left')}
+        className="absolute left-0 z-50 p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20"
+      >
+        <ChevronLeft className="w-4 h-4 text-black" />
+      </button>
+    )}
 
     <div 
       ref={categoryScrollRef}
-      className="flex gap-2 overflow-x-auto pb-4 no-scrollbar scroll-smooth px-2"
+      onScroll={checkScroll}
+      className="flex gap-2 overflow-x-auto pb-4 no-scrollbar scroll-smooth px-2 w-full"
     >
       {categoriesWithCounts.map(cat => (
         <button 
@@ -630,12 +652,14 @@ return (
     </div>
 
     {/* Right Scroll Button */}
-    <button 
-      onClick={() => scrollCategories('right')}
-      className="absolute right-0 z-50 p-1.5 bg-[var(--theme)] rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hidden md:block hover:scale-110 active:scale-95"
-    >
-      <ChevronRight className="w-4 h-4 text-black" />
-    </button>
+    {canScrollRight && (
+      <button 
+        onClick={() => scrollCategories('right')}
+        className="absolute right-0 z-50 p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20"
+      >
+        <ChevronRight className="w-4 h-4 text-black" />
+      </button>
+    )}
   </div>
 </div>
 
