@@ -63,15 +63,17 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
                 Your Friend Code
               </label>
               
-              <div className="bg-black/40 border border-white/10 rounded-xl p-3 h-24 show-vertical-bar">
+              <div 
+                className="bg-black/40 border border-white/10 rounded-xl p-3 h-24 overflow-y-scroll show-vertical-bar"
+                style={{ 
+                  scrollbarWidth: 'thin', 
+                  display: 'block',
+                  WebkitOverflowScrolling: 'touch' 
+                }}
+              >
                 <p className="text-[9px] font-mono text-blue-400 break-all whitespace-pre-wrap leading-tight">
                   {friend.code}
                 </p>
               </div>
             </div>
           )}
-        </div>
-      </div>
-    </div>
-  );
-}
