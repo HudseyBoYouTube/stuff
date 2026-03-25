@@ -5,7 +5,7 @@ export function Header({
   time, battery, 
   profilePic, setShowSettings, 
   onRandomGame, DEFAULT_ICON,
-  onViewProfile // Added this prop to trigger the FriendViewModal for yourself
+  onViewProfile 
 }) {
   return (
     <header className="border-b border-white/5 h-16 flex items-center px-4 bg-[#09090b]/95 backdrop-blur-md sticky top-0 z-50">
@@ -53,28 +53,31 @@ export function Header({
           </div>
           
           <div className="flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/5">
-             {/* Profile Picture Button - Opens the Modal we just fixed */}
-             <button 
-               onClick={() => onViewProfile?.()} 
-               className="w-8 h-8 rounded-full border border-transparent hover:border-[var(--theme)] overflow-hidden bg-zinc-800 transition-all active:scale-90"
-             >
-               {profilePic ? (
-                 <img src={profilePic} className="w-full h-full object-cover" alt="Profile" />
-               ) : (
-                 <UserCircle className="w-full h-full p-1 text-[var(--theme)]" />
-               )}
-             </button>
+              {/* Profile Picture Button */}
+              <button 
+                onClick={() => onViewProfile?.()} 
+                className="w-8 h-8 rounded-full border border-transparent hover:border-[var(--theme)] overflow-hidden bg-zinc-800 transition-all active:scale-90"
+              >
+                {profilePic ? (
+                  <img src={profilePic} className="w-full h-full object-cover" alt="Profile" />
+                ) : (
+                  <UserCircle className="w-full h-full p-1 text-[var(--theme)]" />
+                )}
+              </button>
 
-             {/* Settings Gear Button */}
-             <button 
-               onClick={() => setShowSettings(true)} 
-               className="p-1.5 transition-all hover:scale-110 active:rotate-90 group"
-             >
-               <Settings 
-                 className="w-5 h-5 drop-shadow-[0_0_8px_rgba(16,165,245,0.6)]" 
-                 style={{ color: '#10A5F5' }}
-               />
-             </button>
+              {/* Settings Gear Button - Color and Glow now dynamic */}
+              <button 
+                onClick={() => setShowSettings(true)} 
+                className="p-1.5 transition-all hover:scale-110 active:rotate-90 group flex items-center justify-center"
+              >
+                <Settings 
+                  className="w-5 h-5" 
+                  style={{ 
+                    color: 'var(--theme)',
+                    filter: 'drop-shadow(0 0 8px var(--theme))'
+                  }}
+                />
+              </button>
           </div>
         </div>
       </div>
