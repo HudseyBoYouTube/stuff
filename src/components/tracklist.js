@@ -26,7 +26,7 @@ export const tracklist = [
     title: "Welcome to Paradise (1994)", 
     artist: "Green Day", 
     album: "Dookie",
-    url: "/music/good-riddance-time-of-your-life.mp3", 
+    url: "/music/welcome-to-paradise.mp3", 
     isClean: true 
   }, 
   {
@@ -40,7 +40,7 @@ export const tracklist = [
     title: "Good Riddance (Time of Your Life)",
     artist: "Green Day",
     album: "Nimrod",
-    url: "/music/good-riddance-time-of-your-life",
+    url: "/music/good-riddance-time-of-your-life.mp3",
     isClean: false
   }
 ];
