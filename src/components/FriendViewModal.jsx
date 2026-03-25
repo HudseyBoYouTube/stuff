@@ -46,7 +46,8 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
           <label className="text-[10px] font-black text-[var(--theme)] uppercase tracking-widest flex items-center gap-2">
             <Heart className="w-3 h-3" /> Favorite Games
           </label>
-          <div className="grid gap-2 max-h-[200px] overflow-y-auto no-scrollbar">
+          {/* Removed 'no-scrollbar' so you can see the bar again, and ensured overflow is set to auto */}
+          <div className="grid gap-2 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
             {(() => {
               const validFavs = displayFavs.filter(id => gamesData.find(g => g.id === id));
 
