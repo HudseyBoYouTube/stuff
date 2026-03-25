@@ -10,10 +10,36 @@
 }
 
 /* Light Mode Overrides */
-:root.light {
+:root.light-mode {
   --bg-main: #f4f4f5;
   --text-main: #09090b; /* zinc-950 */
   --card-bg: #ffffff;
+}
+
+/* Light Mode Component Overrides */
+.light-mode .bg-\[\#09090b\],
+.light-mode .bg-zinc-900,
+.light-mode .bg-black {
+  background-color: #ffffff !important;
+}
+
+.light-mode .text-zinc-100,
+.light-mode .text-zinc-400,
+.light-mode .text-white {
+  color: #18181b !important;
+}
+
+.light-mode .border-white\/5,
+.light-mode .border-white\/10 {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-mode .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.light-mode .bg-\[\#09090b\]\/90 {
+  background-color: rgba(244, 244, 245, 0.9) !important;
 }
 
 @theme {
