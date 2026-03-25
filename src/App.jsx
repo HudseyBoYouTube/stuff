@@ -106,6 +106,9 @@ function App() {
 
   const [isSyncing, setIsSyncing] = useState(false);
 
+  // New Light Mode State
+  const [isLightMode, setIsLightMode] = useState(() => localStorage.getItem('capy-light-mode') === 'true');
+
   const [uniqueId] = useState(() => {
     let id = localStorage.getItem('capy-unique-id');
     if (!id) {
@@ -165,6 +168,16 @@ function App() {
     const savedTheme = localStorage.getItem('capy-theme') || DEFAULT_COLOR;
     document.documentElement.style.setProperty('--theme', savedTheme);
   }, []);
+
+  // Effect to handle Light Mode class on document
+  useEffect(() => {
+    if (isLightMode) {
+      document.documentElement.classList.add('light-mode');
+    } else {
+      document.documentElement.classList.remove('light-mode');
+    }
+    localStorage.setItem('capy-light-mode', isLightMode);
+  }, [isLightMode]);
 
   useEffect(() => {
   }, [friends]); 
@@ -414,7 +427,7 @@ function App() {
         'capy-custom-title', 'capy-custom-icon', 'capy-bg-image', 
         'capy-bg-video', 'capy-bg-opacity', 'capy-bg-music', 
         'capy-volume', 'capy-panic-url', 'capy-panic-key', 'capy-perf-mode',
-        'capy-bg-enabled', 'capy-recent', 'capy-pfp'
+        'capy-bg-enabled', 'capy-recent', 'capy-pfp', 'capy-light-mode'
       ];
       settingsKeys.forEach(key => localStorage.removeItem(key));
       window.location.reload();
@@ -714,6 +727,10 @@ function App() {
         customIcon={customIcon}
         setCustomIcon={(val) => { setCustomIcon(val); localStorage.setItem('capy-custom-icon', val); }}
         
+        // Pass light mode props here
+        isLightMode={isLightMode}
+        setIsLightMode={setIsLightMode}
+
         onAddFriend={(code) => {
           const decodedData = safeDecode(code);
           if (decodedData && decodedData.id) {
