@@ -571,7 +571,7 @@ function App() {
       )}
 
       <div className="relative z-10">
-        <div className={`sticky top-0 z-50 ${isLightMode ? 'bg-[#09090b]/95 border-b border-black/5' : 'bg-[#09090b]/90 border-b border-white/5'} backdrop-blur-md`}>
+        <div className="sticky top-0 z-50">
           <Header 
             searchQuery={searchQuery} 
             setSearchQuery={setSearchQuery}
@@ -650,100 +650,139 @@ function App() {
       />
 
      <SettingsModal 
-          show={showSettings} 
-          onClose={() => setShowSettings(false)}
-          tracklist={tracklist} 
-          performanceMode={performanceMode}
-          setPerformanceMode={(val) => { 
-              setPerformanceMode(val); 
-              localStorage.setItem('capy-perf-mode', val);
-          }}
-          onViewOwnProfile={() => {
-            setShowSettings(false);
-            setSelectedFriendId('me');
-          }}
-          isLightMode={isLightMode}
-          setIsLightMode={setIsLightMode}
-          themes={THEMES}
-          applyTheme={applyTheme}
-          panicKey={panicKey}
-          setPanicKey={(val) => { setPanicKey(val); localStorage.setItem('capy-panic-key', val); }}
-          panicUrl={panicUrl}
-          setPanicUrl={(val) => { setPanicUrl(val); localStorage.setItem('capy-panic-url', val); }}
-          handleBackgroundUpload={handleBackgroundUpload}
-          handleResetBackground={handleResetBackground}
-          handleAudioUpload={handleAudioUpload}
-          handleResetMusic={handleResetMusic}
-          profilePic={profilePic}
-          handlePfpUpload={handlePfpUpload}
-          handleResetPfp={() => { setProfilePic(''); localStorage.removeItem('capy-pfp'); }}
-          handleClearSettings={handleClearSettings}
-          handleReset={handleReset}
-          confirmReset={confirmReset}
-          confirmClearSettings={confirmClearSettings}
-          bgMusic={bgMusic}
-          bgEnabled={bgEnabled}
-          volume={volume}
-          setVolume={setVolume}
-          bgOpacity={bgOpacity}
-          setBgOpacity={setBgOpacity}
-          displayName={displayName}
-          setDisplayName={(val) => {
-            const nameExists = friends.some(f => f.name.toLowerCase() === val.trim().toLowerCase());
-            if (nameExists) {
-              alert("Name is already taken by a friend! Please choose a unique name.");
+  show={showSettings} 
+  onClose={() => setShowSettings(false)}
+  tracklist={tracklist} 
+  performanceMode={performanceMode}
+  setPerformanceMode={(val) => { 
+      setPerformanceMode(val); 
+      localStorage.setItem('capy-perf-mode', val);
+  }}
+  onViewOwnProfile={() => {
+    setShowSettings(false);
+    setSelectedFriendId('me');
+  }}
+  themes={THEMES}
+  applyTheme={applyTheme}
+  panicKey={panicKey}
+  setPanicKey={(val) => { setPanicKey(val); localStorage.setItem('capy-panic-key', val); }}
+  panicUrl={panicUrl}
+  setPanicUrl={(val) => { setPanicUrl(val); localStorage.setItem('capy-panic-url', val); }}
+  handleBackgroundUpload={handleBackgroundUpload}
+  handleResetBackground={handleResetBackground}
+  handleAudioUpload={handleAudioUpload}
+  handleResetMusic={handleResetMusic}
+  profilePic={profilePic}
+  handlePfpUpload={handlePfpUpload}
+  handleResetPfp={() => { setProfilePic(''); localStorage.removeItem('capy-pfp'); }}
+  handleClearSettings={handleClearSettings}
+  handleReset={handleReset}
+  confirmReset={confirmReset}
+  confirmClearSettings={confirmClearSettings}
+  bgMusic={bgMusic}
+  bgEnabled={bgEnabled}
+  volume={volume}
+  setVolume={setVolume}
+  bgOpacity={bgOpacity}
+  setBgOpacity={setBgOpacity}
+  
+  // Name & Friend Logic
+  displayName={displayName}
+  setDisplayName={(val) => {
+    const nameExists = friends.some(f => f.name.toLowerCase() === val.trim().toLowerCase());
+    if (nameExists) {
+      alert("Name is already taken by a friend! Please choose a unique name.");
+      return;
+    }
+    setDisplayName(val); 
+    localStorage.setItem('capy-display-name', val); 
+  }}
+  
+  // Sync Logic
+  friendCode={friendCode}
+  fullSyncCode={fullSyncCode}
+  onImportSync={(code) => {
+    const decoded = safeDecode(code);
+    if (decoded && decoded.n) {
+      setDisplayName(decoded.n);
+      localStorage.setItem('capy-display-name', decoded.n);
+      if (decoded.p) {
+        setProfilePic(decoded.p);
+        localStorage.setItem('capy-pfp', decoded.p);
+      }
+      if (decoded.t) {
+        setTheme(decoded.t);
+        localStorage.setItem('capy-theme', decoded.t);
+      }
+      if (decoded.g) {
+        setGlowIntensity(decoded.g);
+        localStorage.setItem('capy-glow', decoded.g);
+      }
+      setNotification("Profile Synced Successfully!");
+      setTimeout(() => window.location.reload(), 1000);
+    } else {
+      alert("Invalid Sync Code!");
+    }
+  }}
+
+  // Stealth & Identity
+  friends={friends}
+  isSyncing={isSyncing}
+  disguise={disguise}
+  setDisguise={(val) => { setDisguise(val); localStorage.setItem('capy-stealth-type', val); }}
+  customTitle={customTitle}
+  setCustomTitle={(val) => { setCustomTitle(val); localStorage.setItem('capy-custom-title', val); }}
+  customIcon={customIcon}
+  setCustomIcon={(val) => { setCustomIcon(val); localStorage.setItem('capy-custom-icon', val); }}
+  
+  // Appearance (Light Mode)
+  isLightMode={isLightMode}
+  setIsLightMode={setIsLightMode}
+/>
+
+        onAddFriend={(code) => {
+          const decodedData = safeDecode(code);
+          if (decodedData && decodedData.id) {
+            const { n: name, id: friendId } = decodedData;
+            if (name.toLowerCase() === displayName.toLowerCase()) {
+              alert("You cannot add yourself!");
               return;
             }
-            setDisplayName(val); 
-            localStorage.setItem('capy-display-name', val); 
-          }}
-          friendCode={friendCode}
-          onAddFriend={(code) => {
-            const decodedData = safeDecode(code);
-            if (decodedData && decodedData.id) {
-              const { n: name, id: friendId } = decodedData;
-              if (name.toLowerCase() === displayName.toLowerCase()) {
-                alert("You cannot add yourself!");
-                return;
-              }
-              const otherFriends = friends.filter(f => {
-                const existingData = safeDecode(f.code);
-                return existingData?.id !== friendId;
-              });
-              const updatedFriends = [...otherFriends, { name, code: code.trim() }];
-              setFriends(updatedFriends);
-              localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
-              setNotification(`Added ${name}!`);
-            } else {
-              alert("Invalid Friend Code!");
+            const otherFriends = friends.filter(f => {
+              const existingData = safeDecode(f.code);
+              return existingData?.id !== friendId;
+            });
+            const updatedFriends = [...otherFriends, { name, code: code.trim() }];
+            setFriends(updatedFriends);
+            localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
+            setNotification(`Added ${name}!`);
+          } else {
+            alert("Invalid Friend Code!");
+          }
+        }}
+        onRemoveFriend={(code) => {
+          const newFriends = friends.filter(f => f.code !== code);
+          setFriends(newFriends);
+          localStorage.setItem('capy-friends', JSON.stringify(newFriends));
+        }}
+        onViewFriend={(friend) => {
+          setSelectedFriendId(null);
+          setTimeout(() => setSelectedFriendId(friend.code), 10);
+        }}
+        onRefreshFriend={(code) => {
+            setIsSyncing(true);
+            const freshFriends = [...friends];
+            setFriends(freshFriends);
+            if (selectedFriendId === code) {
+                setSelectedFriendId(null);
+                setTimeout(() => setSelectedFriendId(code), 50);
             }
-          }}
-          onViewFriend={(friend) => {
-            setShowSettings(false);
-            setSelectedFriendId(friend.id || 'friend');
-          }}
-          onRemoveFriend={(code) => {
-            const updated = friends.filter(f => f.code !== code);
-            setFriends(updated);
-            localStorage.setItem('capy-friends', JSON.stringify(updated));
-          }}
-          friends={friends}
-        />
-
-        {/* This closing div ends the "sticky top-0" container if you have one */}
-      </div> 
-
-      {/* MAIN CONTENT AREA (Grid of Games) */}
-      <main className="max-w-7xl mx-auto px-4 py-8 relative z-10">
-        {/* Your game grid logic usually goes here */}
-      </main>
-
-      {/* NOTIFICATION TOAST */}
-      {notification && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] bg-[var(--theme)] text-black px-6 py-3 rounded-2xl font-black uppercase text-xs shadow-2xl animate-bounce">
-          {notification}
-        </div>
-      )}
+            setTimeout(() => {
+              setIsSyncing(false);
+              setNotification("Friend view refreshed!");
+            }, 500);
+        }}
+      />
     </div>
   );
 }
