@@ -111,10 +111,11 @@
   filter: brightness(1.2);
 }
 
-/* Chromebook Fix: Forces the category scrollbar to stay visible */
+/* Chromebook Fix: Force category scrollbar to stay visible */
 .no-scrollbar {
-  overflow-x: auto !important;
+  overflow-x: scroll !important;
   scrollbar-width: thin !important;
+  -webkit-overflow-scrolling: touch;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -123,15 +124,15 @@
   background-color: transparent !important;
 }
 
-.no-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #d4d4d8 !important; /* Light grey handle */
+.no-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03) !important; 
   border-radius: 10px !important;
-  border: 2px solid white !important; /* Makes it look cleaner */
-  min-width: 40px !important;
 }
 
-.no-scrollbar::-webkit-scrollbar-track {
-  background: transparent !important;
+.no-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #d4d4d8 !important; 
+  border-radius: 10px !important;
+  border: 2px solid white !important;
 }
 
 /* Firefox Support */
