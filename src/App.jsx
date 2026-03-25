@@ -121,7 +121,6 @@ function App() {
     return id;
   });
 
-  // --- Scroll Visibility Logic ---
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
@@ -619,14 +618,16 @@ return (
 <div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors group`}>
   <div className="max-w-7xl mx-auto relative flex items-center">
     
-    {/* Left Scroll Button */}
+    {/* Left Scroll Button Area */}
     {canScrollLeft && (
-      <button 
-        onClick={() => scrollCategories('left')}
-        className="absolute left-0 z-50 p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20"
-      >
-        <ChevronLeft className="w-4 h-4 text-black" />
-      </button>
+      <div className={`absolute left-0 z-50 flex items-center pr-12 h-full bg-gradient-to-r ${isLightMode ? 'from-white via-white/80' : 'from-[#09090b] via-[#09090b]/80'} to-transparent pointer-events-none`}>
+        <button 
+          onClick={() => scrollCategories('left')}
+          className="p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20 pointer-events-auto"
+        >
+          <ChevronLeft className="w-4 h-4 text-black" />
+        </button>
+      </div>
     )}
 
     <div 
@@ -651,14 +652,16 @@ return (
       ))}
     </div>
 
-    {/* Right Scroll Button */}
+    {/* Right Scroll Button Area - Positioned slightly outside and with a fade */}
     {canScrollRight && (
-      <button 
-        onClick={() => scrollCategories('right')}
-        className="absolute right-0 z-50 p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20"
-      >
-        <ChevronRight className="w-4 h-4 text-black" />
-      </button>
+      <div className={`absolute -right-2 z-50 flex items-center pl-12 h-full bg-gradient-to-l ${isLightMode ? 'from-white via-white/80' : 'from-[#09090b] via-[#09090b]/80'} to-transparent pointer-events-none`}>
+        <button 
+          onClick={() => scrollCategories('right')}
+          className="p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20 pointer-events-auto"
+        >
+          <ChevronRight className="w-4 h-4 text-black" />
+        </button>
+      </div>
     )}
   </div>
 </div>
