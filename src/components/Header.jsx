@@ -9,7 +9,7 @@ export function Header({
   isLightMode // Added this prop
 }) {
   return (
-    <header className={`border-b ${isLightMode ? 'bg-white/95 border-black/5 text-black' : 'bg-[#09090b]/95 border-white/5 text-white'} h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors`}>
+    <header className={`border-b ${isLightMode ? 'bg-white border-black/5 text-black' : 'bg-[#09090b]/95 border-white/5 text-white'} h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors`}>
       <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
         
         {/* LOGO SECTION */}
