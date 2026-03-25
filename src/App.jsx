@@ -3,7 +3,7 @@ import {
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
   Link as LinkIcon, Upload, Battery, Calendar, Heart, Trash2, Ghost, Zap, Video, Music, Volume2, Power,
-  Cpu, Users, UserPlus, UserCircle, CheckCircle2, History
+  Cpu, Users, UserPlus, UserCircle, CheckCircle2, History, ChevronLeft, ChevronRight
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
@@ -45,6 +45,8 @@ function App() {
   }, [gamesDataRaw]);
 
   const audioRef = useRef(null);
+  const categoryScrollRef = useRef(null); // Ref for the category scroll
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showSettings, setShowSettings] = useState(false);
@@ -106,7 +108,6 @@ function App() {
 
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // New Light Mode State
   const [isLightMode, setIsLightMode] = useState(() => localStorage.getItem('capy-light-mode') === 'true');
 
   const [uniqueId] = useState(() => {
@@ -119,6 +120,16 @@ function App() {
     }
     return id;
   });
+
+  const scrollCategories = (direction) => {
+    if (categoryScrollRef.current) {
+      const scrollAmount = 250;
+      categoryScrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   const safeDecode = (str) => {
     try {
@@ -163,13 +174,11 @@ function App() {
     return btoa(unescape(encodeURIComponent(JSON.stringify(data)))).replace(/=/g, '');
   }, [displayName, uniqueId, profilePic, theme, glowIntensity, favorites]);
 
-  // Initial Boot: Set CSS variable from localStorage
   useEffect(() => {
     const savedTheme = localStorage.getItem('capy-theme') || DEFAULT_COLOR;
     document.documentElement.style.setProperty('--theme', savedTheme);
   }, []);
 
-  // Effect to handle Light Mode class on document
   useEffect(() => {
     if (isLightMode) {
       document.documentElement.classList.add('light-mode');
@@ -178,9 +187,6 @@ function App() {
     }
     localStorage.setItem('capy-light-mode', isLightMode);
   }, [isLightMode]);
-
-  useEffect(() => {
-  }, [friends]); 
 
   useEffect(() => {
     localStorage.setItem('capy-volume', volume.toString());
@@ -591,23 +597,45 @@ return (
   }}
   isLightMode={isLightMode} 
 />
-         <div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors`}>
-  <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
-    {categoriesWithCounts.map(cat => (
-      <button 
-        key={cat.name} 
-        onClick={() => setActiveCategory(cat.name)} 
-        className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${
-          activeCategory === cat.name 
-            ? 'bg-[var(--theme)] border-[var(--theme)] text-black' 
-            : isLightMode 
-              ? 'bg-zinc-100 border-zinc-200 text-zinc-600 hover:bg-zinc-200' 
-              : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'
-        }`}
-      >
-        {cat.name} <span className="opacity-40 ml-1">{cat.count}</span>
-      </button>
-    ))}
+          <div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors group`}>
+  <div className="max-w-7xl mx-auto relative flex items-center">
+    
+    {/* Left Scroll Button */}
+    <button 
+      onClick={() => scrollCategories('left')}
+      className="absolute left-0 z-50 p-1.5 bg-[var(--theme)] rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hidden md:block hover:scale-110 active:scale-95"
+    >
+      <ChevronLeft className="w-4 h-4 text-black" />
+    </button>
+
+    <div 
+      ref={categoryScrollRef}
+      className="flex gap-2 overflow-x-auto pb-4 no-scrollbar scroll-smooth px-2"
+    >
+      {categoriesWithCounts.map(cat => (
+        <button 
+          key={cat.name} 
+          onClick={() => setActiveCategory(cat.name)} 
+          className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${
+            activeCategory === cat.name 
+              ? 'bg-[var(--theme)] border-[var(--theme)] text-black' 
+              : isLightMode 
+                ? 'bg-zinc-100 border-zinc-200 text-zinc-600 hover:bg-zinc-200' 
+                : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'
+          }`}
+        >
+          {cat.name} <span className="opacity-40 ml-1">{cat.count}</span>
+        </button>
+      ))}
+    </div>
+
+    {/* Right Scroll Button */}
+    <button 
+      onClick={() => scrollCategories('right')}
+      className="absolute right-0 z-50 p-1.5 bg-[var(--theme)] rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hidden md:block hover:scale-110 active:scale-95"
+    >
+      <ChevronRight className="w-4 h-4 text-black" />
+    </button>
   </div>
 </div>
 
