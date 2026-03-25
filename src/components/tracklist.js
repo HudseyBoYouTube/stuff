@@ -26,7 +26,7 @@ export const tracklist = [
     title: "Welcome to Paradise (1994)", 
     artist: "Green Day", 
     album: "Dookie",
-    url: "/music/welcome-to-paradise.mp3", 
+    url: "/music/welcome-to-paradise.mp3",
     isClean: true 
   }, 
   {
