@@ -600,6 +600,7 @@ return (
               ))}
             </div>
           </div>
+         </div>
 
         <main className="max-w-7xl mx-auto px-4 mt-8 space-y-12">
           {recentGamesData.length > 0 && activeCategory === 'All' && !searchQuery && (
