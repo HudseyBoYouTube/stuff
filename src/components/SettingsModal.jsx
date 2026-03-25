@@ -55,21 +55,25 @@ export function SettingsModal({
   const inputBg = isLightMode ? "bg-black/5 border-black/10 text-black placeholder:text-zinc-500" : "bg-zinc-800 border-white/10 text-white";
 
   return (
-    {/* HEADER */}
-        <div className={`flex items-center justify-between border-b ${isLightMode ? 'border-black/10' : 'border-white/5'} pb-4`}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className={`${modalBg} w-full max-w-md max-h-[85vh] rounded-3xl border shadow-2xl overflow-hidden flex flex-col`}>
+        
+        {/* HEADER */}
+        <div className={`flex items-center justify-between border-b ${isLightMode ? 'border-black/10' : 'border-white/5'} p-6`}>
           <h2 className={`text-xl font-bold flex items-center gap-2 ${isLightMode ? 'text-black' : 'text-[var(--theme)]'}`}>
-            <ShieldAlert className={`w-5 h-5 ${isLightMode ? 'text-[var(--theme)]' : ''}`} /> System Settings
+            <ShieldAlert className="w-5 h-5" /> System Settings
           </h2>
           <button 
             onClick={onClose} 
-            className={`${isLightMode ? 'text-zinc-500 hover:text-black hover:bg-black/5' : 'text-zinc-400 hover:text-white hover:bg-white/5'} p-1 transition-all focus:outline-none focus:ring-2 focus:ring-[var(--theme)] rounded-lg`}
+            className={`${isLightMode ? 'text-zinc-500 hover:text-black hover:bg-black/5' : 'text-zinc-400 hover:text-white hover:bg-white/5'} p-2 transition-all focus:outline-none focus:ring-2 focus:ring-[var(--theme)] rounded-xl`}
             aria-label="Close settings"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
-        <div className="space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+          
           {/* IDENTITY & SOCIAL */}
           <section className={`space-y-4 bg-[var(--theme)]/5 p-4 rounded-2xl border ${isLightMode ? 'border-[var(--theme)]/20' : 'border-[var(--theme)]/10'}`}>
             <div className="flex items-center justify-between">
@@ -156,14 +160,12 @@ export function SettingsModal({
                       onClick={() => onViewFriend(friend)}
                       className={`p-1.5 ${isLightMode ? 'bg-black/5 hover:bg-[var(--theme)]' : 'bg-white/5 hover:bg-[var(--theme)]'} hover:text-black rounded-lg transition-all`}
                     >
-                      <span className="sr-only">View</span>
                       <Eye className="w-3 h-3" />
                     </button>
                     <button 
                       onClick={() => onRemoveFriend(friend.code)}
                       className="p-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-all"
                     >
-                      <span className="sr-only">Delete</span>
                       <Trash2 className="w-3 h-3" />
                     </button>
                   </div>
@@ -335,7 +337,6 @@ export function SettingsModal({
               <Palette className="w-3 h-3" /> Themes
             </label>
             
-            {/* LIGHT MODE TOGGLE */}
             <button 
               onClick={() => setIsLightMode(!isLightMode)}
               className={`w-full p-3 mb-2 ${isLightMode ? 'bg-black/5 border-black/10 text-black hover:bg-black/10' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'} border rounded-xl text-[10px] font-black uppercase hover:border-[var(--theme)] flex items-center justify-center gap-2 transition-all`}
