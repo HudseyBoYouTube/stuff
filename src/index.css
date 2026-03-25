@@ -111,32 +111,6 @@
   filter: brightness(1.2);
 }
 
-/* Chromebook Fix: Forces the category scrollbar to stay visible using the Shelf Method */
-.no-scrollbar {
-  overflow-x: scroll !important;
-  display: flex !important;
-  padding-bottom: 12px !important; 
-  margin-bottom: -12px !important; 
-  scrollbar-width: auto !important;
-  -webkit-overflow-scrolling: touch;
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: block !important;
-  height: 10px !important;
-}
-
-.no-scrollbar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05) !important; 
-  border-radius: 10px !important;
-}
-
-.no-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #a1a1aa !important; 
-  border-radius: 10px !important;
-  border: 2px solid white !important;
-}
-
 /* Firefox Support */
 * {
   scrollbar-width: thin;
