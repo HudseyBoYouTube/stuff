@@ -56,27 +56,14 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
             </div>
           </div>
 
-          {/* Friend Code section: Using "Force-Show" styles */}
+          {/* Friend Code Section */}
           {isOwnProfile && friend?.code && (
             <div className="space-y-2 pt-4 border-t border-white/5">
-              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Your Friend Code</label>
+              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">
+                Your Friend Code
+              </label>
               
-              {/* This style block manually forces the scrollbar to be drawn by the browser */}
-              <style dangerouslySetInnerHTML={{ __html: `
-                .force-scroll::-webkit-scrollbar {
-                  width: 6px !important;
-                  display: block !important;
-                }
-                .force-scroll::-webkit-scrollbar-thumb {
-                  background: var(--theme) !important;
-                  border-radius: 10px !important;
-                }
-                .force-scroll::-webkit-scrollbar-track {
-                  background: rgba(255, 255, 255, 0.05) !important;
-                }
-              `}} />
-
-              <div className="bg-black/40 border border-white/10 rounded-xl p-3 h-28 overflow-y-scroll overflow-x-hidden force-scroll">
+              <div className="bg-black/40 border border-white/10 rounded-xl p-3 h-24 show-vertical-bar">
                 <p className="text-[9px] font-mono text-blue-400 break-all whitespace-pre-wrap leading-tight">
                   {friend.code}
                 </p>
