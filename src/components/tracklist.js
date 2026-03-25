@@ -2,17 +2,17 @@
 
 export const tracklist = [
   { 
-    title: "Crazy Train",
-    artist: "Ozzy Osbourne",
-    album: "Blizzard of Ozz",
-    url: "/music/crazy-train.mp3",
+    title: "Back In Black",
+    artist: "AC/DC",
+    album: "Back In Black",
+    url: "/music/back-in-black.mp3",
     isClean: true
   },
   { 
-    title: "Back In Black",
-    artist: "AC/DC", 
-    album: "Back In Black",
-    url: "/music/back-in-black.mp3",
+    title: "Crazy Train",
+    artist: "Ozzy Osbourne", 
+    album: "Blizzard of Ozz",
+    url: "/music/crazy-train.mp3",
     isClean: true
   },
   {
@@ -30,17 +30,17 @@ export const tracklist = [
     isClean: true 
   }, 
   {
-    title: "American Idiot",
-    artist: "Green Day",
-    album: "American Idiot",
-    url: "/music/american-idiot.mp3",
-    isClean: false
-  },
-  {
     title: "Good Riddance (Time of Your Life)",
     artist: "Green Day",
     album: "Nimrod",
     url: "/music/good-riddance-time-of-your-life.mp3",
+    isClean: false
+  },
+  {
+    title: "American Idiot",
+    artist: "Green Day",
+    album: "American Idiot",
+    url: "/music/american-idiot.mp3",
     isClean: false
   }
 ];
