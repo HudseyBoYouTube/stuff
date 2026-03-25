@@ -530,11 +530,15 @@ function App() {
     return decoded ? { ...friend, decoded } : friend;
   }, [friends, selectedFriendId]);
 
-  return (
-    <div 
-  className={`min-h-screen ${isLightMode ? 'bg-white text-black' : 'bg-[#09090b] text-zinc-100'} pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'}`} 
-  style={{ '--theme': theme, '--glow': `${performanceMode ? 0 : glowIntensity}px` }}
->
+return (
+    <div
+      className={`min-h-screen pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'} ${isLightMode ? 'light-mode bg-white text-zinc-900' : 'bg-[#0a0a0a] text-zinc-100'}`} 
+      style={{ 
+        '--theme': theme, 
+        '--glow': `${performanceMode ? 0 : glowIntensity}px`,
+        backgroundColor: isLightMode ? '#ffffff' : '#0a0a0a' 
+      }}
+    >
       
       {notification && (
         <div className="fixed bottom-40 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
