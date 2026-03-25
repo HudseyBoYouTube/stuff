@@ -50,24 +50,29 @@ export function SettingsModal({
   };
 
   // UI Variable Logic
-  // Using higher opacity for light mode to prevent "muddiness" from background blurs
-  const modalBg = isLightMode ? "bg-white border-zinc-200 text-zinc-900" : "bg-zinc-900 border-white/10 text-white";
-  const sectionBg = isLightMode ? "bg-zinc-100 border-zinc-200" : "bg-white/5 border-white/5";
+  // Changed modalBg to solid white for Light Mode to kill the "muddiness"
+  const modalBg = isLightMode ? "bg-white border-zinc-300 text-black shadow-[0_20px_50px_rgba(0,0,0,0.2)]" : "bg-zinc-900 border-white/10 text-white";
+  const sectionBg = isLightMode ? "bg-zinc-50 border-zinc-200" : "bg-white/5 border-white/5";
   const inputBg = isLightMode ? "bg-white border-zinc-300 text-black placeholder:text-zinc-400" : "bg-zinc-800 border-white/10 text-white";
-  const headerText = isLightMode ? "text-zinc-900" : "text-[var(--theme)]";
+  
+  // Forced inline style for the header to ensure it updates even if CSS is stubborn
+  const headerStyle = isLightMode ? { color: '#000000' } : { color: 'var(--theme)' };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className={`${modalBg} border p-6 rounded-3xl max-w-md w-full relative shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar`}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+      <div className={`${modalBg} border p-6 rounded-3xl max-w-md w-full relative space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar`}>
         
         {/* HEADER */}
         <div className={`flex items-center justify-between border-b ${isLightMode ? 'border-zinc-200' : 'border-white/5'} pb-4`}>
-          <h2 className={`text-xl font-bold flex items-center gap-2 ${headerText}`}>
-            <ShieldAlert className={`w-5 h-5 ${isLightMode ? 'text-[var(--theme)]' : ''}`} /> System Settings
+          <h2 
+            style={headerStyle}
+            className="text-xl font-black flex items-center gap-2 uppercase tracking-tight"
+          >
+            <ShieldAlert className="w-5 h-5" /> System Settings
           </h2>
           <button 
             onClick={onClose} 
-            className={`${isLightMode ? 'text-zinc-500 hover:text-black hover:bg-zinc-100' : 'text-zinc-400 hover:text-white hover:bg-white/5'} p-1 transition-all focus:outline-none rounded-lg`}
+            className={`${isLightMode ? 'text-zinc-400 hover:text-black hover:bg-zinc-100' : 'text-zinc-400 hover:text-white hover:bg-white/5'} p-1.5 transition-all rounded-xl focus:outline-none`}
             aria-label="Close settings"
           >
             <X className="w-6 h-6" />
@@ -78,7 +83,7 @@ export function SettingsModal({
           {/* IDENTITY & SOCIAL */}
           <section className={`space-y-4 ${isLightMode ? 'bg-zinc-50 border-zinc-200' : 'bg-[var(--theme)]/5 border-[var(--theme)]/10'} p-4 rounded-2xl border`}>
             <div className="flex items-center justify-between">
-              <label className={`text-[10px] uppercase font-black tracking-widest flex items-center gap-2 ${isLightMode ? 'text-zinc-500' : 'text-[var(--theme)]'}`}>
+              <label className={`text-[10px] uppercase font-black tracking-widest flex items-center gap-2 ${isLightMode ? 'text-zinc-400' : 'text-[var(--theme)]'}`}>
                 <Type className="w-3 h-3" /> Profile Identity
               </label>
               <button 
@@ -110,18 +115,18 @@ export function SettingsModal({
                 onChange={(e) => setDisplayName(e.target.value.slice(0, 25))}
                 className={`w-full ${inputBg} border rounded-xl p-3 text-xs outline-none focus:ring-2 focus:ring-[var(--theme)]/20 font-bold shadow-sm`}
               />
-              <div className={`${isLightMode ? 'bg-zinc-100 border-zinc-200' : 'bg-black/20 border-white/5'} p-3 rounded-xl border space-y-3`}>
+              <div className={`${isLightMode ? 'bg-white border-zinc-200' : 'bg-black/20 border-white/5'} p-3 rounded-xl border space-y-3`}>
                 <div className="flex items-center justify-between">
-                  <p className="text-[8px] font-black text-zinc-500 uppercase leading-none">Your Friend Code</p>
+                  <p className="text-[8px] font-black text-zinc-400 uppercase leading-none">Your Friend Code</p>
                   <button 
                     onClick={handleCopyCode}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${copied ? 'bg-green-500 text-black' : isLightMode ? 'bg-white text-zinc-600 border border-zinc-200 hover:bg-zinc-50' : 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white'}`}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${copied ? 'bg-green-500 text-black' : isLightMode ? 'bg-zinc-100 text-zinc-600 border border-zinc-200 hover:bg-zinc-200' : 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white'}`}
                   >
                     {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                     {copied ? 'Copied' : 'Copy'}
                   </button>
                 </div>
-                <div className={`${isLightMode ? 'bg-white border-zinc-200' : 'bg-white/5 border-white/5'} p-2 rounded-lg border max-h-20 overflow-y-auto no-scrollbar`}>
+                <div className={`${isLightMode ? 'bg-zinc-50 border-zinc-200' : 'bg-white/5 border-white/5'} p-2 rounded-lg border max-h-20 overflow-y-auto no-scrollbar`}>
                   <p className="text-[10px] font-mono font-black text-[var(--theme)] break-all leading-relaxed tracking-tight">
                     {friendCode}
                   </p>
@@ -132,7 +137,7 @@ export function SettingsModal({
 
           {/* FRIENDS LIST */}
           <section className={`space-y-4 ${sectionBg} p-4 rounded-2xl border`}>
-            <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2">
+            <label className="text-[10px] uppercase font-black text-zinc-400 tracking-widest flex items-center gap-2">
               <Users className="w-3 h-3 text-[var(--theme)]" /> Friends List
             </label>
             
@@ -178,7 +183,7 @@ export function SettingsModal({
           </section>
 
           {/* PERFORMANCE MODE */}
-          <section className={`space-y-4 p-4 rounded-2xl border ${isLightMode ? 'bg-yellow-50 border-yellow-100' : 'bg-yellow-500/5 border-yellow-500/10'}`}>
+          <section className={`space-y-4 p-4 rounded-2xl border ${isLightMode ? 'bg-yellow-50 border-yellow-200' : 'bg-yellow-500/5 border-yellow-500/10'}`}>
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <label className="text-[10px] uppercase font-black text-yellow-600 tracking-widest flex items-center gap-2">
@@ -186,7 +191,7 @@ export function SettingsModal({
                 </label>
                 <button 
                   onClick={() => setPerformanceMode(!performanceMode)}
-                  className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all shadow-sm ${performanceMode ? 'bg-yellow-500 text-black' : isLightMode ? 'bg-white text-zinc-400 border border-zinc-200' : 'bg-white/5 text-zinc-500 border border-white/10'}`}
+                  className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all shadow-sm ${performanceMode ? 'bg-yellow-500 text-black' : isLightMode ? 'bg-white text-zinc-400 border border-zinc-300' : 'bg-white/5 text-zinc-500 border border-white/10'}`}
                 >
                   <Zap className="w-3 h-3" />
                   {performanceMode ? 'ON' : 'OFF'}
@@ -202,13 +207,13 @@ export function SettingsModal({
 
           {/* MEDIA UPLOADS */}
           <section className={`space-y-4 ${sectionBg} p-4 rounded-2xl border`}>
-            <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2">
+            <label className="text-[10px] uppercase font-black text-zinc-400 tracking-widest flex items-center gap-2">
               <ImageIcon className="w-3 h-3 text-[var(--theme)]" /> Custom Media
             </label>
             <div className="grid grid-cols-2 gap-2">
               <label className={`p-3 ${inputBg} border rounded-xl text-[9px] font-black uppercase text-center cursor-pointer hover:border-[var(--theme)] transition-all shadow-sm`}>
                 <Upload className="w-3 h-3 mx-auto mb-1 text-[var(--theme)]" />
-                Upload BG IMG/GIF
+                Upload BG
                 <input type="file" accept="image/*,video/*" onChange={handleBackgroundUpload} className="hidden" />
               </label>
               <label className={`p-3 ${inputBg} border rounded-xl text-[9px] font-black uppercase text-center cursor-pointer hover:border-[var(--theme)] transition-all shadow-sm`}>
@@ -272,7 +277,7 @@ export function SettingsModal({
 
           {/* MUSIC LIBRARY PRESETS */}
           <section className={`space-y-4 p-4 rounded-2xl border ${isLightMode ? 'bg-zinc-50 border-zinc-200' : 'bg-[var(--theme)]/5 border-[var(--theme)]/10'}`}>
-            <label className={`text-[10px] uppercase font-black tracking-widest flex items-center gap-2 ${isLightMode ? 'text-zinc-500' : 'text-[var(--theme)]'}`}>
+            <label className={`text-[10px] uppercase font-black tracking-widest flex items-center gap-2 ${isLightMode ? 'text-zinc-400' : 'text-[var(--theme)]'}`}>
               <Music className="w-3 h-3" /> Music Library
             </label>
             <div className="grid grid-cols-1 gap-2">
@@ -331,16 +336,16 @@ export function SettingsModal({
 
           {/* THEMES */}
           <section className="space-y-3">
-            <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2">
+            <label className="text-[10px] uppercase font-black text-zinc-400 tracking-widest flex items-center gap-2">
               <Palette className="w-3 h-3" /> Themes
             </label>
             
             <button 
               onClick={() => setIsLightMode(!isLightMode)}
-              className={`w-full p-3 mb-2 border rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-all shadow-sm ${isLightMode ? 'bg-white border-zinc-200 text-zinc-900 hover:bg-zinc-50' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'}`}
+              className={`w-full p-3 mb-2 border rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-all shadow-sm ${isLightMode ? 'bg-zinc-100 border-zinc-300 text-black hover:bg-zinc-200' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'}`}
             >
               {isLightMode ? <Sun className="w-3.5 h-3.5 text-yellow-500" /> : <Moon className="w-3.5 h-3.5 text-blue-400" />} 
-              {isLightMode ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+              {isLightMode ? 'Mode: Light' : 'Mode: Dark'}
             </button>
 
             <div className="grid grid-cols-2 gap-2">
@@ -348,7 +353,7 @@ export function SettingsModal({
                 <button 
                   key={id} 
                   onClick={() => applyTheme(t)} 
-                  className={`p-3 border rounded-xl text-[10px] font-bold flex items-center gap-2 transition-all shadow-sm ${isLightMode ? 'bg-white border-zinc-200 hover:border-[var(--theme)]' : 'bg-white/5 border-white/10 hover:border-[var(--theme)]'}`}
+                  className={`p-3 border rounded-xl text-[10px] font-bold flex items-center gap-2 transition-all shadow-sm ${isLightMode ? 'bg-white border-zinc-200 hover:border-[var(--theme)] text-black' : 'bg-white/5 border-white/10 hover:border-[var(--theme)]'}`}
                 >
                   <div className="w-2 h-2 rounded-full shadow-sm" style={{ backgroundColor: t.color }} /> {t.name}
                 </button>
@@ -357,7 +362,7 @@ export function SettingsModal({
           </section>
 
           {/* RESET BUTTONS */}
-          <div className="grid grid-cols-2 gap-3 pt-4">
+          <div className="grid grid-cols-2 gap-3 pt-4 border-t border-zinc-200/50">
             <button 
               onClick={handleClearSettings} 
               className={`p-4 rounded-2xl border transition-all text-[9px] font-black uppercase flex items-center justify-center gap-2 shadow-sm ${
