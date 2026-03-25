@@ -24,14 +24,31 @@
 .light-mode .bg-\[#09090b\],
 .light-mode .bg-zinc-900,
 .light-mode .bg-zinc-950,
-.light-mode .bg-black,
-.light-mode .bg-\[#09090b\]\/90 {
+.light-mode .bg-black {
   background-color: #ffffff !important;
   color: #18181b !important;
 }
 
+/* --- HEADER & STICKY BAR FIX --- */
+.light-mode .sticky,
+.light-mode header,
+.light-mode .bg-\[#09090b\]\/90,
+.light-mode .bg-\[#09090b\]\/95,
+.light-mode .backdrop-blur-md {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Fix Search Bar and Inputs in Header */
+.light-mode header input,
+.light-mode .bg-white\/5 {
+  background-color: #f4f4f5 !important;
+  color: #18181b !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
 /* Make Game Cards look good on white */
-.light-mode .bg-white\/5, 
 .light-mode .bg-zinc-900\/50 {
   background-color: #f4f4f5 !important;
   border: 1px solid rgba(0, 0, 0, 0.05) !important;
