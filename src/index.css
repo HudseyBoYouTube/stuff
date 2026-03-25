@@ -91,19 +91,20 @@
   }
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar - General */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: var(--bg-main);
+  /* Fix: Changed to transparent so the bar is actually visible against the background */
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
   background-color: var(--theme);
-  border: 3px solid var(--bg-main);
+  border: 2px solid var(--bg-main);
   @apply rounded-full transition-colors;
 }
 
@@ -111,7 +112,7 @@
   filter: brightness(1.2);
 }
 
-/* Chromebook Fix: Ghost Track Method */
+/* Chromebook Fix: Ghost Track Method (Specifically for Horizontal Bars) */
 .no-scrollbar {
   overflow-x: scroll !important;
   overflow-y: hidden !important;
@@ -136,6 +137,18 @@
   border: 2px solid white !important;
 }
 
+/* Vertical Scrollbar Helper for the Friend Code Box */
+.show-vertical-bar {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: thin !important;
+}
+
+.show-vertical-bar::-webkit-scrollbar {
+  width: 6px !important;
+  display: block !important;
+}
+
 .no-scrollbar::-webkit-scrollbar-button {
   display: none !important;
 }
@@ -143,5 +156,5 @@
 /* Firefox Support */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--theme) var(--bg-main);
+  scrollbar-color: var(--theme) transparent;
 }
