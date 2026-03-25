@@ -98,7 +98,6 @@
 }
 
 ::-webkit-scrollbar-track {
-  /* Fix: Changed to transparent so the bar is actually visible against the background */
   background-color: transparent;
 }
 
@@ -147,6 +146,12 @@
 .show-vertical-bar::-webkit-scrollbar {
   width: 6px !important;
   display: block !important;
+}
+
+/* Added visibility for the track so you can see it's there */
+.show-vertical-bar::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 10px;
 }
 
 .no-scrollbar::-webkit-scrollbar-button {
