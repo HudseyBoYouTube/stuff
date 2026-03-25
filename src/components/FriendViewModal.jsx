@@ -1,7 +1,6 @@
 import { X, UserCircle, Heart } from 'lucide-react';
 
 export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfile }) {
-  // FIXED GUARD: Allow the modal to show if it's your own profile, even if 'friend' is null
   if (!isOwnProfile && (!friend || !friend.decoded)) return null;
 
   const displayPfp = isOwnProfile ? ownPfp : friend?.decoded?.p;
@@ -16,7 +15,7 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
           <X />
         </button>
         
-        {/* Main Wrapper: Added overflow-x-hidden to kill the horizontal scroll bar */}
+        {/* Main Wrapper - Keeps horizontal scroll hidden */}
         <div className="overflow-y-auto overflow-x-hidden space-y-6 pr-1 custom-scrollbar">
           <div className="text-center space-y-2">
             <div className="w-24 h-24 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20 overflow-hidden shadow-[0_0_20px_rgba(var(--theme-rgb),0.1)]">
@@ -57,19 +56,27 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
             </div>
           </div>
 
-          {/* Friend Code section: Inline styles to force the bar visibility */}
+          {/* Friend Code section: Using "Force-Show" styles */}
           {isOwnProfile && friend?.code && (
             <div className="space-y-2 pt-4 border-t border-white/5">
               <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Your Friend Code</label>
-              <div 
-                className="bg-black/40 border border-white/10 rounded-xl p-3 overflow-y-scroll overflow-x-hidden"
-                style={{ 
-                  height: '100px',
-                  scrollbarWidth: 'thin', /* For Firefox */
-                  scrollbarColor: 'var(--theme) transparent', /* For Firefox */
-                  msOverflowStyle: 'scrollbar' /* For Edge/IE */
-                }}
-              >
+              
+              {/* This style block manually forces the scrollbar to be drawn by the browser */}
+              <style dangerouslySetInnerHTML={{ __html: `
+                .force-scroll::-webkit-scrollbar {
+                  width: 6px !important;
+                  display: block !important;
+                }
+                .force-scroll::-webkit-scrollbar-thumb {
+                  background: var(--theme) !important;
+                  border-radius: 10px !important;
+                }
+                .force-scroll::-webkit-scrollbar-track {
+                  background: rgba(255, 255, 255, 0.05) !important;
+                }
+              `}} />
+
+              <div className="bg-black/40 border border-white/10 rounded-xl p-3 h-28 overflow-y-scroll overflow-x-hidden force-scroll">
                 <p className="text-[9px] font-mono text-blue-400 break-all whitespace-pre-wrap leading-tight">
                   {friend.code}
                 </p>
