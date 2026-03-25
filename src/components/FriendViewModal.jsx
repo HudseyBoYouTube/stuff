@@ -77,3 +77,8 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
               </div>
             </div>
           )}
+        </div>
+      </div>
+    </div>
+  );
+}
