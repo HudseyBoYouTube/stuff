@@ -591,7 +591,7 @@ return (
   }}
   isLightMode={isLightMode} 
 />
-         <div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md border-b ${isLightMode ? 'border-zinc-200' : 'border-white/5'} px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors`}>
+         <div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors`}>
   <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-4 no-scrollbar">
     {categoriesWithCounts.map(cat => (
       <button 
@@ -631,7 +631,6 @@ return (
           />
         ))}
       </div>
-      <div className={`h-px ${isLightMode ? 'bg-zinc-200' : 'bg-white/5'} w-full mt-8`} />
     </section>
   )}
 
