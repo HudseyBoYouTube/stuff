@@ -53,9 +53,11 @@
   background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
-/* Header transparency effect for light mode */
-.light-mode .bg-\[\#09090b\]\/90 {
-  background-color: rgba(255, 255, 255, 0.9) !important;
+/* Header & Category Bar - Solid White to prevent gray bleed-through */
+.light-mode .bg-\[\#09090b\]\/90,
+.light-mode .bg-\[\#09090b\]\/95 {
+  background-color: #ffffff !important;
+  backdrop-filter: none !important;
 }
 
 @theme {
