@@ -508,14 +508,13 @@ function App() {
       return updated;
     });
 
+    const startTime = Date.now();
+    const win = window.open('about:blank', '_blank');
+    
     if (win) {
       win.document.title = "DO NOT REFRESH";
       const link = win.document.createElement('link');
-      link.rel = 'icon'; 
-      
-      // THIS LINE REMOVES THE CAPYBARA:
-      link.href = 'data:,'; 
-      
+      link.rel = 'icon'; link.href = currentIdentity.icon;
       win.document.head.appendChild(link);
       win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
       const iframe = win.document.createElement('iframe');
