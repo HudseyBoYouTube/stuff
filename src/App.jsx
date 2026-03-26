@@ -537,7 +537,7 @@ function App() {
           });
         }
       }, 1000);
-    }
+    };
 
   const filteredGames = useMemo(() => {
     const q = searchQuery.toLowerCase();
