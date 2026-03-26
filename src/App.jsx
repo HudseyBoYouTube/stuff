@@ -146,14 +146,23 @@ function App() {
   const validFavoritesCount = useMemo(() => gamesData.filter(g => favorites.includes(g.id)).length, [gamesData, favorites]);
 
   const categoriesWithCounts = useMemo(() => {
-    const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
-    const final = [{ name: 'All', count: gamesData.length }];
-    if (validFavoritesCount > 0) final.unshift({ name: 'Favorites', count: validFavoritesCount });
-    uniqueCats.forEach(cat => {
-      final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
-    });
-    return final;
-  }, [gamesData, validFavoritesCount]);
+  const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
+  
+  // 1. Start with "All" at the very beginning
+  const final = [{ name: 'All', count: gamesData.length }];
+  
+  // 2. Add "Favorites" second (if you have any)
+  if (validFavoritesCount > 0) {
+    final.push({ name: 'Favorites', count: validFavoritesCount });
+  }
+  
+  // 3. Add the rest of the categories (Community, Action, etc.)
+  uniqueCats.forEach(cat => {
+    final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
+  });
+  
+  return final;
+}, [gamesData, validFavoritesCount]);
 
   useEffect(() => {
     checkScroll();
