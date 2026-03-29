@@ -340,7 +340,7 @@ export function SettingsModal({
               className={`w-full p-3 mb-2 border rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-all shadow-sm ${isLightMode ? 'bg-white border-zinc-200 text-zinc-900 hover:bg-zinc-50' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'}`}
             >
               {isLightMode ? <Sun className="w-3.5 h-3.5 text-yellow-500" /> : <Moon className="w-3.5 h-3.5 text-blue-400" />} 
-              {isLightMode ? 'Switch to Dark Mode' : 'Switch to Light Mode (Refresh to apply)'}
+              {isLightMode ? 'Switch to Dark Mode' : 'Switch to Light Mode (Refresh to apply on Desktop PC)'}
             </button>
 
             <div className="grid grid-cols-2 gap-2">
