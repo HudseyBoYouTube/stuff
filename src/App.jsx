@@ -512,10 +512,12 @@ function App() {
     const win = window.open('about:blank', '_blank');
     
     if (win) {
+      // Set the title only
       win.document.title = "DO NOT REFRESH";
-      const link = win.document.createElement('link');
-      link.rel = 'icon'; link.href = currentIdentity.icon;
-      win.document.head.appendChild(link);
+      
+      // ICON LOGIC REMOVED: 
+      // The code that created the 'link' element and set it to currentIdentity.icon is gone.
+      
       win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
       const iframe = win.document.createElement('iframe');
       iframe.src = item.url;
