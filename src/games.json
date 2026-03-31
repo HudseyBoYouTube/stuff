@@ -28,13 +28,6 @@
     "category": "Creative"
   },
   {
-    "id": "sandspiel",
-    "title": "Sandspiel",
-    "url": "https://sandspiel.club/",
-    "thumbnail": "https://images.weserv.nl/?url=https://pbs.twimg.com/profile_images/1073861926097117184/FB3bBgcN_400x400.jpg&w=240&h=240&fit=contain&bg=white",
-    "category": "Creative"
-  },
-  {
     "id": "cookie-clicker",
     "title": "Cookie Clicker",
     "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/cookie-clicker/",
@@ -156,7 +149,7 @@
   {
     "id": "ovo",
     "title": "OvO",
-    "url": "https://stophop.theveranda.co.id/cdn/projects/ovo/",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/ovo/",
     "thumbnail": "https://imgs.crazygames.com/auto-covers2/ovo_1x1.png?format=auto&quality=70&metadata=none",
     "category": "Platformer"
   },
@@ -166,13 +159,6 @@
     "url": "https://voided-shielf.gravityenergygenerator.com/assets/games/monkeymart.html",
     "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/ce4a204b6d2cc99d1879da0b2282b0d8/monkey-mart.png",
     "category": "Casual"
-  },
-  {
-    "id": "a-small-world-cup",
-    "title": "A Small World Cup",
-    "url": "https://stophop.theveranda.co.id/stuff/selfhosted/asmallworldcup/",
-    "thumbnail": "https://doodlebaseball.io/cache/data/image/game/a-small-world-cup-m200x200.webp",
-    "category": "Sports"
   },
   {
     "id": "retro-bowl",
@@ -266,16 +252,9 @@
     "category": "Strategy"
   },
   {
-    "id": "deadly-decent",
-    "title": "Deadly Decent",
-    "url": "https://4games-comeback-soon.pueblos.org.ve/db/html/deadly_descent/index.html",
-    "thumbnail": "https://imgs.crazygames.com/deadly-descent-bzs_1x1/20250818071830/deadly-descent-bzs_1x1-cover?format=auto&quality=100&metadata=none&width=1200",
-    "category": "Driving"
-  },
-  {
     "id": "dune",
     "title": "Dune",
-    "url": "https://4games-comeback-soon.pueblos.org.ve/db/html/dune/index.html",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/dune/",
     "thumbnail": "https://cdn.aptoide.com/imgs/0/f/a/0faa6de9c6fbd892baa4732fc67f980a_screen.png",
     "category": "Skill"
   },
@@ -427,13 +406,6 @@
     "category": "Platformer"
   },
   {
-    "id": "bit-planes",
-    "title": "Bit Planes",
-    "url": "https://medv.io/bit-planes/",
-    "thumbnail": "https://imgr2.ant.games/220x220/games/bit-planes/s307x310-1751620350.png",
-    "category": "Action"
-  },
-  {
     "id": "crossy-road",
     "title": "Crossy Road",
     "url": "https://neatliterature.majoitus.ee/books/files/k12learning/arsenic/crossy-road/index.html",
@@ -478,7 +450,7 @@
   {
     "id": "learn-2-fly",
     "title": "Learn 2 Fly",
-    "url": "https://stophop.theveranda.co.id/stuff/selfhosted/flash/game/learn-to-fly.html",
+    "url": "https://wwww.o.bostoncareercounselor.com/games/learntofly/index.html",
     "thumbnail": "https://e.snmc.io/lk/lv/x/77e0aedce501ea412351ef15386c75e4/9441677",
     "category": "Arcade"
   },
@@ -492,14 +464,14 @@
   {
     "id": "slow-roads",
     "title": "Slow Roads",
-    "url": "https://stophop.theveranda.co.id/stuff/selfhosted/slowroads/",
+    "url": "https://wwww.o.bostoncareercounselor.com/games/slowroads/index.html",
     "thumbnail": "https://cdn-1.webcatalog.io/catalog/slow-roads/slow-roads-icon-filled-256.png?v=1714780308395",
     "category": "Driving"
   },
   {
     "id": "subway-surfers",
     "title": "Subway Surfers",
-    "url": "https://stophop.theveranda.co.id/cdn/projects/subway-surfers/",
+    "url": "https://wwww.o.bostoncareercounselor.com/games/subway-surfers/index.html",
     "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/7f4c7dc492227ec127a47e4b3197754e/subway-surfers.png",
     "category": "Runner"
   },
@@ -534,21 +506,21 @@
   {
     "id": "basketball-stars",
     "title": "Basketball Stars",
-    "url": "https://stophop.theveranda.co.id/stuff/selfhosted/basketball-stars/",
+    "url": "https://wwww.o.bostoncareercounselor.com/games/basketballstars/index.html",
     "thumbnail": "https://m.media-amazon.com/images/I/81BL1Hx2KuL.png",
     "category": "Sports"
   },
   {
     "id": "getting-over-it",
     "title": "Getting Over It ",
-    "url": "https://stophop.theveranda.co.id/stuff/selfhosted/gettingoverit/index.html",
+    "url": "https://wwww.o.bostoncareercounselor.com/gamefile/goi.html",
     "thumbnail": "https://sm.ign.com/ign_nl/cover/g/getting-ov/getting-over-it-with-bennett-foddy_z7y4.jpg",
     "category": "Skill"
   },
   {
     "id": "house-of-hazards",
     "title": "House Of Hazards",
-    "url": "https://stophop.theveranda.co.id/stuff/selfhosted/houseofhazards/index.html",
+    "url": "https://wwww.o.bostoncareercounselor.com/games/houseofhazards/index.html",
     "thumbnail": "https://imgs.crazygames.com/house-of-hazards_1x1/20250108101728/house-of-hazards_1x1-cover?format=auto&quality=100&metadata=none&width=1200",
     "category": "Action"
   },
@@ -646,7 +618,7 @@
   {
     "id": "boxing-random",
     "title": "Boxing Random",
-    "url": "https://stophop.theveranda.co.id/stuff/selfhosted/boxing-random/",
+    "url": "https://neatliterature.majoitus.ee/books/files/k12learning/echo/boxing-random/index.html",
     "thumbnail": "https://imgs.crazygames.com/auto-covers/boxing-random_1x1.jpeg?format=auto&quality=100&metadata=none&width=1200",
     "category": "Random"
   },
@@ -667,7 +639,7 @@
   { 
     "id": "stick-merge",
     "title": "Stick Merge",
-    "url": "https://neatliterature.majoitus.ee/books/files/stick-merge/index.html",
+    "url": "https://neatliterature.majoitus.ee/books/files/k12learning/echo/stick-merge/index.html",
     "thumbnail": "https://www.virlan.co/unblocked-games/wp-content/uploads/2022/08/stick-merge-game.jpg",
     "category": "Action"
   },
@@ -905,7 +877,7 @@
   {
     "id": "gladi-hoppers",
     "title": "Gladihoppers",
-    "url": "https://neatliterature.majoitus.ee/books/files/k12learning/arsenic/gladihoppers/index.html",
+    "url": "https://wwww.o.bostoncareercounselor.com/gamefile/Gladihoppers.html",
     "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNAr1A5XDPj_A-DstsmCwi-aV5wYSGzL7O4Q&s",
     "category": "Action"
   },
@@ -952,16 +924,9 @@
     "category": "Parkour"
   },
   {
-    "id": "google-snake",
-    "title": "Google Snake",
-    "url": "https://neatliterature.majoitus.ee/books/files/google-snake/index.html",
-    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSqJ8g7ciqYtlon-LpDTjrVpsgaBwvdL38Bg&s",
-    "category": "Classic"
-  },
-  {
     "id": "jetpack-joyride",
     "title": "Jetpack Joyride",
-    "url": "https://neatliterature.majoitus.ee/books/files/jetpack-joyride/index.html",
+    "url": "https://wwww.o.bostoncareercounselor.com/games/jetpackjoyride/index.html",
     "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMp6a83tWwzGzLQdtI12IvUwzOThFf2nMMIA&s",
     "category": "Easy"
   },
