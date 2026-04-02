@@ -1,16 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
-/* --- Step 1: Variable Definitions --- */
 :root {
-  /* Default: Dark Mode */
   --bg-main: #0a0a0a;
-  --text-main: #f4f4f5; /* zinc-100 */
-  --card-bg: #18181b;   /* zinc-900 */
+  --text-main: #f4f4f5; 
+  --card-bg: #18181b;   
   --border-main: rgba(255, 255, 255, 0.1);
 }
 
-/* Light Mode Overrides - FORCED PURE WHITE */
 .light-mode {
   --bg-main: #ffffff !important;
   --text-main: #18181b !important;
@@ -20,7 +17,6 @@
   color: #18181b !important;
 }
 
-/* Force Fix for Tailwind Dark Classes */
 .light-mode .bg-\[#09090b\],
 .light-mode .bg-zinc-900,
 .light-mode .bg-zinc-950,
@@ -29,7 +25,6 @@
   color: #18181b !important;
 }
 
-/* --- HEADER & STICKY BAR FIX --- */
 .light-mode .sticky,
 .light-mode header,
 .light-mode .bg-\[#09090b\]\/90,
@@ -40,7 +35,6 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Fix Search Bar and Inputs in Header */
 .light-mode header input,
 .light-mode .bg-white\/5 {
   background-color: #f4f4f5 !important;
@@ -48,14 +42,12 @@
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Make Game Cards look good on white */
 .light-mode .bg-zinc-900\/50 {
   background-color: #f4f4f5 !important;
   border: 1px solid rgba(0, 0, 0, 0.05) !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Force text visibility */
 .light-mode .text-white,
 .light-mode .text-zinc-100,
 .light-mode .text-zinc-200,
@@ -65,10 +57,9 @@
 
 .light-mode .text-zinc-400,
 .light-mode .text-zinc-500 {
-  color: #71717a !important; /* zinc-500 */
+  color: #71717a !important; 
 }
 
-/* Fix Borders */
 .light-mode .border-white\/5,
 .light-mode .border-white\/10,
 .light-mode .border-zinc-800 {
@@ -91,7 +82,6 @@
   }
 }
 
-/* Custom Scrollbar - General */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -111,7 +101,6 @@
   filter: brightness(1.2);
 }
 
-/* Chromebook Fix: Ghost Track Method (Specifically for Horizontal Bars) */
 .no-scrollbar {
   overflow-x: scroll !important;
   overflow-y: hidden !important;
@@ -136,30 +125,27 @@
   border: 2px solid white !important;
 }
 
-/* Vertical Scrollbar Helper for the Friend Code Box */
 .show-vertical-bar {
-  overflow-y: scroll !important; /* Changed to scroll to force the gutter to exist */
+  overflow-y: scroll !important; 
   overflow-x: hidden !important;
   scrollbar-width: thin !important;
   display: block !important;
 }
 
 .show-vertical-bar::-webkit-scrollbar {
-  width: 8px !important; /* Made slightly wider to be visible */
+  width: 8px !important; 
   display: block !important;
 }
 
-/* Visible track for debugging */
 .show-vertical-bar::-webkit-scrollbar-track {
   background-color: rgba(255, 255, 255, 0.1) !important;
   border-radius: 10px !important;
 }
 
-/* Forced thumb visibility */
 .show-vertical-bar::-webkit-scrollbar-thumb {
   background-color: var(--theme) !important;
   border-radius: 10px !important;
-  min-height: 40px !important; /* Forces the handle to be big enough to see */
+  min-height: 40px !important; 
   border: 2px solid rgba(0, 0, 0, 0.2) !important;
 }
 
@@ -167,7 +153,6 @@
   display: none !important;
 }
 
-/* Firefox Support */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--theme) transparent;
