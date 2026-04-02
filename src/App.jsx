@@ -148,15 +148,12 @@ function App() {
   const categoriesWithCounts = useMemo(() => {
   const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
   
-  // 1. Start with "All" at the very beginning
   const final = [{ name: 'All', count: gamesData.length }];
   
-  // 2. Add "Favorites" second (if you have any)
   if (validFavoritesCount > 0) {
     final.push({ name: 'Favorites', count: validFavoritesCount });
   }
   
-  // 3. Add the rest of the categories (Community, Action, etc.)
   uniqueCats.forEach(cat => {
     final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
   });
@@ -512,11 +509,7 @@ function App() {
     const win = window.open('about:blank', '_blank');
     
     if (win) {
-      // Set the title only
       win.document.title = "DO NOT REFRESH";
-      
-      // ICON LOGIC REMOVED: 
-      // The code that created the 'link' element and set it to currentIdentity.icon is gone.
       
       win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
       const iframe = win.document.createElement('iframe');
@@ -629,7 +622,6 @@ return (
 <div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors group`}>
   <div className="max-w-7xl mx-auto relative flex items-center">
     
-    {/* Left Scroll Button Area */}
     {canScrollLeft && (
       <div className={`absolute left-0 z-50 flex items-center pr-12 h-full bg-gradient-to-r ${isLightMode ? 'from-white via-white/80' : 'from-[#09090b] via-[#09090b]/80'} to-transparent pointer-events-none`}>
         <button 
@@ -663,7 +655,6 @@ return (
       ))}
     </div>
 
-    {/* Right Scroll Button Area - Positioned slightly outside and with a fade */}
     {canScrollRight && (
       <div className={`absolute -right-9 z-50 flex items-center pl-12 h-full bg-gradient-to-l ${isLightMode ? 'from-white via-white/80' : 'from-[#09090b] via-[#09090b]/80'} to-transparent pointer-events-none`}>
         <button 
@@ -763,7 +754,6 @@ return (
         bgOpacity={bgOpacity}
         setBgOpacity={setBgOpacity}
         
-        // Name & Friend Logic
         displayName={displayName}
         setDisplayName={(val) => {
           const nameExists = friends.some(f => f.name.toLowerCase() === val.trim().toLowerCase());
@@ -775,7 +765,6 @@ return (
           localStorage.setItem('capy-display-name', val); 
         }}
         
-        // Sync Logic
         friendCode={friendCode}
         fullSyncCode={fullSyncCode}
         onImportSync={(code) => {
@@ -801,8 +790,7 @@ return (
             alert("Invalid Sync Code!");
           }
         }}
-
-        // Stealth & Identity
+      
         friends={friends}
         isSyncing={isSyncing}
         disguise={disguise}
@@ -812,11 +800,9 @@ return (
         customIcon={customIcon}
         setCustomIcon={(val) => { setCustomIcon(val); localStorage.setItem('capy-custom-icon', val); }}
         
-        // Appearance (Light Mode)
         isLightMode={isLightMode}
         setIsLightMode={setIsLightMode}
 
-        // Friend Actions
         onAddFriend={(code) => {
           const decodedData = safeDecode(code);
           if (decodedData && decodedData.id) {
