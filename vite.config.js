@@ -9,7 +9,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
-    // This base path is CRUCIAL for GitHub Pages to find your files
     base: '/', 
     plugins: [react(), tailwindcss()],
     define: {
@@ -21,7 +20,6 @@ export default defineConfig(({mode}) => {
       },
     },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
       hmr: process.env.DISABLE_HMR !== 'true',
     },
   };
