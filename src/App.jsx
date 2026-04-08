@@ -382,12 +382,11 @@ function App() {
     if (themeChangeCount >= 5) checkAndAdd('styler');
 
     if (earnedNew) {
-      setAchievements(newAchievements);
-      localStorage.setItem('capy-achievements', JSON.stringify(newAchievements));
+      // Logic is now handled by the useAchievements hook
       setNotification("🏆 New Trophy Unlocked!");
     }
-  }, [playtimes, favorites, themeChangeCount, achievements]);
-
+  }, [playtimes, favorites, themeChangeCount]);
+  
   const handleBackgroundUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
