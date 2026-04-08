@@ -32,7 +32,7 @@
 }
 
 .light-mode header input,
-.light-mode .bg-white/5 {
+.light-mode .bg-white\/5 {
   background-color: #f4f4f5 !important;
   color: #18181b !important;
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
@@ -56,8 +56,8 @@
   color: #71717a !important; 
 }
 
-.light-mode .border-white/5,
-.light-mode .border-white/10,
+.light-mode .border-white\/5,
+.light-mode .border-white\/10,
 .light-mode .border-zinc-800 {
   border-color: rgba(0, 0, 0, 0.1) !important;
 }
