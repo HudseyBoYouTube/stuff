@@ -25,11 +25,7 @@
   color: #18181b !important;
 }
 
-.light-mode .sticky,
-.light-mode header,
-.light-mode .bg-\[#09090b\]\/90,
-.light-mode .bg-\[#09090b\]\/95,
-.light-mode .backdrop-blur-md {
+.light-mode .sticky, .light-mode header, .light-mode .backdrop-blur-md {
   background-color: #ffffff !important;
   background: #ffffff !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
