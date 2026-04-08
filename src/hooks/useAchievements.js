@@ -4,11 +4,15 @@ export function useAchievements(userData) {
   const [achievements, setAchievements] = useState([]);
 
   useEffect(() => {
-    if (!userData) return;
+    if (!userData) {
+      setAchievements([]);
+      return;
+    }
     
     const unlocked = [];
     
-    if (userData.times && Object.keys(userData.times).length > 0) {
+    const playTimes = userData.times || {};
+    if (Object.keys(playTimes).length > 0) {
       unlocked.push({
         id: 'first_game',
         title: 'Getting Started',
@@ -16,7 +20,7 @@ export function useAchievements(userData) {
       });
     }
 
-    if (userData.themeChanges >= 5) {
+    if ((userData.themeChanges || 0) >= 5) {
       unlocked.push({
         id: 'styler',
         title: 'Fashionista',
