@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { useAchievements } from './hooks/useAchievements.js';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
@@ -48,13 +49,14 @@ const updateThemeVariables = (color, glow) => {
 };
 
 function App() {
+  const achievements = useAchievements(userData);
   const gamesData = useMemo(() => {
     if (!gamesDataRaw || !Array.isArray(gamesDataRaw)) return [];
     return gamesDataRaw;
   }, [gamesDataRaw]);
 
   const audioRef = useRef(null);
-  const categoryScrollRef = useRef(null); 
+  const categoryScrollRef = useRef(null);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
@@ -910,6 +912,7 @@ return (
               setNotification("Friend view refreshed!");
             }, 500);
         }}
+        myAchievements={achievements}
       />
     </div>
   );
