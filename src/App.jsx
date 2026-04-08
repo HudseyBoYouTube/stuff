@@ -18,6 +18,15 @@ const DEFAULT_GLOW = 50;
 const DEFAULT_TITLE = "Capybara Science";
 const DEFAULT_ICON = "https://img.icons8.com/color/32/capybara.png";
 
+// --- ACHIEVEMENT DEFINITIONS ---
+const TROPHIES = [
+  { id: 'first_game', name: 'First Blood', desc: 'Play your first game', icon: '🎯' },
+  { id: 'marathon', name: 'Marathoner', desc: 'Play for over 1 hour total', icon: '🏃' },
+  { id: 'collector', name: 'The Collector', desc: 'Favorite 10 different games', icon: '⭐' },
+  { id: 'loyal', name: 'Capy-Loyalist', desc: 'Play one game for 30 mins', icon: '👑' },
+  { id: 'styler', name: 'Fashionista', desc: 'Change your theme 5 times', icon: '🎨' }
+];
+
 const THEMES = {
   cyber: { name: 'Cyberpunk', color: '#ff0055', glow: 60 },
   midnight: { name: 'Midnight', color: '#7c3aed', glow: 40 },
@@ -87,6 +96,13 @@ function App() {
   });
   
   const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
+
+  // ACHIEVEMENT STATES
+  const [achievements, setAchievements] = useState(() => {
+    const saved = localStorage.getItem('capy-achievements');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [themeChangeCount, setThemeChangeCount] = useState(() => Number(localStorage.getItem('capy-theme-changes')) || 0);
 
   const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
     try {
@@ -192,11 +208,12 @@ function App() {
       id: uniqueId,
       f: topFavs,
       t: topTimes,
-      p: profilePic 
+      p: profilePic,
+      a: achievements // Sync achievements to friends
     };
     
     return btoa(JSON.stringify(data));
-  }, [displayName, uniqueId, favorites, playtimes, profilePic]);
+  }, [displayName, uniqueId, favorites, playtimes, profilePic, achievements]);
 
   const fullSyncCode = useMemo(() => {
     const data = {
@@ -205,10 +222,11 @@ function App() {
       p: profilePic,
       t: theme,
       g: glowIntensity,
-      favs: favorites
+      favs: favorites,
+      ach: achievements
     };
     return btoa(unescape(encodeURIComponent(JSON.stringify(data)))).replace(/=/g, '');
-  }, [displayName, uniqueId, profilePic, theme, glowIntensity, favorites]);
+  }, [displayName, uniqueId, profilePic, theme, glowIntensity, favorites, achievements]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('capy-theme') || DEFAULT_COLOR;
@@ -338,6 +356,41 @@ function App() {
     }
   }, [confirmClearSettings]);
 
+  // --- ACHIEVEMENT TRACKING LOGIC ---
+  useEffect(() => {
+    const newAchievements = [...achievements];
+    let earnedNew = false;
+
+    const checkAndAdd = (id) => {
+      if (!newAchievements.includes(id)) {
+        newAchievements.push(id);
+        earnedNew = true;
+      }
+    };
+
+    // 1. First Game
+    if (Object.keys(playtimes).length > 0) checkAndAdd('first_game');
+
+    // 2. Marathoner (3600s = 1hr)
+    const totalTime = Object.values(playtimes).reduce((a, b) => a + b, 0);
+    if (totalTime >= 3600) checkAndAdd('marathon');
+
+    // 3. Collector (10 favs)
+    if (favorites.length >= 10) checkAndAdd('collector');
+
+    // 4. Loyalist (1800s = 30m on one game)
+    if (Object.values(playtimes).some(t => t >= 1800)) checkAndAdd('loyal');
+
+    // 5. Fashionista (5 theme changes)
+    if (themeChangeCount >= 5) checkAndAdd('styler');
+
+    if (earnedNew) {
+      setAchievements(newAchievements);
+      localStorage.setItem('capy-achievements', JSON.stringify(newAchievements));
+      setNotification("🏆 New Trophy Unlocked!");
+    }
+  }, [playtimes, favorites, themeChangeCount, achievements]);
+
   const handleBackgroundUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -446,6 +499,13 @@ function App() {
     setGlowIntensity(t.glow);
     localStorage.setItem('capy-theme', t.color);
     localStorage.setItem('capy-glow', t.glow);
+
+    // Track for Achievement
+    setThemeChangeCount(prev => {
+      const next = prev + 1;
+      localStorage.setItem('capy-theme-changes', next);
+      return next;
+    });
     
     if (!performanceMode) {
         updateThemeVariables(t.color, t.glow);
@@ -469,7 +529,7 @@ function App() {
         'capy-custom-title', 'capy-custom-icon', 'capy-bg-image', 
         'capy-bg-video', 'capy-bg-opacity', 'capy-bg-music', 
         'capy-volume', 'capy-panic-url', 'capy-panic-key', 'capy-perf-mode',
-        'capy-bg-enabled', 'capy-recent', 'capy-pfp', 'capy-light-mode'
+        'capy-bg-enabled', 'capy-recent', 'capy-pfp', 'capy-light-mode', 'capy-achievements', 'capy-theme-changes'
       ];
       settingsKeys.forEach(key => localStorage.removeItem(key));
       window.location.reload();
@@ -715,6 +775,7 @@ return (
         ownPfp={profilePic} 
         isOwnProfile={selectedFriendId === 'me'}
         onClose={() => setSelectedFriendId(null)} 
+        myAchievements={achievements}
       />
 
     <SettingsModal 
@@ -783,6 +844,10 @@ return (
             if (decoded.g) {
               setGlowIntensity(decoded.g);
               localStorage.setItem('capy-glow', decoded.g);
+            }
+            if (decoded.ach) {
+              setAchievements(decoded.ach);
+              localStorage.setItem('capy-achievements', JSON.stringify(decoded.ach));
             }
             setNotification("Profile Synced Successfully!");
             setTimeout(() => window.location.reload(), 1000);
