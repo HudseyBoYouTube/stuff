@@ -841,13 +841,14 @@ return (
               setGlowIntensity(decoded.g);
               localStorage.setItem('capy-glow', decoded.g);
             }
-           if (decoded.ach) {
+            if (decoded.ach) {
+            }
+            setNotification("Profile Synced Successfully!");
+            setTimeout(() => window.location.reload(), 1000);
+          } else {
+            alert("Invalid Sync Code!");
           }
-          setNotification("Profile Synced Successfully!");
-          setTimeout(() => window.location.reload(), 1000);
-        } else {
-          alert("Invalid Sync Code!");
-        }
+        }}
       
         friends={friends}
         isSyncing={isSyncing}
