@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { useAchievements } from './hooks/useAchievements.js';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
   Clock, Dices, RotateCcw, Palette, Type, ImageIcon, 
@@ -19,9 +18,14 @@ const DEFAULT_GLOW = 50;
 const DEFAULT_TITLE = "Capybara Science";
 const DEFAULT_ICON = "https://img.icons8.com/color/32/capybara.png";
 
-// You can keep the IDs here if you need them for logic, 
-// but the descriptions usually live in the Modal now!
-const ACHIEVEMENT_IDS = ['first_game', 'marathon', 'collector', 'loyal', 'styler'];
+// --- ACHIEVEMENT DEFINITIONS ---
+const TROPHIES = [
+  { id: 'first_game', name: 'First Blood', desc: 'Play your first game', icon: '🎯' },
+  { id: 'marathon', name: 'Marathoner', desc: 'Play for over 1 hour total', icon: '🏃' },
+  { id: 'collector', name: 'The Collector', desc: 'Favorite 10 different games', icon: '⭐' },
+  { id: 'loyal', name: 'Capy-Loyalist', desc: 'Play one game for 30 mins', icon: '👑' },
+  { id: 'styler', name: 'Fashionista', desc: 'Change your theme 5 times', icon: '🎨' }
+];
 
 const THEMES = {
   cyber: { name: 'Cyberpunk', color: '#ff0055', glow: 60 },
