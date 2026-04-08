@@ -99,11 +99,6 @@ function App() {
   
   const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
 
-  // ACHIEVEMENT STATES
-  const [achievements, setAchievements] = useState(() => {
-    const saved = localStorage.getItem('capy-achievements');
-    return saved ? JSON.parse(saved) : [];
-  });
   const [themeChangeCount, setThemeChangeCount] = useState(() => Number(localStorage.getItem('capy-theme-changes')) || 0);
 
   const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
@@ -114,7 +109,7 @@ function App() {
       return [];
     }
   });
-
+  
   const [performanceMode, setPerformanceMode] = useState(() => localStorage.getItem('capy-perf-mode') === 'true');
 
   const [displayName, setDisplayName] = useState(() => localStorage.getItem('capy-display-name') || 'CapyUser');
