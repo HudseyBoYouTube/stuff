@@ -49,7 +49,7 @@ const updateThemeVariables = (color, glow) => {
 };
 
 function App() {
-  const achievements = useAchievements(userData);
+  const achievements = useAchievements(userData || {});
   const gamesData = useMemo(() => {
     if (!gamesDataRaw || !Array.isArray(gamesDataRaw)) return [];
     return gamesDataRaw;
