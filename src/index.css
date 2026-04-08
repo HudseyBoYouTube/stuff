@@ -17,7 +17,7 @@
   color: #18181b !important;
 }
 
-.light-mode .bg-\[#09090b\],
+/* Fixed block: Removed the square bracket selector */
 .light-mode .bg-zinc-900,
 .light-mode .bg-zinc-950,
 .light-mode .bg-black {
@@ -32,13 +32,13 @@
 }
 
 .light-mode header input,
-.light-mode .bg-white\/5 {
+.light-mode .bg-white/5 {
   background-color: #f4f4f5 !important;
   color: #18181b !important;
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
 }
 
-.light-mode .bg-zinc-900\/50 {
+.light-mode .bg-zinc-900/50 {
   background-color: #f4f4f5 !important;
   border: 1px solid rgba(0, 0, 0, 0.05) !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
@@ -56,8 +56,8 @@
   color: #71717a !important; 
 }
 
-.light-mode .border-white\/5,
-.light-mode .border-white\/10,
+.light-mode .border-white/5,
+.light-mode .border-white/10,
 .light-mode .border-zinc-800 {
   border-color: rgba(0, 0, 0, 0.1) !important;
 }
