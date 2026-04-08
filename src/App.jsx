@@ -49,7 +49,15 @@ const updateThemeVariables = (color, glow) => {
 };
 
 function App() {
-  const achievements = useAchievements(userData || {});
+  // We define the data first so the computer knows what "userData" is
+  const [playtimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
+  const [favorites] = useState(() => JSON.parse(localStorage.getItem('capy-favs') || '[]'));
+  const [themeChangeCount] = useState(() => parseInt(localStorage.getItem('capy-theme-changes') || '0'));
+
+  const userData = { times: playtimes, favs: favorites, themeChanges: themeChangeCount };
+
+  const achievements = useAchievements(userData);
+
   const gamesData = useMemo(() => {
     if (!gamesDataRaw || !Array.isArray(gamesDataRaw)) return [];
     return gamesDataRaw;
