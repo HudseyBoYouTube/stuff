@@ -104,10 +104,6 @@ function App() {
         return [];
     }
   });
-  
-  const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
-
-  const [themeChangeCount, setThemeChangeCount] = useState(() => Number(localStorage.getItem('capy-theme-changes')) || 0);
 
   const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
     try {
