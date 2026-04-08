@@ -1,12 +1,23 @@
-import { X, UserCircle, Heart } from 'lucide-react';
+import { X, UserCircle, Heart, Trophy } from 'lucide-react';
 
-export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfile }) {
+const TROPHIES = [
+  { id: 'first_game', name: 'First Blood', desc: 'Play your first game', icon: '🎯' },
+  { id: 'marathon', name: 'Marathoner', desc: 'Play for over 1 hour total', icon: '🏃' },
+  { id: 'collector', name: 'The Collector', desc: 'Favorite 10 different games', icon: '⭐' },
+  { id: 'loyal', name: 'Capy-Loyalist', desc: 'Play one game for 30 mins', icon: '👑' },
+  { id: 'styler', name: 'Fashionista', desc: 'Change your theme 5 times', icon: '🎨' }
+];
+
+export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfile, myAchievements }) {
   if (!isOwnProfile && (!friend || !friend.decoded)) return null;
 
   const displayPfp = isOwnProfile ? ownPfp : friend?.decoded?.p;
   const displayName = isOwnProfile ? "You" : (friend?.decoded?.n || friend?.name);
   const displayFavs = isOwnProfile ? (friend?.favs || []) : (friend?.decoded?.f || []);
   const displayTimes = isOwnProfile ? (friend?.times || {}) : (friend?.decoded?.t || {});
+  
+  // Get achievements: either from your live state or the friend's decoded data
+  const displayAchievements = isOwnProfile ? myAchievements : (friend?.decoded?.a || []);
 
   return (
     <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
@@ -15,12 +26,11 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
           <X />
         </button>
         
-        {/* Main Wrapper - Keeps horizontal scroll hidden */}
         <div className="overflow-y-auto overflow-x-hidden space-y-6 pr-1 custom-scrollbar">
           <div className="text-center space-y-2">
             <div className="w-24 h-24 bg-[var(--theme)]/10 rounded-full mx-auto flex items-center justify-center border border-[var(--theme)]/20 overflow-hidden shadow-[0_0_20px_rgba(var(--theme-rgb),0.1)]">
               {displayPfp ? (
-                <img src={displayPfp} alt={displayName} className="w-full h-full object-cover" key={displayPfp.substring(0, 20)} />
+                <img src={displayPfp} alt={displayName} className="w-full h-full object-cover" />
               ) : (
                 <UserCircle className="w-14 h-14 text-[var(--theme)]" />
               )}
@@ -32,11 +42,37 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
             </p>
           </div>
 
+          {/* Achievement Section */}
+          <div className="space-y-3">
+            <label className="text-[10px] font-black text-yellow-500 uppercase tracking-widest flex items-center gap-2">
+              <Trophy className="w-3 h-3" /> Trophies
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {TROPHIES.map(trophy => {
+                const isEarned = displayAchievements.includes(trophy.id);
+                return (
+                  <div 
+                    key={trophy.id} 
+                    className={`p-2 rounded-xl border transition-all duration-300 ${
+                      isEarned 
+                        ? 'border-yellow-500/30 bg-yellow-500/5' 
+                        : 'border-white/5 opacity-20 grayscale'
+                    }`}
+                  >
+                    <div className="text-xl">{trophy.icon}</div>
+                    <div className="text-[9px] font-black uppercase mt-1 leading-tight">{trophy.name}</div>
+                    <div className="text-[7px] opacity-60 leading-tight">{trophy.desc}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="space-y-4">
             <label className="text-[10px] font-black text-[var(--theme)] uppercase tracking-widest flex items-center gap-2">
               <Heart className="w-3 h-3" /> Favorite Games
             </label>
-            <div className="grid gap-2 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
+            <div className="grid gap-2 max-h-[150px] overflow-y-auto pr-1 custom-scrollbar">
               {(() => {
                 const validFavs = displayFavs.filter(id => gamesData.find(g => g.id === id));
                 return (validFavs.length > 0) ? validFavs.map(gameId => {
@@ -62,8 +98,7 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
               <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">
                 Your Friend Code
               </label>
-              
-              <div className="bg-black/40 border border-white/10 rounded-xl p-3 h-24 show-vertical-bar">
+              <div className="bg-black/40 border border-white/10 rounded-xl p-3 h-24 overflow-y-auto">
                 <p className="text-[9px] font-mono text-blue-400 break-all whitespace-pre-wrap leading-tight">
                   {friend.code}
                 </p>
