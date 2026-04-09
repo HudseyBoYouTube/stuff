@@ -348,10 +348,9 @@ function App() {
     }
   }, [confirmClearSettings]);
 
-  // --- ACHIEVEMENT TRACKING LOGIC ---
+ // --- ACHIEVEMENT TRACKING LOGIC ---
   useEffect(() => {
-    console.log("🔍 Checking achievements... Playtimes count:", Object.keys(playtimes).length);
-
+    console.log("Checking playtimes:", playtimes);
     const newAchievements = [...achievements];
     let earnedNew = false;
 
@@ -362,32 +361,21 @@ function App() {
       }
     };
 
-    // 1. First Game Check
     if (Object.keys(playtimes).length > 0) {
-      const alreadyHasFirstGame = localStorage.getItem('achievement_first_game');
-      if (!alreadyHasFirstGame) {
-        console.log("🏆 Triggering First Blood trophy!");
+      if (!localStorage.getItem('achievement_first_game')) {
         localStorage.setItem('achievement_first_game', 'true');
         checkAndAdd('first_game');
         setNotification("🎯 Achievement Unlocked: First Blood!");
-      } else {
-        console.log("✅ First Blood already earned.");
       }
     }
 
-    // 2. Marathoner Check
     const totalTime = Object.values(playtimes).reduce((a, b) => a + b, 0);
-    if (totalTime >= 3600) {
-      const alreadyHasMarathon = localStorage.getItem('achievement_marathon');
-      if (!alreadyHasMarathon) {
-        console.log("🏆 Triggering Marathoner!");
-        localStorage.setItem('achievement_marathon', 'true');
-        checkAndAdd('marathon');
-        setNotification("🏃 Achievement Unlocked: Marathoner!");
-      }
+    if (totalTime >= 3600 && !localStorage.getItem('achievement_marathon')) {
+      localStorage.setItem('achievement_marathon', 'true');
+      checkAndAdd('marathon');
+      setNotification("🏃 Achievement Unlocked: Marathoner!");
     }
 
-    // Update state only if something actually changed
     if (earnedNew) {
       setAchievements(newAchievements);
     }
