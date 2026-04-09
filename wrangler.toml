@@ -1,7 +1,6 @@
-name = "carti-is-a-goat-rapper"
+name = "puppy-math"
 compatibility_date = "2026-03-18"
 main = "functions/api/players.js"
 
 [assets]
-# Change this back to ./dist
 directory = "./dist"
