@@ -350,9 +350,7 @@ function App() {
 
   // --- ACHIEVEMENT TRACKING LOGIC ---
   useEffect(() => {
-    // This tells us exactly what the computer is seeing every time it checks
     console.log("🔍 Checking achievements... Playtimes count:", Object.keys(playtimes).length);
-    console.log("Current Playtimes Data:", playtimes);
 
     const newAchievements = [...achievements];
     let earnedNew = false;
@@ -364,7 +362,7 @@ function App() {
       }
     };
 
-    // 1. First Game
+    // 1. First Game Check
     if (Object.keys(playtimes).length > 0) {
       const alreadyHasFirstGame = localStorage.getItem('achievement_first_game');
       if (!alreadyHasFirstGame) {
@@ -375,11 +373,9 @@ function App() {
       } else {
         console.log("✅ First Blood already earned.");
       }
-    } else {
-      console.log("❌ No games played detected yet.");
     }
 
-    // 2. Marathoner (Example of how to keep others inside this block)
+    // 2. Marathoner Check
     const totalTime = Object.values(playtimes).reduce((a, b) => a + b, 0);
     if (totalTime >= 3600) {
       const alreadyHasMarathon = localStorage.getItem('achievement_marathon');
@@ -391,13 +387,11 @@ function App() {
       }
     }
 
-    // This updates the actual list if a new trophy was found
+    // Update state only if something actually changed
     if (earnedNew) {
       setAchievements(newAchievements);
     }
-
-  }, [playtimes, favorites, themeChangeCount]); 
-  // ^ Make sure there is only ONE brace '}' before this comma!
+  }, [playtimes, favorites, themeChangeCount]);
     
   // 3. Collector
     if (favorites.length >= 10 && !localStorage.getItem('achievement_collector')) {
