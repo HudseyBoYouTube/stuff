@@ -361,18 +361,30 @@ function App() {
     };
 
    // 1. First Game
-    if (Object.keys(playtimes).length > 0 && !localStorage.getItem('achievement_first_game')) {
-      localStorage.setItem('achievement_first_game', 'true');
-      checkAndAdd('first_game');
-      setNotification("🎯 Achievement Unlocked: First Blood!");
+    if (Object.keys(playtimes).length > 0) {
+      const alreadyHasFirstGame = localStorage.getItem('achievement_first_game');
+      if (!alreadyHasFirstGame) {
+        console.log("🏆 Triggering First Blood trophy!");
+        localStorage.setItem('achievement_first_game', 'true');
+        checkAndAdd('first_game');
+        setNotification("🎯 Achievement Unlocked: First Blood!");
+      } else {
+        console.log("✅ First Blood already earned.");
+      }
     }
 
-    // 2. Marathoner
+    // 2. Marathoner (3600s = 1hr)
     const totalTime = Object.values(playtimes).reduce((a, b) => a + b, 0);
-    if (totalTime >= 3600 && !localStorage.getItem('achievement_marathon')) {
-      localStorage.setItem('achievement_marathon', 'true');
-      checkAndAdd('marathon');
-      setNotification("🏃 Achievement Unlocked: Marathoner!");
+    if (totalTime >= 3600) {
+      const alreadyHasMarathon = localStorage.getItem('achievement_marathon');
+      if (!alreadyHasMarathon) {
+        console.log("🏆 Triggering Marathoner trophy!");
+        localStorage.setItem('achievement_marathon', 'true');
+        checkAndAdd('marathon');
+        setNotification("🏃 Achievement Unlocked: Marathoner!");
+      } else {
+        console.log("✅ Marathoner already earned.");
+      }
     }
 
     // 3. Collector
