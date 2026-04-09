@@ -358,6 +358,8 @@ function App() {
       if (!newAchievements.includes(id)) {
         newAchievements.push(id);
         earnedNew = true;
+        // SYNC: This ensures the Master List updates so the Profile isn't shaded
+        localStorage.setItem('capy-achievements', JSON.stringify([...newAchievements]));
       }
     };
 
@@ -378,11 +380,12 @@ function App() {
 
     if (earnedNew) {
       setAchievements(newAchievements);
+      // SYNC: Final save to ensure state and storage match
+      localStorage.setItem('capy-achievements', JSON.stringify(newAchievements));
     }
   }, [playtimes, favorites, themeChangeCount]);
 
   const handleBackgroundUpload = (e) => {
-    
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -403,38 +406,6 @@ function App() {
         }
       };
       reader.readAsDataURL(file);
-    }
-  };
-
-  const handleResetBackground = () => {
-    setBackgroundImage('');
-    setBackgroundVideo('');
-    setBgEnabled(false);
-    localStorage.removeItem('capy-bg-image');
-    localStorage.removeItem('capy-bg-video');
-    localStorage.setItem('capy-bg-enabled', 'false');
-  };
-
-  const handleAudioUpload = (e) => {
-    if (e && e.presetUrl) {
-      setBgMusic(e.presetUrl);
-      setBgEnabled(true); 
-      localStorage.setItem('capy-bg-music', e.presetUrl);
-      return;
-    }
-
-    if (e.target && e.target.files) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const audioData = event.target.result;
-          setBgMusic(audioData);
-          setBgEnabled(true);
-          localStorage.setItem('capy-bg-music', audioData);
-        };
-        reader.readAsDataURL(file);
-      }
     }
   };
 
