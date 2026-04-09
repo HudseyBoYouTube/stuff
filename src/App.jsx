@@ -396,9 +396,10 @@ function App() {
       setAchievements(newAchievements);
     }
 
-  }, [playtimes, favorites, themeChangeCount]); // <--- CRITICAL: This "triggers" the check!
-
-    // 3. Collector
+  }, [playtimes, favorites, themeChangeCount]); 
+  // ^ Make sure there is only ONE brace '}' before this comma!
+    
+  // 3. Collector
     if (favorites.length >= 10 && !localStorage.getItem('achievement_collector')) {
       localStorage.setItem('achievement_collector', 'true');
       checkAndAdd('collector');
