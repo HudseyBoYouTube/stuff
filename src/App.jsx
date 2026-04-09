@@ -359,8 +359,10 @@ function App() {
         earnedNew = true;
       }
     };
+// Debugging line to see what the app sees
+    console.log("Current Playtimes Data:", playtimes);
 
-   // 1. First Game
+    // 1. First Game
     if (Object.keys(playtimes).length > 0) {
       const alreadyHasFirstGame = localStorage.getItem('achievement_first_game');
       if (!alreadyHasFirstGame) {
@@ -371,6 +373,8 @@ function App() {
       } else {
         console.log("✅ First Blood already earned.");
       }
+    } else {
+      console.log("❌ No games played detected yet.");
     }
 
     // 2. Marathoner (3600s = 1hr)
