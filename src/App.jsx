@@ -380,33 +380,9 @@ function App() {
       setAchievements(newAchievements);
     }
   }, [playtimes, favorites, themeChangeCount]);
-    
-  // 3. Collector
-    if (favorites.length >= 10 && !localStorage.getItem('achievement_collector')) {
-      localStorage.setItem('achievement_collector', 'true');
-      checkAndAdd('collector');
-      setNotification("⭐ Achievement Unlocked: Collector!");
-    }
 
-    // 4. Loyalist (1800s = 30m on one game)
-    if (Object.values(playtimes).some(t => t >= 1800) && !localStorage.getItem('achievement_loyal')) {
-      checkAndAdd('loyal');
-      localStorage.setItem('achievement_loyal', 'true');
-    }
-
-    // 5. Fashionista (5 theme changes)
-    if (themeChangeCount >= 5 && !localStorage.getItem('achievement_styler')) {
-      checkAndAdd('styler');
-      localStorage.setItem('achievement_styler', 'true');
-    }
-
-    if (earnedNew) {
-      // Logic is now handled by the useAchievements hook
-      setNotification("🏆 New Trophy Unlocked!");
-    }
-  }, [playtimes, favorites, themeChangeCount]);
-  
   const handleBackgroundUpload = (e) => {
+    
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
