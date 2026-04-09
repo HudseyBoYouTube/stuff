@@ -350,6 +350,10 @@ function App() {
 
   // --- ACHIEVEMENT TRACKING LOGIC ---
   useEffect(() => {
+    // This tells us exactly what the computer is seeing every time it checks
+    console.log("🔍 Checking achievements... Playtimes count:", Object.keys(playtimes).length);
+    console.log("Current Playtimes Data:", playtimes);
+
     const newAchievements = [...achievements];
     let earnedNew = false;
 
@@ -359,8 +363,6 @@ function App() {
         earnedNew = true;
       }
     };
-// Debugging line to see what the app sees
-    console.log("Current Playtimes Data:", playtimes);
 
     // 1. First Game
     if (Object.keys(playtimes).length > 0) {
@@ -377,19 +379,24 @@ function App() {
       console.log("❌ No games played detected yet.");
     }
 
-    // 2. Marathoner (3600s = 1hr)
+    // 2. Marathoner (Example of how to keep others inside this block)
     const totalTime = Object.values(playtimes).reduce((a, b) => a + b, 0);
     if (totalTime >= 3600) {
       const alreadyHasMarathon = localStorage.getItem('achievement_marathon');
       if (!alreadyHasMarathon) {
-        console.log("🏆 Triggering Marathoner trophy!");
+        console.log("🏆 Triggering Marathoner!");
         localStorage.setItem('achievement_marathon', 'true');
         checkAndAdd('marathon');
         setNotification("🏃 Achievement Unlocked: Marathoner!");
-      } else {
-        console.log("✅ Marathoner already earned.");
       }
     }
+
+    // This updates the actual list if a new trophy was found
+    if (earnedNew) {
+      setAchievements(newAchievements);
+    }
+
+  }, [playtimes, favorites, themeChangeCount]); // <--- CRITICAL: This "triggers" the check!
 
     // 3. Collector
     if (favorites.length >= 10 && !localStorage.getItem('achievement_collector')) {
