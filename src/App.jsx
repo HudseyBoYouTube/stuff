@@ -360,23 +360,26 @@ function App() {
       }
     };
 
-    // 1. First Game
+   // 1. First Game
     if (Object.keys(playtimes).length > 0 && !localStorage.getItem('achievement_first_game')) {
-      checkAndAdd('first_game');
       localStorage.setItem('achievement_first_game', 'true');
+      checkAndAdd('first_game');
+      setNotification("🎯 Achievement Unlocked: First Blood!");
     }
 
-    // 2. Marathoner (3600s = 1hr)
+    // 2. Marathoner
     const totalTime = Object.values(playtimes).reduce((a, b) => a + b, 0);
     if (totalTime >= 3600 && !localStorage.getItem('achievement_marathon')) {
-      checkAndAdd('marathon');
       localStorage.setItem('achievement_marathon', 'true');
+      checkAndAdd('marathon');
+      setNotification("🏃 Achievement Unlocked: Marathoner!");
     }
 
-    // 3. Collector (10 favs)
+    // 3. Collector
     if (favorites.length >= 10 && !localStorage.getItem('achievement_collector')) {
-      checkAndAdd('collector');
       localStorage.setItem('achievement_collector', 'true');
+      checkAndAdd('collector');
+      setNotification("⭐ Achievement Unlocked: Collector!");
     }
 
     // 4. Loyalist (1800s = 30m on one game)
