@@ -361,20 +361,35 @@ function App() {
     };
 
     // 1. First Game
-    if (Object.keys(playtimes).length > 0) checkAndAdd('first_game');
+    if (Object.keys(playtimes).length > 0 && !localStorage.getItem('achievement_first_game')) {
+      checkAndAdd('first_game');
+      localStorage.setItem('achievement_first_game', 'true');
+    }
 
     // 2. Marathoner (3600s = 1hr)
     const totalTime = Object.values(playtimes).reduce((a, b) => a + b, 0);
-    if (totalTime >= 3600) checkAndAdd('marathon');
+    if (totalTime >= 3600 && !localStorage.getItem('achievement_marathon')) {
+      checkAndAdd('marathon');
+      localStorage.setItem('achievement_marathon', 'true');
+    }
 
     // 3. Collector (10 favs)
-    if (favorites.length >= 10) checkAndAdd('collector');
+    if (favorites.length >= 10 && !localStorage.getItem('achievement_collector')) {
+      checkAndAdd('collector');
+      localStorage.setItem('achievement_collector', 'true');
+    }
 
     // 4. Loyalist (1800s = 30m on one game)
-    if (Object.values(playtimes).some(t => t >= 1800)) checkAndAdd('loyal');
+    if (Object.values(playtimes).some(t => t >= 1800) && !localStorage.getItem('achievement_loyal')) {
+      checkAndAdd('loyal');
+      localStorage.setItem('achievement_loyal', 'true');
+    }
 
     // 5. Fashionista (5 theme changes)
-    if (themeChangeCount >= 5) checkAndAdd('styler');
+    if (themeChangeCount >= 5 && !localStorage.getItem('achievement_styler')) {
+      checkAndAdd('styler');
+      localStorage.setItem('achievement_styler', 'true');
+    }
 
     if (earnedNew) {
       // Logic is now handled by the useAchievements hook
