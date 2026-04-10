@@ -40,7 +40,12 @@ export function Header({
             )}
           </div>
 
-          {/* SUPPLIER SELECTOR (Next to Dices) */}
+          {/* 1. RANDOM GAME BUTTON */}
+          <button onClick={onRandomGame} className={`p-2 ${isLightMode ? 'bg-black/5 border-black/10' : 'bg-white/5 border-white/10'} border rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all shadow-[0_0_15px_rgba(var(--theme-rgb),0.1)]`}>
+            <Dices className="w-5 h-5" />
+          </button>
+
+          {/* 2. SUPPLIER SELECTOR (Now on the right of Dices) */}
           <select 
             value={supplier} 
             onChange={(e) => setSupplier(e.target.value)}
@@ -54,10 +59,6 @@ export function Header({
             <option value="Puppy Math">Puppy</option>
             <option value="GN Math">GN</option>
           </select>
-
-          <button onClick={onRandomGame} className={`p-2 ${isLightMode ? 'bg-black/5 border-black/10' : 'bg-white/5 border-white/10'} border rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all shadow-[0_0_15px_rgba(var(--theme-rgb),0.1)]`}>
-            <Dices className="w-5 h-5" />
-          </button>
         </div>
 
         {/* STATS & PROFILE SECTION */}
