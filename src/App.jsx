@@ -721,22 +721,25 @@ return (
             boxShadow: `0 0 15px ${theme}44`
           }}
         >
-          <option value="Puppy Math">Puppy Math</option>
-          <option value="gn-math">GN Math</option>
+          <option value="Puppy Math">Capybara Science</option>
+          <option value="gn-math">gn-math</option>
         </select>
       </div>
       {/* --- END OF SUPPLIER DROPDOWN --- */}
      
       <Header 
-  searchQuery={searchQuery} 
-  setSearchQuery={setSearchQuery}
-  time={time}
-  battery={battery}
-  profilePic={profilePic}
-  setShowSettings={setShowSettings}
-  DEFAULT_ICON={DEFAULT_ICON}
-  onViewProfile={() => setSelectedFriendId('me')} 
-  onRandomGame={() => {
+        searchQuery={searchQuery} 
+        setSearchQuery={setSearchQuery}
+        time={time}
+        battery={battery}
+        profilePic={profilePic}
+        setShowSettings={setShowSettings}
+        DEFAULT_ICON={DEFAULT_ICON}
+        supplier={supplier}      
+        setSupplier={setSupplier}  
+        theme={theme}   
+        onViewProfile={() => setSelectedFriendId('me')} 
+        onRandomGame={() => {
     const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
     if (playable.length > 0) {
       launchContent(playable[Math.floor(Math.random() * playable.length)]);
