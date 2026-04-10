@@ -6,7 +6,9 @@ export function Header({
   profilePic, setShowSettings, 
   onRandomGame, DEFAULT_ICON,
   onViewProfile,
-  isLightMode // Added this prop
+  isLightMode,
+  supplier,    // Added
+  setSupplier  // Added
 }) {
   return (
     <header className={`${isLightMode ? 'bg-white text-black' : 'bg-[#09090b]/95 text-white'} h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors`}>
@@ -37,6 +39,22 @@ export function Header({
               </button>
             )}
           </div>
+
+          {/* SUPPLIER SELECTOR (Next to Dices) */}
+          <select 
+            value={supplier} 
+            onChange={(e) => setSupplier(e.target.value)}
+            className={`text-[10px] font-black uppercase tracking-tighter px-2 py-2 border rounded-full outline-none cursor-pointer transition-all ${
+              isLightMode 
+                ? 'bg-black/5 border-black/10 text-black' 
+                : 'bg-white/5 border-white/10 text-white'
+            } focus:border-[var(--theme)]`}
+            style={{ color: 'var(--theme)' }}
+          >
+            <option value="Puppy Math">Puppy</option>
+            <option value="GN Math">GN</option>
+          </select>
+
           <button onClick={onRandomGame} className={`p-2 ${isLightMode ? 'bg-black/5 border-black/10' : 'bg-white/5 border-white/10'} border rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all shadow-[0_0_15px_rgba(var(--theme-rgb),0.1)]`}>
             <Dices className="w-5 h-5" />
           </button>
