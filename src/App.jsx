@@ -129,6 +129,19 @@ function App() {
     return id;
   });
 
+  // --- SUPPLIER & LAUNCH LOGIC (NEW) ---
+  const [supplier, setSupplier] = useState(() => localStorage.getItem('capy-supplier') || 'Puppy Math');
+
+  const getLaunchUrl = (gameFile) => {
+    const folder = supplier === 'Puppy Math' ? 'puppy-math' : 'gn-math';
+    return `/play.html?launch=/stores/${folder}/${gameFile}`;
+  };
+
+  useEffect(() => {
+    localStorage.setItem('capy-supplier', supplier);
+  }, [supplier]);
+  // -------------------------------------
+
   // --- EMERGENCY BLACKOUT KILL SWITCH ---
   // This turns the old site into a black screen without affecting Puppy Math
   useEffect(() => {
