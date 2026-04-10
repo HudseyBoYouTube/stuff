@@ -104,18 +104,6 @@ function App() {
       return [];
     }
   });
-
-  // --- EMERGENCY KILL SWITCH ---
-  useEffect(() => {
-    const checkStatus = setInterval(() => {
-      // This kicks people off if they are using the old URL
-      if (window.location.href.includes("carti-is-a-goat-rapper")) {
-        window.location.href = "https://puppy-math.canvasforschool.workers.dev/404-not-found";
-      }
-    }, 5000);
-
-    return () => clearInterval(checkStatus);
-  }, []);
   
   const [performanceMode, setPerformanceMode] = useState(() => localStorage.getItem('capy-perf-mode') === 'true');
 
