@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Loading...</title>
+    <title>Puppy Math | Loading...</title>
     <style>
         body, html { margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; background: #000; }
         iframe { width: 100%; height: 100%; border: none; }
@@ -12,15 +12,12 @@
 
     <script>
         const params = new URLSearchParams(window.location.search);
-        let gamePath = params.get('launch');
+        const gamePath = params.get('launch'); 
 
         if (gamePath) {
-            if (!gamePath.startsWith('/public/')) {
-                document.getElementById('game-frame').src = "/public" + gamePath;
-            } else {
-                document.getElementById('game-frame').src = gamePath;
-            }
+            document.getElementById('game-frame').src = gamePath;
         }
+        // I removed the extra "}" that was here!
     </script>
 </body>
 </html>
