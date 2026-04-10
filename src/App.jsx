@@ -501,7 +501,7 @@ function App() {
     }
   };
 
-  const toggleFavorite = (id) => {
+const toggleFavorite = (id) => {
     const isRemoving = favorites.includes(id);
     const newFavs = isRemoving 
       ? favorites.filter(favId => favId !== id) 
@@ -578,7 +578,8 @@ function App() {
   }, [currentIdentity]);
 
   const launchContent = (item) => {
-    if (!item?.url) return;
+    const gameFile = item.file || `${item.id}.html`;
+    const finalUrl = getLaunchUrl(gameFile);
 
     setRecentlyPlayed(prev => {
       const filtered = prev.filter(id => id !== item.id);
@@ -595,7 +596,10 @@ function App() {
       
       win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
       const iframe = win.document.createElement('iframe');
-      iframe.src = item.url;
+      
+      // Use the new finalUrl instead of item.url
+      iframe.src = finalUrl; 
+      
       iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
       iframe.allow = "fullscreen";
       win.document.body.appendChild(iframe);
