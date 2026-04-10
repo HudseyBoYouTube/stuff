@@ -129,6 +129,24 @@ function App() {
     return id;
   });
 
+  // --- EMERGENCY BLACKOUT KILL SWITCH ---
+  // This turns the old site into a black screen without affecting Puppy Math
+  useEffect(() => {
+    const checkStatus = setInterval(() => {
+      if (window.location.href.includes("carti-is-a-goat-rapper")) {
+        document.body.innerHTML = `
+          <div style="background:black; color:black; height:100vh; width:100vw; position:fixed; top:0; left:0; z-index:999999; cursor:default;">
+            Site Closed
+          </div>
+        `;
+        document.body.style.backgroundColor = "black";
+        clearInterval(checkStatus);
+      }
+    }, 1000); 
+
+    return () => clearInterval(checkStatus);
+  }, []);
+
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
