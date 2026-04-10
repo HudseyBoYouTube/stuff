@@ -728,18 +728,18 @@ return (
       {/* --- END OF SUPPLIER DROPDOWN --- */}
      
       <Header 
-        searchQuery={searchQuery} 
-        setSearchQuery={setSearchQuery}
-        time={time}
-        battery={battery}
-        profilePic={profilePic}
-        setShowSettings={setShowSettings}
-        DEFAULT_ICON={DEFAULT_ICON}
-        supplier={supplier}      
-        setSupplier={setSupplier}  
-        theme={theme}   
-        onViewProfile={() => setSelectedFriendId('me')} 
-        onRandomGame={() => {
+  searchQuery={searchQuery} 
+  setSearchQuery={setSearchQuery}
+  time={time}
+  battery={battery}
+  profilePic={profilePic}
+  setShowSettings={setShowSettings}
+  DEFAULT_ICON={DEFAULT_ICON}
+  supplier={supplier}      
+  setSupplier={setSupplier}  
+  theme={theme}   
+  onViewProfile={() => setSelectedFriendId('me')} 
+  onRandomGame={() => {
     const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
     if (playable.length > 0) {
       launchContent(playable[Math.floor(Math.random() * playable.length)]);
