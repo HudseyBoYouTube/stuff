@@ -687,46 +687,7 @@ return (
           }}
         />
       )}
-{/* --- START OF SUPPLIER DROPDOWN --- */}
-      <div style={{ 
-        position: 'relative', 
-        zIndex: 50, 
-        padding: '20px 0', 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center',
-        gap: '12px'
-      }}>
-        <label style={{ 
-          fontSize: '11px', 
-          fontWeight: '900', 
-          color: theme, 
-          letterSpacing: '2px',
-          textShadow: `0 0 10px ${theme}`
-        }}>
-          SOURCE:
-        </label>
-        <select 
-          value={supplier} 
-          onChange={(e) => setSupplier(e.target.value)}
-          style={{
-            backgroundColor: isLightMode ? '#ffffff' : '#000000',
-            color: isLightMode ? '#000000' : '#ffffff',
-            border: `2px solid ${theme}`,
-            padding: '6px 14px',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            outline: 'none',
-            boxShadow: `0 0 15px ${theme}44`
-          }}
-        >
-          <option value="Puppy Math">Capybara Science</option>
-          <option value="gn-math">gn-math</option>
-        </select>
-      </div>
-      {/* --- END OF SUPPLIER DROPDOWN --- */}
-     
+
       <Header 
   searchQuery={searchQuery} 
   setSearchQuery={setSearchQuery}
