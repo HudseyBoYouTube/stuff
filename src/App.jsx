@@ -51,7 +51,7 @@ const updateThemeVariables = (color, glow) => {
 function App() {
   // We define the data first so the computer knows what "userData" is
   const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
-  const [favorites] = useState(() => JSON.parse(localStorage.getItem('capy-favs') || '[]'));
+  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favs') || '[]'));
   const [themeChangeCount] = useState(() => parseInt(localStorage.getItem('capy-theme-changes') || '0'));
 
   const userData = { times: playtimes, favs: favorites, themeChanges: themeChangeCount };
