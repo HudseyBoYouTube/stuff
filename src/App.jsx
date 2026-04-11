@@ -624,11 +624,16 @@ const toggleFavorite = (id) => {
     const q = searchQuery.toLowerCase();
     return gamesData.filter(g => {
       const matchesSearch = g?.title?.toLowerCase().includes(q);
-      if (activeCategory === 'Favorites') return favorites.includes(g.id) && matchesSearch;
+      
+      const matchesSupplier = g?.supplier === supplier;
+
+      if (activeCategory === 'Favorites') return favorites.includes(g.id) && matchesSearch && matchesSupplier;
+      
       const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
-      return matchesSearch && matchesCategory;
+
+      return matchesSearch && matchesCategory && matchesSupplier;
     });
-  }, [searchQuery, activeCategory, gamesData, favorites]);
+  }, [searchQuery, activeCategory, gamesData, favorites, supplier]);
 
   const recentGamesData = useMemo(() => {
     return recentlyPlayed
