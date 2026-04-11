@@ -622,13 +622,27 @@ const toggleFavorite = (id) => {
 
   const filteredGames = useMemo(() => {
     const q = searchQuery.toLowerCase();
+    
     return gamesData.filter(g => {
       const matchesSearch = g?.title?.toLowerCase().includes(q);
-      if (activeCategory === 'Favorites') return favorites.includes(g.id) && matchesSearch;
+      
+      // 1. Safety Check: If supplier isn't defined yet, show everything
+      const currentSupplier = typeof supplier !== 'undefined' ? supplier : 'Puppy Math';
+      
+      // 2. The Filter: Match the game's supplier or default to Puppy Math
+      const matchesSupplier = (g?.supplier || 'Puppy Math') === currentSupplier;
+
+      if (activeCategory === 'Favorites') {
+        return favorites.includes(g.id) && matchesSearch && matchesSupplier;
+      }
+      
       const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
-      return matchesSearch && matchesCategory;
+
+      // 3. Combine everything
+      return matchesSearch && matchesCategory && matchesSupplier;
     });
-  }, [searchQuery, activeCategory, gamesData, favorites]);
+    // 4. Added supplier here so the list refreshes when you click the button
+  }, [searchQuery, activeCategory, gamesData, favorites, supplier]);
 
   const recentGamesData = useMemo(() => {
     return recentlyPlayed
