@@ -494,20 +494,20 @@ const getLaunchUrl = (gameFile) => {
   };
 
 const toggleFavorite = (id) => {
-  const gameId = String(id); 
-  const isRemoving = favorites.includes(gameId);
-  
-  const newFavs = isRemoving 
-    ? favorites.filter(favId => favId !== gameId) 
-    : [...favorites, gameId];
-  
-  setFavorites(newFavs);
-  localStorage.setItem('capy-favs', JSON.stringify(newFavs));
+    const stringId = String(id); 
+    const isRemoving = favorites.includes(stringId);
+    
+    const newFavs = isRemoving 
+      ? favorites.filter(favId => favId !== stringId) 
+      : [...favorites, stringId];
+    
+    setFavorites(newFavs);
+    localStorage.setItem('capy-favs', JSON.stringify(newFavs));
 
-  if (isRemoving && newFavs.length === 0 && activeCategory === 'Favorites') {
-    setActiveCategory('All');
-  }
-};
+    if (isRemoving && newFavs.length === 0 && activeCategory === 'Favorites') {
+      setActiveCategory('All');
+    }
+  };
 
   const applyTheme = (t) => {
     document.documentElement.style.setProperty('--theme', t.color);
@@ -772,7 +772,7 @@ return (
             game={game} 
             onLaunch={launchContent} 
             playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
-            isFavorite={favorites.includes(game.id)}
+            isFavorite={favorites.includes(String(game.id))}
             onToggleFavorite={() => toggleFavorite(game.id)}
             performanceMode={performanceMode}
           />
@@ -781,16 +781,17 @@ return (
     </section>
   )}
 
-  <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+<section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
     {filteredGames.map(game => (
       <GameCard 
-  key={game.id} 
-  game={game} 
-  onLaunch={launchContent} 
-  isFavorite={favorites.includes(String(game.id))} 
-  onToggleFavorite={() => toggleFavorite(game.id)} 
-  performanceMode={performanceMode}
-/>
+        key={game.id} 
+        game={game} 
+        onLaunch={launchContent} 
+        playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
+        isFavorite={favorites.includes(String(game.id))} 
+        onToggleFavorite={() => toggleFavorite(game.id)}
+        performanceMode={performanceMode}
+      />
     ))}
   </section>
 </main>
