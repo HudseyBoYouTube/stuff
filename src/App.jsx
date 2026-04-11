@@ -72,9 +72,6 @@ function App() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmClearSettings, setConfirmClearSettings] = useState(false);
   const [notification, setNotification] = useState(null);
-  
-  // NEW: Supplier state added here
-  const [supplier, setSupplier] = useState('Default');
 
   const [time, setTime] = useState(new Date());
   const [battery, setBattery] = useState({ level: 100, charging: false });
@@ -131,54 +128,9 @@ function App() {
     }
     return id;
   });
-const getLaunchUrl = (game) => {
-    // 1. First, check if a specific Supplier link exists (GN Math, etc.)
-    if (game.urls && game.urls[supplier]) {
-      return game.urls[supplier];
-    }
-
-    // 2. If no supplier link, use the standard 'url' from your JSON
-    if (game.url) {
-      return game.url;
-    }
-
-    // 3. If neither exists, try the local /stores/ folder (Fallback)
-    if (game.file) {
-      return `/play.html?launch=/stores/${game.file}`;
-    }
-
-    // 4. Ultimate fallback using the ID
-    return `/play.html?launch=/stores/${game.id}.html`;
+const getLaunchUrl = (gameFile) => {
+    return `/play.html?launch=/stores/${gameFile}`;
   };
-
-  const launchContent = (game) => {
-    const url = getLaunchUrl(game);
-    if (!url) return;
-    
-    // ... (rest of your recently played and iframe logic here)
-
-    // 1. Save to recently played
-    setRecentlyPlayed(prev => {
-      const filtered = prev.filter(p => p.id !== game.id);
-      const updated = [game, ...filtered].slice(0, 10);
-      localStorage.setItem('capy-recent', JSON.stringify(updated));
-      return updated;
-    });
-
-    // 2. Open in a "DO NOT REFRESH" about:blank tab
-    const win = window.open('about:blank', '_blank');
-    if (win) {
-      win.document.title = "DO NOT REFRESH";
-      win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
-      
-      const iframe = win.document.createElement('iframe');
-      iframe.src = url;
-      iframe.style = 'width:100vw;height:100vh;border:none;';
-      
-      win.document.body.appendChild(iframe);
-    }
-  }; // <--- Just one closing bracket here.
-
   // --- EMERGENCY BLACKOUT KILL SWITCH ---
   // This turns the old site into a black screen without affecting Puppy Math
   useEffect(() => {
@@ -221,22 +173,25 @@ const getLaunchUrl = (game) => {
 
   const validFavoritesCount = useMemo(() => gamesData.filter(g => favorites.includes(g.id)).length, [gamesData, favorites]);
 
-  const categoriesWithCounts = useMemo(() => {
-    const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
-    const final = [{ name: 'All', count: gamesData.length }];
-    
-    if (favorites.length > 0) {
-      final.push({ name: 'Favorites', count: favorites.length });
-    }
-    
-    uniqueCats.forEach(cat => {
-      final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
-    });
-    
-    return final;
-  }, [gamesData, favorites]);
+ const categoriesWithCounts = useMemo(() => {
+  const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
+  const final = [{ name: 'All', count: gamesData.length }];
+  
+  // FIX 1: Change 'validFavoritesCount' to 'favorites.length'
+  if (favorites.length > 0) {
+    // FIX 2: Change the count here too
+    final.push({ name: 'Favorites', count: favorites.length });
+  }
+  
+  uniqueCats.forEach(cat => {
+    final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
+  });
+  
+  return final;
+// FIX 3: Make sure 'favorites' is in this array so it updates live
+}, [gamesData, favorites]);
 
-  useEffect(() => {
+ useEffect(() => {
     checkScroll();
     window.addEventListener('resize', checkScroll);
     return () => window.removeEventListener('resize', checkScroll);
@@ -615,7 +570,36 @@ const toggleFavorite = (id) => {
     }
     link.href = currentIdentity.icon;
   }, [currentIdentity]);
-  
+
+  const launchContent = (item) => {
+    const gameFile = item.file || `${item.id}.html`;
+
+    setRecentlyPlayed(prev => {
+      const filtered = prev.filter(id => id !== item.id);
+      const updated = [item.id, ...filtered].slice(0, 4);
+      localStorage.setItem('capy-recent', JSON.stringify(updated));
+      return updated;
+    });
+
+    const startTime = Date.now();
+
+    // ✅ NEW: use URL if it exists
+    const finalUrl = item.url || `/play.html?launch=/stores/${gameFile}`;
+
+    const win = window.open('about:blank', '_blank');
+    
+    if (win) {
+      win.document.title = "DO NOT REFRESH";
+      
+      win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
+      const iframe = win.document.createElement('iframe');
+      
+      iframe.src = finalUrl; 
+      
+      iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
+      iframe.allow = "fullscreen";
+      win.document.body.appendChild(iframe);
+
       const trackPlaytime = setInterval(() => {
         if (win.closed) {
           clearInterval(trackPlaytime);
@@ -629,6 +613,8 @@ const toggleFavorite = (id) => {
           });
         }
       }, 1000);
+    }
+  };
 
   const filteredGames = useMemo(() => {
     const q = (searchQuery || "").toLowerCase();
