@@ -175,11 +175,11 @@ const getLaunchUrl = (gameFile) => {
 
  const categoriesWithCounts = useMemo(() => {
   const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
-  
   const final = [{ name: 'All', count: gamesData.length }];
   
-  // CHANGED: Use favorites.length instead of validFavoritesCount
+  // FIX 1: Change 'validFavoritesCount' to 'favorites.length'
   if (favorites.length > 0) {
+    // FIX 2: Change the count here too
     final.push({ name: 'Favorites', count: favorites.length });
   }
   
@@ -188,7 +188,7 @@ const getLaunchUrl = (gameFile) => {
   });
   
   return final;
-  // CHANGED: Added favorites to the dependency array so it updates live
+// FIX 3: Make sure 'favorites' is in this array so it updates live
 }, [gamesData, favorites]);
 
  useEffect(() => {
