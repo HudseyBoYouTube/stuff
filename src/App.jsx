@@ -782,14 +782,13 @@ return (
   <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
     {filteredGames.map(game => (
       <GameCard 
-        key={game.id} 
-        game={game} 
-        onLaunch={launchContent} 
-        playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
-        isFavorite={favorites.includes(game.id)}
-        onToggleFavorite={() => toggleFavorite(game.id)}
-        performanceMode={performanceMode}
-      />
+  key={game.id} 
+  game={game} 
+  onLaunch={launchContent} 
+  isFavorite={favorites.includes(String(game.id))} 
+  onToggleFavorite={() => toggleFavorite(game.id)} 
+  performanceMode={performanceMode}
+/>
     ))}
   </section>
 </main>
