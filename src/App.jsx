@@ -952,11 +952,11 @@ return (
               setIsSyncing(false);
               setNotification("Friend view refreshed!");
             }, 500);
-        } // <--- Only one here now
-        myAchievements={achievements}
-      />
-    </div>
-  );
+        }} // <--- Use TWO here: one for the function, one for the prop
+        myAchievements={achievements}
+      />
+    </div>
+  );
 }
 
 export default App;
