@@ -494,18 +494,20 @@ const getLaunchUrl = (gameFile) => {
   };
 
 const toggleFavorite = (id) => {
-    const isRemoving = favorites.includes(id);
-    const newFavs = isRemoving 
-      ? favorites.filter(favId => favId !== id) 
-      : [...favorites, id];
-    
-    setFavorites(newFavs);
-    localStorage.setItem('capy-favs', JSON.stringify(newFavs));
+  const gameId = String(id); 
+  const isRemoving = favorites.includes(gameId);
+  
+  const newFavs = isRemoving 
+    ? favorites.filter(favId => favId !== gameId) 
+    : [...favorites, gameId];
+  
+  setFavorites(newFavs);
+  localStorage.setItem('capy-favs', JSON.stringify(newFavs));
 
-    if (isRemoving && newFavs.length === 0 && activeCategory === 'Favorites') {
-      setActiveCategory('All');
-    }
-  };
+  if (isRemoving && newFavs.length === 0 && activeCategory === 'Favorites') {
+    setActiveCategory('All');
+  }
+};
 
   const applyTheme = (t) => {
     document.documentElement.style.setProperty('--theme', t.color);
