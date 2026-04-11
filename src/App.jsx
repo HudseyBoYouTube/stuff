@@ -72,6 +72,9 @@ function App() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmClearSettings, setConfirmClearSettings] = useState(false);
   const [notification, setNotification] = useState(null);
+  
+  // NEW: Supplier state added here
+  const [supplier, setSupplier] = useState('Default');
 
   const [time, setTime] = useState(new Date());
   const [battery, setBattery] = useState({ level: 100, charging: false });
