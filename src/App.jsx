@@ -173,13 +173,14 @@ const getLaunchUrl = (gameFile) => {
 
   const validFavoritesCount = useMemo(() => gamesData.filter(g => favorites.includes(g.id)).length, [gamesData, favorites]);
 
-  const categoriesWithCounts = useMemo(() => {
+ const categoriesWithCounts = useMemo(() => {
   const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
   
   const final = [{ name: 'All', count: gamesData.length }];
   
-  if (validFavoritesCount > 0) {
-    final.push({ name: 'Favorites', count: validFavoritesCount });
+  // CHANGED: Use favorites.length instead of validFavoritesCount
+  if (favorites.length > 0) {
+    final.push({ name: 'Favorites', count: favorites.length });
   }
   
   uniqueCats.forEach(cat => {
@@ -187,9 +188,10 @@ const getLaunchUrl = (gameFile) => {
   });
   
   return final;
-}, [gamesData, validFavoritesCount]);
+  // CHANGED: Added favorites to the dependency array so it updates live
+}, [gamesData, favorites]);
 
-  useEffect(() => {
+ useEffect(() => {
     checkScroll();
     window.addEventListener('resize', checkScroll);
     return () => window.removeEventListener('resize', checkScroll);
@@ -498,10 +500,10 @@ const toggleFavorite = (id) => {
       : [...favorites, id];
     
     setFavorites(newFavs);
-    localStorage.setItem('capy-favorites', JSON.stringify(newFavs));
+    localStorage.setItem('capy-favs', JSON.stringify(newFavs));
 
     if (isRemoving && newFavs.length === 0 && activeCategory === 'Favorites') {
-        setActiveCategory('All');
+      setActiveCategory('All');
     }
   };
 
