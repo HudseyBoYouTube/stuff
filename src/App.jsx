@@ -569,7 +569,6 @@ const toggleFavorite = (id) => {
 
   const launchContent = (item) => {
     const gameFile = item.file || `${item.id}.html`;
-    const finalUrl = getLaunchUrl(gameFile);
 
     setRecentlyPlayed(prev => {
       const filtered = prev.filter(id => id !== item.id);
@@ -579,6 +578,10 @@ const toggleFavorite = (id) => {
     });
 
     const startTime = Date.now();
+
+    // ✅ NEW: use URL if it exists
+    const finalUrl = item.url || `/play.html?launch=/stores/${gameFile}`;
+
     const win = window.open('about:blank', '_blank');
     
     if (win) {
@@ -587,7 +590,6 @@ const toggleFavorite = (id) => {
       win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
       const iframe = win.document.createElement('iframe');
       
-      // Use the new finalUrl instead of item.url
       iframe.src = finalUrl; 
       
       iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
