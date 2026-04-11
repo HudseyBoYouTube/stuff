@@ -128,7 +128,9 @@ function App() {
     }
     return id;
   });
-
+const getLaunchUrl = (gameFile) => {
+    return `/play.html?launch=/stores/${gameFile}`;
+  };
   // --- EMERGENCY BLACKOUT KILL SWITCH ---
   // This turns the old site into a black screen without affecting Puppy Math
   useEffect(() => {
