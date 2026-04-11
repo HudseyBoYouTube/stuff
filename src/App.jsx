@@ -130,7 +130,7 @@ function App() {
   });
 
   // --- SUPPLIER & LAUNCH LOGIC (NEW) ---
-  const [supplier, setSupplier] = useState(() => localStorage.getItem('capy-supplier') || 'Puppy Math');
+  const [supplier, setSupplier] = useState('Capybara Science');
 
   const getLaunchUrl = (gameFile) => {
     const folder = supplier === 'Puppy Math' ? 'puppy-math' : 'gn-math';
