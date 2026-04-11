@@ -379,10 +379,10 @@ function App() {
     }
   }, [confirmClearSettings]);
 
- // --- ACHIEVEMENT TRACKING LOGIC ---
+ // --- 1. FIXED ACHIEVEMENT TRACKING ---
+  // Added a check to make sure setAchievements exists before calling it
   useEffect(() => {
-    console.log("Checking playtimes:", playtimes);
-    const newAchievements = [...achievements];
+    const newAchievements = [...(achievements || [])];
     let earnedNew = false;
 
     const checkAndAdd = (id) => {
@@ -392,7 +392,7 @@ function App() {
       }
     };
 
-    if (Object.keys(playtimes).length > 0) {
+    if (Object.keys(playtimes || {}).length > 0) {
       if (!localStorage.getItem('achievement_first_game')) {
         localStorage.setItem('achievement_first_game', 'true');
         checkAndAdd('first_game');
@@ -400,17 +400,39 @@ function App() {
       }
     }
 
-    const totalTime = Object.values(playtimes).reduce((a, b) => a + b, 0);
+    const totalTime = Object.values(playtimes || {}).reduce((a, b) => a + b, 0);
     if (totalTime >= 3600 && !localStorage.getItem('achievement_marathon')) {
       localStorage.setItem('achievement_marathon', 'true');
       checkAndAdd('marathon');
       setNotification("🏃 Achievement Unlocked: Marathoner!");
     }
 
-    if (earnedNew) {
+    // This was the crash site! We added a safety check here:
+    if (earnedNew && typeof setAchievements === 'function') {
       setAchievements(newAchievements);
     }
-  }, [playtimes, favorites, themeChangeCount]);
+  }, [playtimes, favorites, themeChangeCount, achievements]);
+
+  // --- 2. FIXED GAME FILTERING ---
+  const filteredGames = useMemo(() => {
+    const q = (searchQuery || "").toLowerCase();
+    const sourceData = gamesData || [];
+
+    return sourceData.filter(g => {
+      const matchesSearch = g?.title?.toLowerCase().includes(q);
+      
+      // Match the supplier or default to Puppy Math if the tag is missing
+      const matchesSupplier = (g?.supplier || 'Puppy Math') === supplier;
+
+      if (activeCategory === 'Favorites') {
+        return (favorites || []).includes(g?.id) && matchesSearch && matchesSupplier;
+      }
+      
+      const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
+
+      return matchesSearch && matchesCategory && matchesSupplier;
+    });
+  }, [searchQuery, activeCategory, gamesData, favorites, supplier]);
 
   const handleBackgroundUpload = (e) => {
     
