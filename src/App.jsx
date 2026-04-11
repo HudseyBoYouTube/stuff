@@ -130,7 +130,7 @@ function App() {
   });
 
   // --- SUPPLIER & LAUNCH LOGIC (NEW) ---
-  const [supplier, setSupplier] = useState('Capybara Science');
+  const [supplier, setSupplier] = useState(() => localStorage.getItem('capy-supplier') || 'Puppy Math');
 
   const getLaunchUrl = (gameFile) => {
     const folder = supplier === 'Puppy Math' ? 'puppy-math' : 'gn-math';
@@ -622,27 +622,13 @@ const toggleFavorite = (id) => {
 
   const filteredGames = useMemo(() => {
     const q = searchQuery.toLowerCase();
-    
     return gamesData.filter(g => {
       const matchesSearch = g?.title?.toLowerCase().includes(q);
-      
-      // 1. Safety Check: If supplier isn't defined yet, show everything
-      const currentSupplier = typeof supplier !== 'undefined' ? supplier : 'Puppy Math';
-      
-      // 2. The Filter: Match the game's supplier or default to Puppy Math
-      const matchesSupplier = (g?.supplier || 'Puppy Math') === currentSupplier;
-
-      if (activeCategory === 'Favorites') {
-        return favorites.includes(g.id) && matchesSearch && matchesSupplier;
-      }
-      
+      if (activeCategory === 'Favorites') return favorites.includes(g.id) && matchesSearch;
       const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
-
-      // 3. Combine everything
-      return matchesSearch && matchesCategory && matchesSupplier;
+      return matchesSearch && matchesCategory;
     });
-    // 4. Added supplier here so the list refreshes when you click the button
-  }, [searchQuery, activeCategory, gamesData, favorites, supplier]);
+  }, [searchQuery, activeCategory, gamesData, favorites]);
 
   const recentGamesData = useMemo(() => {
     return recentlyPlayed
