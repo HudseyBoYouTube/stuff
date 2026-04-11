@@ -133,8 +133,14 @@ function App() {
   const [supplier, setSupplier] = useState('Puppy Math');
 
   const getLaunchUrl = (gameFile) => {
-    const folder = supplier === 'Puppy Math' ? 'puppy-math' : 'gn-math';
-    return `/play.html?launch=/stores/${folder}/${gameFile}`;
+    // If it's GN Math, go to the gn-math folder. 
+    // If it's Puppy Math, we leave the folder empty (if they are in the main stores folder)
+    if (supplier === 'gn-math') {
+      return `/play.html?launch=/stores/gn-math/${gameFile}`;
+    } else {
+      // This assumes Puppy Math games are directly in /stores/
+      return `/play.html?launch=/stores/${gameFile}`;
+    }
   };
 
   useEffect(() => {
@@ -633,7 +639,7 @@ const toggleFavorite = (id) => {
       
       // 3. SUPER SAFETY: If supplier is broken/missing, this prevents the crash
       const currentSupplier = (typeof supplier !== 'undefined') ? supplier : 'Puppy Math';
-      const matchesSupplier = (g?.supplier || 'Puppy Math') === currentSupplier;
+      const matchesSupplier = (g?.supplier || 'Puppy Math').toLowerCase() === currentSupplier.toLowerCase();
 
       if (activeCategory === 'Favorites') {
         return (favorites || []).includes(g?.id) && matchesSearch && matchesSupplier;
