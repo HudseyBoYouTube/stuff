@@ -6,9 +6,7 @@ export function Header({
   profilePic, setShowSettings, 
   onRandomGame, DEFAULT_ICON,
   onViewProfile,
-  isLightMode,
-  supplier,    // Added
-  setSupplier  // Added
+  isLightMode
 }) {
   return (
     <header className={`${isLightMode ? 'bg-white text-black' : 'bg-[#09090b]/95 text-white'} h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors`}>
@@ -40,25 +38,9 @@ export function Header({
             )}
           </div>
 
-          {/* 1. RANDOM GAME BUTTON */}
           <button onClick={onRandomGame} className={`p-2 ${isLightMode ? 'bg-black/5 border-black/10' : 'bg-white/5 border-white/10'} border rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all shadow-[0_0_15px_rgba(var(--theme-rgb),0.1)]`}>
             <Dices className="w-5 h-5" />
           </button>
-
-          {/* 2. SUPPLIER SELECTOR (Now on the right of Dices) */}
-          <select 
-            value={supplier} 
-            onChange={(e) => setSupplier(e.target.value)}
-            className={`text-[10px] font-black uppercase tracking-tighter px-2 py-2 border rounded-full outline-none cursor-pointer transition-all ${
-              isLightMode 
-                ? 'bg-black/5 border-black/10 text-black' 
-                : 'bg-white/5 border-white/10 text-white'
-            } focus:border-[var(--theme)]`}
-            style={{ color: 'var(--theme)' }}
-          >
-            <option value="Puppy Math">Puppy</option>
-            <option value="GN Math">GN</option>
-          </select>
         </div>
 
         {/* STATS & PROFILE SECTION */}
@@ -73,7 +55,6 @@ export function Header({
           </div>
           
           <div className={`flex items-center gap-1 ${isLightMode ? 'bg-black/5 border-black/5' : 'bg-white/5 border-white/5'} rounded-full p-1 border`}>
-              {/* Profile Picture Button */}
               <button 
                 onClick={() => onViewProfile?.()} 
                 className="w-8 h-8 rounded-full border border-transparent hover:border-[var(--theme)] overflow-hidden bg-zinc-800 transition-all active:scale-90"
@@ -85,7 +66,6 @@ export function Header({
                 )}
               </button>
 
-              {/* Settings Gear Button */}
               <button 
                 onClick={() => setShowSettings(true)} 
                 className="p-1.5 transition-all hover:scale-110 active:rotate-90 group flex items-center justify-center"
