@@ -131,9 +131,34 @@ function App() {
     }
     return id;
   });
-const getLaunchUrl = (gameFile) => {
-    return `/play.html?launch=/stores/${gameFile}`;
+const getLaunchUrl = (game) => {
+    // 1. Check if the game has the specific supplier URL (GN Math / Truffled)
+    if (game.urls?.[supplier]) {
+      return game.urls[supplier];
+    }
+    // 2. Fallback to your original local store logic
+    if (game.file) {
+      return `/play.html?launch=/stores/${game.file}`;
+    }
+    // 3. Final fallback for games that just have a standard 'url'
+    return game.url;
   };
+
+  const launchContent = (game) => {
+    const url = getLaunchUrl(game);
+    if (!url) return;
+
+    // Save to recently played
+    setRecentlyPlayed(prev => {
+      const filtered = prev.filter(p => p.id !== game.id);
+      const updated = [game, ...filtered].slice(0, 10);
+      localStorage.setItem('capy-recent', JSON.stringify(updated));
+      return updated;
+    });
+
+    window.open(url, '_blank');
+  };
+
   // --- EMERGENCY BLACKOUT KILL SWITCH ---
   // This turns the old site into a black screen without affecting Puppy Math
   useEffect(() => {
@@ -176,25 +201,22 @@ const getLaunchUrl = (gameFile) => {
 
   const validFavoritesCount = useMemo(() => gamesData.filter(g => favorites.includes(g.id)).length, [gamesData, favorites]);
 
- const categoriesWithCounts = useMemo(() => {
-  const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
-  const final = [{ name: 'All', count: gamesData.length }];
-  
-  // FIX 1: Change 'validFavoritesCount' to 'favorites.length'
-  if (favorites.length > 0) {
-    // FIX 2: Change the count here too
-    final.push({ name: 'Favorites', count: favorites.length });
-  }
-  
-  uniqueCats.forEach(cat => {
-    final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
-  });
-  
-  return final;
-// FIX 3: Make sure 'favorites' is in this array so it updates live
-}, [gamesData, favorites]);
+  const categoriesWithCounts = useMemo(() => {
+    const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
+    const final = [{ name: 'All', count: gamesData.length }];
+    
+    if (favorites.length > 0) {
+      final.push({ name: 'Favorites', count: favorites.length });
+    }
+    
+    uniqueCats.forEach(cat => {
+      final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
+    });
+    
+    return final;
+  }, [gamesData, favorites]);
 
- useEffect(() => {
+  useEffect(() => {
     checkScroll();
     window.addEventListener('resize', checkScroll);
     return () => window.removeEventListener('resize', checkScroll);
