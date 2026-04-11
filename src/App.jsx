@@ -588,26 +588,7 @@ const toggleFavorite = (id) => {
     }
     link.href = currentIdentity.icon;
   }, [currentIdentity]);
-
-    const startTime = Date.now();
-
-    // ✅ NEW: use URL if it exists
-    const finalUrl = item.url || `/play.html?launch=/stores/${gameFile}`;
-
-    const win = window.open('about:blank', '_blank');
-    
-    if (win) {
-      win.document.title = "DO NOT REFRESH";
-      
-      win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
-      const iframe = win.document.createElement('iframe');
-      
-      iframe.src = finalUrl; 
-      
-      iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
-      iframe.allow = "fullscreen";
-      win.document.body.appendChild(iframe);
-
+  
       const trackPlaytime = setInterval(() => {
         if (win.closed) {
           clearInterval(trackPlaytime);
