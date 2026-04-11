@@ -133,14 +133,8 @@ function App() {
   const [supplier, setSupplier] = useState('Puppy Math');
 
   const getLaunchUrl = (gameFile) => {
-    // If it's GN Math, go to the gn-math folder. 
-    // If it's Puppy Math, we leave the folder empty (if they are in the main stores folder)
-    if (supplier === 'gn-math') {
-      return `/play.html?launch=/stores/gn-math/${gameFile}`;
-    } else {
-      // This assumes Puppy Math games are directly in /stores/
-      return `/play.html?launch=/stores/${gameFile}`;
-    }
+    // This sends every game straight to your main stores folder like before
+    return `/play.html?launch=/stores/${gameFile}`;
   };
 
   useEffect(() => {
@@ -628,29 +622,21 @@ const toggleFavorite = (id) => {
   };
 
   const filteredGames = useMemo(() => {
-    // 1. Make sure searchQuery exists or use an empty string
     const q = (searchQuery || "").toLowerCase();
-    
-    // 2. Make sure gamesData exists or use an empty list
     const sourceData = gamesData || [];
 
     return sourceData.filter(g => {
       const matchesSearch = g?.title?.toLowerCase().includes(q);
       
-      // 3. SUPER SAFETY: If supplier is broken/missing, this prevents the crash
-      const currentSupplier = (typeof supplier !== 'undefined') ? supplier : 'Puppy Math';
-      const matchesSupplier = (g?.supplier || 'Puppy Math').toLowerCase() === currentSupplier.toLowerCase();
-
       if (activeCategory === 'Favorites') {
-        return (favorites || []).includes(g?.id) && matchesSearch && matchesSupplier;
+        return (favorites || []).includes(g?.id) && matchesSearch;
       }
       
       const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
 
-      return matchesSearch && matchesCategory && matchesSupplier;
+      return matchesSearch && matchesCategory;
     });
-    // 4. We use supplier? to prevent errors if the state isn't ready
-  }, [searchQuery, activeCategory, gamesData, favorites, (typeof supplier !== 'undefined' ? supplier : 'Puppy Math')]);
+  }, [searchQuery, activeCategory, gamesData, favorites]);
 
   const recentGamesData = useMemo(() => {
     return recentlyPlayed
@@ -709,45 +695,6 @@ return (
           }}
         />
       )}
-{/* --- START OF SUPPLIER DROPDOWN --- */}
-      <div style={{ 
-        position: 'relative', 
-        zIndex: 50, 
-        padding: '20px 0', 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center',
-        gap: '12px'
-      }}>
-        <label style={{ 
-          fontSize: '11px', 
-          fontWeight: '900', 
-          color: theme, 
-          letterSpacing: '2px',
-          textShadow: `0 0 10px ${theme}`
-        }}>
-          SOURCE:
-        </label>
-        <select 
-          value={supplier} 
-          onChange={(e) => setSupplier(e.target.value)}
-          style={{
-            backgroundColor: isLightMode ? '#ffffff' : '#000000',
-            color: isLightMode ? '#000000' : '#ffffff',
-            border: `2px solid ${theme}`,
-            padding: '6px 14px',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            outline: 'none',
-            boxShadow: `0 0 15px ${theme}44`
-          }}
-        >
-          <option value="Puppy Math">Capybara Science</option>
-          <option value="gn-math">gn-math</option>
-        </select>
-      </div>
-      {/* --- END OF SUPPLIER DROPDOWN --- */}
      
       <Header 
   searchQuery={searchQuery} 
@@ -756,9 +703,7 @@ return (
   battery={battery}
   profilePic={profilePic}
   setShowSettings={setShowSettings}
-  DEFAULT_ICON={DEFAULT_ICON}
-  supplier={supplier}      
-  setSupplier={setSupplier}  
+  DEFAULT_ICON={DEFAULT_ICON}   
   theme={theme}   
   onViewProfile={() => setSelectedFriendId('me')} 
   onRandomGame={() => {
