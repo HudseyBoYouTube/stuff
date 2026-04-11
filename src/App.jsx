@@ -132,15 +132,30 @@ function App() {
     return id;
   });
 const getLaunchUrl = (game) => {
-    if (game.urls?.[supplier]) return game.urls[supplier];
-    const gameFile = game.file || (game.id ? `${game.id}.html` : null);
-    if (gameFile) return `/play.html?launch=/stores/${gameFile}`;
-    return game.url;
-  }; // <--- One bracket and a semicolon
+    // 1. First, check if a specific Supplier link exists (GN Math, etc.)
+    if (game.urls && game.urls[supplier]) {
+      return game.urls[supplier];
+    }
 
- const launchContent = (game) => {
+    // 2. If no supplier link, use the standard 'url' from your JSON
+    if (game.url) {
+      return game.url;
+    }
+
+    // 3. If neither exists, try the local /stores/ folder (Fallback)
+    if (game.file) {
+      return `/play.html?launch=/stores/${game.file}`;
+    }
+
+    // 4. Ultimate fallback using the ID
+    return `/play.html?launch=/stores/${game.id}.html`;
+  };
+
+  const launchContent = (game) => {
     const url = getLaunchUrl(game);
     if (!url) return;
+    
+    // ... (rest of your recently played and iframe logic here)
 
     // 1. Save to recently played
     setRecentlyPlayed(prev => {
