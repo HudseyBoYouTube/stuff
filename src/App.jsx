@@ -596,16 +596,6 @@ const toggleFavorite = (id) => {
     link.href = currentIdentity.icon;
   }, [currentIdentity]);
 
-  const launchContent = (item) => {
-    const gameFile = item.file || `${item.id}.html`;
-
-    setRecentlyPlayed(prev => {
-      const filtered = prev.filter(id => id !== item.id);
-      const updated = [item.id, ...filtered].slice(0, 4);
-      localStorage.setItem('capy-recent', JSON.stringify(updated));
-      return updated;
-    });
-
     const startTime = Date.now();
 
     // ✅ NEW: use URL if it exists
