@@ -132,23 +132,16 @@ function App() {
     return id;
   });
 const getLaunchUrl = (game) => {
-    // 1. Check if the game has the specific supplier URL (GN Math / Truffled)
-    if (game.urls?.[supplier]) {
-      return game.urls[supplier];
-    }
-    // 2. Fallback to your original local store logic
-    if (game.file) {
-      return `/play.html?launch=/stores/${game.file}`;
-    }
-    // 3. Final fallback for games that just have a standard 'url'
+    if (game.urls?.[supplier]) return game.urls[supplier];
+    const gameFile = game.file || (game.id ? `${game.id}.html` : null);
+    if (gameFile) return `/play.html?launch=/stores/${gameFile}`;
     return game.url;
-  };
+  }; // <--- One bracket and a semicolon
 
   const launchContent = (game) => {
     const url = getLaunchUrl(game);
     if (!url) return;
 
-    // Save to recently played
     setRecentlyPlayed(prev => {
       const filtered = prev.filter(p => p.id !== game.id);
       const updated = [game, ...filtered].slice(0, 10);
@@ -157,7 +150,7 @@ const getLaunchUrl = (game) => {
     });
 
     window.open(url, '_blank');
-  };
+  }; // <--- One bracket and a semicolon
 
   // --- EMERGENCY BLACKOUT KILL SWITCH ---
   // This turns the old site into a black screen without affecting Puppy Math
@@ -952,7 +945,7 @@ return (
               setIsSyncing(false);
               setNotification("Friend view refreshed!");
             }, 500);
-        }} // <--- Use TWO here: one for the function, one for the prop
+        }}
         myAchievements={achievements}
       />
     </div>
