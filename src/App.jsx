@@ -138,10 +138,11 @@ const getLaunchUrl = (game) => {
     return game.url;
   }; // <--- One bracket and a semicolon
 
-  const launchContent = (game) => {
+ const launchContent = (game) => {
     const url = getLaunchUrl(game);
     if (!url) return;
 
+    // 1. Save to recently played
     setRecentlyPlayed(prev => {
       const filtered = prev.filter(p => p.id !== game.id);
       const updated = [game, ...filtered].slice(0, 10);
@@ -149,8 +150,19 @@ const getLaunchUrl = (game) => {
       return updated;
     });
 
-    window.open(url, '_blank');
-  }; // <--- One bracket and a semicolon
+    // 2. Open in a "DO NOT REFRESH" about:blank tab
+    const win = window.open('about:blank', '_blank');
+    if (win) {
+      win.document.title = "DO NOT REFRESH";
+      win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
+      
+      const iframe = win.document.createElement('iframe');
+      iframe.src = url;
+      iframe.style = 'width:100vw;height:100vh;border:none;';
+      
+      win.document.body.appendChild(iframe);
+    }
+  }; // <--- Just one closing bracket here.
 
   // --- EMERGENCY BLACKOUT KILL SWITCH ---
   // This turns the old site into a black screen without affecting Puppy Math
