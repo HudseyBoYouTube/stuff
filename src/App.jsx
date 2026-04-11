@@ -952,11 +952,11 @@ return (
               setIsSyncing(false);
               setNotification("Friend view refreshed!");
             }, 500);
-        }}
-        myAchievements={achievements}
-      />
-    </div>
-  );
+        } // <--- Only one here now
+        myAchievements={achievements}
+      />
+    </div>
+  );
 }
 
 export default App;
