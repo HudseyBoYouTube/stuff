@@ -129,19 +129,6 @@ function App() {
     return id;
   });
 
-  // --- SUPPLIER & LAUNCH LOGIC (NEW) ---
-  const [supplier, setSupplier] = useState('Puppy Math');
-
-  const getLaunchUrl = (gameFile) => {
-    // This sends every game straight to your main stores folder like before
-    return `/play.html?launch=/stores/${gameFile}`;
-  };
-
-  useEffect(() => {
-    localStorage.setItem('capy-supplier', supplier);
-  }, [supplier]);
-  // -------------------------------------
-
   // --- EMERGENCY BLACKOUT KILL SWITCH ---
   // This turns the old site into a black screen without affecting Puppy Math
   useEffect(() => {
