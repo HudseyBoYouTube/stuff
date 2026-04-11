@@ -130,7 +130,7 @@ function App() {
   });
 
   // --- SUPPLIER & LAUNCH LOGIC (NEW) ---
-  const [supplier, setSupplier] = useState(() => localStorage.getItem('capy-supplier') || 'Puppy Math');
+  const [supplier, setSupplier] = useState('Puppy Math');
 
   const getLaunchUrl = (gameFile) => {
     const folder = supplier === 'Puppy Math' ? 'puppy-math' : 'gn-math';
@@ -621,14 +621,29 @@ const toggleFavorite = (id) => {
   };
 
   const filteredGames = useMemo(() => {
-    const q = searchQuery.toLowerCase();
-    return gamesData.filter(g => {
+    // 1. Make sure searchQuery exists or use an empty string
+    const q = (searchQuery || "").toLowerCase();
+    
+    // 2. Make sure gamesData exists or use an empty list
+    const sourceData = gamesData || [];
+
+    return sourceData.filter(g => {
       const matchesSearch = g?.title?.toLowerCase().includes(q);
-      if (activeCategory === 'Favorites') return favorites.includes(g.id) && matchesSearch;
+      
+      // 3. SUPER SAFETY: If supplier is broken/missing, this prevents the crash
+      const currentSupplier = (typeof supplier !== 'undefined') ? supplier : 'Puppy Math';
+      const matchesSupplier = (g?.supplier || 'Puppy Math') === currentSupplier;
+
+      if (activeCategory === 'Favorites') {
+        return (favorites || []).includes(g?.id) && matchesSearch && matchesSupplier;
+      }
+      
       const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
-      return matchesSearch && matchesCategory;
+
+      return matchesSearch && matchesCategory && matchesSupplier;
     });
-  }, [searchQuery, activeCategory, gamesData, favorites]);
+    // 4. We use supplier? to prevent errors if the state isn't ready
+  }, [searchQuery, activeCategory, gamesData, favorites, (typeof supplier !== 'undefined' ? supplier : 'Puppy Math')]);
 
   const recentGamesData = useMemo(() => {
     return recentlyPlayed
