@@ -413,27 +413,6 @@ function App() {
     }
   }, [playtimes, favorites, themeChangeCount, achievements]);
 
-  // --- 2. FIXED GAME FILTERING ---
-  const filteredGames = useMemo(() => {
-    const q = (searchQuery || "").toLowerCase();
-    const sourceData = gamesData || [];
-
-    return sourceData.filter(g => {
-      const matchesSearch = g?.title?.toLowerCase().includes(q);
-      
-      // Match the supplier or default to Puppy Math if the tag is missing
-      const matchesSupplier = (g?.supplier || 'Puppy Math') === supplier;
-
-      if (activeCategory === 'Favorites') {
-        return (favorites || []).includes(g?.id) && matchesSearch && matchesSupplier;
-      }
-      
-      const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
-
-      return matchesSearch && matchesCategory && matchesSupplier;
-    });
-  }, [searchQuery, activeCategory, gamesData, favorites, supplier]);
-
   const handleBackgroundUpload = (e) => {
     
     const file = e.target.files[0];
