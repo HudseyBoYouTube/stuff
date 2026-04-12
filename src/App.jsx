@@ -15,6 +15,62 @@ import { Header } from './components/Header';
 import { FriendViewModal } from './components/FriendViewModal';
 import { tracklist } from './components/tracklist'; 
 
+export default function App() {
+  // 1. STATE DEFINITIONS
+  const [supplier, setSupplier] = useState('Default');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [favorites, setFavorites] = useState(() => {
+    const saved = localStorage.getItem('capy-favorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+  
+  const [recentlyPlayed, setRecentlyPlayed] = useState([]);
+  const [playtimes, setPlaytimes] = useState(() => {
+    const saved = localStorage.getItem('capy-playtimes');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  // 2. LOADING LOGIC (Swaps history when you change supplier)
+  useEffect(() => {
+    const recentKey = `capy-recent-${supplier}`;
+    const saved = localStorage.getItem(recentKey);
+    setRecentlyPlayed(saved ? JSON.parse(saved) : []);
+  }, [supplier]);
+
+  // 3. ENGINE LOGIC
+  const getLaunchUrl = (game, currentSupplier) => {
+    if (currentSupplier !== 'Default' && game.urls && game.urls[currentSupplier]) {
+      return game.urls[currentSupplier];
+    }
+    return game.url || null; 
+  };
+
+  const launchContent = (item) => {
+    const finalUrl = getLaunchUrl(item, supplier); 
+    if (!finalUrl) return;
+
+    // Save to the supplier-specific history
+    const recentKey = `capy-recent-${supplier}`;
+    setRecentlyPlayed(prev => {
+      const filtered = prev.filter(id => id !== item.id);
+      const updated = [item.id, ...filtered].slice(0, 10);
+      localStorage.setItem(recentKey, JSON.stringify(updated));
+      return updated;
+    });
+
+    const win = window.open('about:blank', '_blank');
+    if (win) {
+      win.document.title = "DO NOT REFRESH";
+      win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
+      const iframe = win.document.createElement('iframe');
+      iframe.src = finalUrl; 
+      iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
+      iframe.allow = "fullscreen";
+      win.document.body.appendChild(iframe);
+    }
+  };
+
 const DEFAULT_COLOR = '#10A5F5';
 const DEFAULT_GLOW = 50;
 const DEFAULT_TITLE = "Capybara Science";
