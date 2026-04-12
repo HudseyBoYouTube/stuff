@@ -62,10 +62,31 @@ export default function App() {
 
   const achievements = useAchievements(userData);
 
-  const gamesData = useMemo(() => {
-    if (!gamesDataRaw || !Array.isArray(gamesDataRaw)) return [];
-    return gamesDataRaw;
-  }, [gamesDataRaw]);
+ const [gamesData, setGamesData] = useState([]);
+
+  useEffect(() => {
+    const loadAllGames = async () => {
+      try {
+        const [mainRes, gnRes] = await Promise.all([
+          fetch('/games.json'),
+          fetch('/gn-math-games.json')
+        ]);
+        const mainData = await mainRes.json();
+        const gnData = await gnRes.json();
+
+        const formattedGN = gnData.map(game => ({
+          ...game,
+          urls: { "GN Math": game.url }, 
+          url: "" 
+        }));
+
+        setGamesData([...mainData, ...formattedGN]);
+      } catch (err) {
+        console.error("Error loading game files:", err);
+      }
+    };
+    loadAllGames();
+  }, []);
 
   const audioRef = useRef(null);
   const categoryScrollRef = useRef(null);
