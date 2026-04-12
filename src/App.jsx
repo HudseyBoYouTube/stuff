@@ -174,25 +174,24 @@ const getLaunchUrl = (game, currentSupplier) => {
     iframe.src = finalUrl; 
     iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
     iframe.allow = "fullscreen";
+   // ... inside launchContent ...
     win.document.body.appendChild(iframe);
-
-    // 3. Track how long you play (saves to local storage when tab closes)
-    const trackPlaytime = setInterval(() => {
+    
+    const checkInterval = setInterval(() => {
       if (win.closed) {
-        clearInterval(trackPlaytime);
-        const endTime = Date.now();
-        const elapsedSeconds = Math.floor((endTime - startTime) / 1000);
-        
-        setPlaytimes(prev => {
-          const updated = { ...prev, [item.id]: (prev[item.id] || 0) + elapsedSeconds };
-          localStorage.setItem('capy-playtimes', JSON.stringify(updated));
-          return updated;
-        });
+        clearInterval(checkInterval);
+        const duration = Math.floor((Date.now() - startTime) / 1000 / 60);
+        if (duration > 0) {
+          setPlaytimes(prev => {
+            const updated = { ...prev, [item.id]: (prev[item.id] || 0) + duration };
+            localStorage.setItem('capy-playtimes', JSON.stringify(updated));
+            return updated;
+          });
+        }
       }
     }, 1000);
-  }
+  } 
 };
-
   // --- EMERGENCY BLACKOUT KILL SWITCH ---
   useEffect(() => {
     const checkStatus = setInterval(() => {
