@@ -146,18 +146,22 @@ const getLaunchUrl = (game, currentSupplier) => {
   return game.url || `/stores/${game.id}.html`;
 };
 
-  const launchContent = (item) => {
-  // 1. Get the correct URL based on the current Supplier
-  const finalUrl = getLaunchUrl(item, supplier); 
-  if (!finalUrl) return;
+ const launchContent = (item) => {
+    const finalUrl = getLaunchUrl(item, supplier); 
+    if (!finalUrl) return;
 
-  // 2. Update Recently Played (keeps the last 10 games)
-  setRecentlyPlayed(prev => {
-    const filtered = prev.filter(id => id !== item.id);
-    const updated = [item.id, ...filtered].slice(0, 10);
-    localStorage.setItem('capy-recent', JSON.stringify(updated));
-    return updated;
-  });
+    // --- UPDATE THIS SECTION ---
+    // This creates a unique history key like "capy-recent-GN Math"
+    const recentKey = `capy-recent-${supplier}`; 
+    
+    setRecentlyPlayed(prev => {
+      const filtered = prev.filter(id => id !== item.id);
+      const updated = [item.id, ...filtered].slice(0, 10);
+      
+      // Save it to the specific supplier bucket
+      localStorage.setItem(recentKey, JSON.stringify(updated));
+      return updated;
+    });
 
   const startTime = Date.now();
   const win = window.open('about:blank', '_blank');
