@@ -232,23 +232,32 @@ const getLaunchUrl = (game, currentSupplier) => {
 
   const validFavoritesCount = useMemo(() => gamesData.filter(g => favorites.includes(g.id)).length, [gamesData, favorites]);
 
- const categoriesWithCounts = useMemo(() => {
-  const uniqueCats = [...new Set(gamesData.map(g => g?.category).filter(Boolean))];
-  const final = [{ name: 'All', count: gamesData.length }];
-  
-  // FIX 1: Change 'validFavoritesCount' to 'favorites.length'
-  if (favorites.length > 0) {
-    // FIX 2: Change the count here too
-    final.push({ name: 'Favorites', count: favorites.length });
-  }
-  
-  uniqueCats.forEach(cat => {
-    final.push({ name: cat, count: gamesData.filter(g => g.category === cat).length });
-  });
-  
-  return final;
-// FIX 3: Make sure 'favorites' is in this array so it updates live
-}, [gamesData, favorites]);
+const categoriesWithCounts = useMemo(() => {
+    const counts = { All: 0 };
+    
+    const supplierGames = gamesData.filter(g => {
+      if (supplier === 'GN Math') return g.urls && g.urls['GN Math'];
+      if (supplier === 'Truffled') return g.urls && g.urls['Truffled'];
+      return g.url || (g.urls && g.urls['Default']); 
+    });
+
+    supplierGames.forEach(game => {
+      counts.All++;
+      const cat = game.category || 'Other';
+      counts[cat] = (counts[cat] || 0) + 1;
+    });
+
+    const final = ['All', 'Arcade', 'Strategy', 'Platformer', 'Action', 'Skill', 'Horror'].map(name => ({
+      name,
+      count: counts[name] || 0
+    }));
+
+    if (favorites.length > 0) {
+      final.splice(1, 0, { name: 'Favorites', count: favorites.length });
+    }
+
+    return final;
+  }, [gamesData, supplier, favorites]);
 
  useEffect(() => {
     checkScroll();
