@@ -100,11 +100,13 @@ export default function App() {
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
   const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || '');
 
-  const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
+ const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
     try {
-      const saved = localStorage.getItem('capy-recent');
-      return saved ? JSON.parse(saved) : [];
+      const recentKey = `capy-recent-${supplier || 'Default'}`;
+      const saved = localStorage.getItem(recentKey);
+      return (saved && saved !== "undefined") ? JSON.parse(saved) : [];
     } catch (e) {
+      console.error("History error:", e);
       return [];
     }
   });
