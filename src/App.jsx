@@ -677,6 +677,25 @@ useEffect(() => {
     return decoded ? { ...friend, decoded } : friend;
   }, [friends, selectedFriendId]);
 
+  // 🔄 The "History Switcher" Fix
+  useEffect(() => {
+    // 1. Wipe the screen immediately so old games from other suppliers don't "ghost"
+    setRecentlyPlayed([]); 
+
+    // 2. Load the specific folder for the current dropdown selection
+    const recentKey = `capy-recent-${supplier}`;
+    const saved = localStorage.getItem(recentKey);
+    
+    try {
+      if (saved && saved !== "undefined") {
+        setRecentlyPlayed(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.error("History error:", e);
+      setRecentlyPlayed([]);
+    }
+  }, [supplier]); // This runs every time you change the dropdown
+  
   return (
     <div
       className={`min-h-screen pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'} ${isLightMode ? 'light-mode bg-white text-zinc-900' : 'bg-[#0a0a0a] text-zinc-100'}`} 
