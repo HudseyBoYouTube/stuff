@@ -602,15 +602,12 @@
     "category": "Classic"
   },
   {
-  "id": "10-minutes-till-dawn",
-  "title": "10 Minutes Till Dawn",
-  "url": "https://play.coolmathgames.eu.org/storage/ag/echo/10-minutes-till-dawn/",
-  "urls": {
-    "GN Math": "/games/10-minutes-till-dawn/index.html"
+    "id": "10-minutes-till-dawn",
+    "title": "10 Minutes Till Dawn",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/echo/10-minutes-till-dawn/",
+    "thumbnail": "https://imgs.crazygames.com/auto-covers/10-minutes-till-dawn_1x1.png?format=auto&quality=70&metadata=none",
+    "category": "Survival"
   },
-  "thumbnail": "https://imgs.crazygames.com/auto-covers/10-minutes-till-dawn_1x1.png?format=auto&quality=70&metadata=none",
-  "category": "Survival"
-},
   {
     "id": "boxing-random",
     "title": "Boxing Random",
@@ -1133,7 +1130,7 @@
     "id": "1-date-danger",
     "title": "1 Date Danger",
     "thumbnail": "https://c10.patreonusercontent.com/4/patreon-media/p/campaign/10021749/c7e9632fa4274f1fb5ce5c36fdec6ee6/eyJoIjozNjAsInciOjM2MH0%3D/5.png?token-hash=chlKPOkQLXjSZDetmbyd7RPVjyXIRJQT2m64iGupEv0%3D&token-time=1776384000",
-    "category": "Strategy",
+    "category": "Arcade",
     "urls": {
       "GN Math": "/stores/gn-math/date.html"
     },
