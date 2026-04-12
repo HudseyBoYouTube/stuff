@@ -21,10 +21,18 @@
     "category": "Action"
   },
   {
-    "id": "1v1.lol",
+    "id": "1v1-lol",
     "title": "1v1.LOL",
     "url": "/stores/gn-math/1v1.lol.html",
     "thumbnail": "https://assets.about.me/background/users/u/n/b/unblockedgame1v1lol_1722245404_678.jpg",
     "category": "Action"
+  },
+  {
+    "id": "2048",
+    "title": "2048",
+    "url": "/stores/gn-math/2048.html",
+    "thumbnail": "https://m.media-amazon.com/images/I/41RCIHMHFDL.png",
+    "category": "Puzzle"
   }
 ]
+    
