@@ -648,11 +648,16 @@ useEffect(() => {
   });
 }, [searchQuery, activeCategory, gamesData, favorites, supplier]); // Added supplier here!
   
-  const recentGamesData = useMemo(() => {
-    return recentlyPlayed
-      .map(id => gamesData.find(g => g.id === id))
-      .filter(Boolean);
-  }, [recentlyPlayed, gamesData]);
+  const recentGames = useMemo(() => {
+  return (recentlyPlayed || [])
+    .map(id => gamesData.find(g => g.id === id))
+    .filter(g => {
+      if (!g) return false;
+      if (supplier === 'GN Math') return g.urls && g.urls['GN Math'];
+      if (supplier === 'Truffled') return g.urls && g.urls['Truffled'];
+      return true;
+    });
+}, [recentlyPlayed, gamesData, supplier]);
 
   const currentFriend = useMemo(() => {
     if (!selectedFriendId || selectedFriendId === 'me') return null;
