@@ -85,7 +85,6 @@ export default function App() {
   const [disguise, setDisguise] = useState(() => localStorage.getItem('capy-stealth-type') || 'none');
   const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
   const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
-  const [supplier, setSupplier] = useState(() => localStorage.getItem('capy-supplier') || 'Default');
 
   const [bgEnabled, setBgEnabled] = useState(() => localStorage.getItem('capy-bg-enabled') === 'true');
   const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
