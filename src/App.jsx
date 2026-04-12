@@ -81,6 +81,7 @@ function App() {
   const [disguise, setDisguise] = useState(() => localStorage.getItem('capy-stealth-type') || 'none');
   const [customTitle, setCustomTitle] = useState(() => localStorage.getItem('capy-custom-title') || '');
   const [customIcon, setCustomIcon] = useState(() => localStorage.getItem('capy-custom-icon') || '');
+  const [supplier, setSupplier] = useState(() => localStorage.getItem('capy-supplier') || 'Default');
 
   const [bgEnabled, setBgEnabled] = useState(() => localStorage.getItem('capy-bg-enabled') === 'true');
   const [backgroundImage, setBackgroundImage] = useState(() => localStorage.getItem('capy-bg-image') || '');
@@ -128,11 +129,37 @@ function App() {
     }
     return id;
   });
-const getLaunchUrl = (gameFile) => {
-    return `/play.html?launch=/stores/${gameFile}`;
+const getLaunchUrl = (game) => {
+    // 1. Check if the chosen Supplier (GN Math/Truffled) has a specific link
+    const supplierUrl = game.urls?.[supplier];
+    if (supplierUrl) return supplierUrl;
+
+    // 2. If no supplier link, use the standard 'url' from your JSON
+    if (game.url) {
+      if (game.url.startsWith('http')) return game.url;
+      return `/play.html?launch=/stores/${game.url}`;
+    }
+
+    // 3. Fallback to using the ID as a filename
+    return `/play.html?launch=/stores/${game.id}.html`;
   };
+
+  const launchContent = (game) => {
+    const url = getLaunchUrl(game); // <--- This belongs INSIDE here!
+    if (!url) return;
+
+    const win = window.open('about:blank', '_blank');
+    if (win) {
+      win.document.title = "DO NOT REFRESH";
+      win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
+      const iframe = win.document.createElement('iframe');
+      iframe.src = url;
+      iframe.style = 'width:100vw;height:100vh;border:none;';
+      win.document.body.appendChild(iframe);
+    }
+  };
+
   // --- EMERGENCY BLACKOUT KILL SWITCH ---
-  // This turns the old site into a black screen without affecting Puppy Math
   useEffect(() => {
     const checkStatus = setInterval(() => {
       if (window.location.href.includes("carti-is-a-goat-rapper")) {
@@ -145,10 +172,9 @@ const getLaunchUrl = (gameFile) => {
         clearInterval(checkStatus);
       }
     }, 1000); 
-
     return () => clearInterval(checkStatus);
   }, []);
-
+  
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
