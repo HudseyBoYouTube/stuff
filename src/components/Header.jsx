@@ -6,7 +6,9 @@ export function Header({
   profilePic, setShowSettings, 
   onRandomGame, DEFAULT_ICON,
   onViewProfile,
-  isLightMode
+  isLightMode,
+  /* ADDED PROPS */
+  supplier, setSupplier
 }) {
   return (
     <header className={`${isLightMode ? 'bg-white text-black' : 'bg-[#09090b]/95 text-white'} h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors`}>
@@ -41,6 +43,25 @@ export function Header({
           <button onClick={onRandomGame} className={`p-2 ${isLightMode ? 'bg-black/5 border-black/10' : 'bg-white/5 border-white/10'} border rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all shadow-[0_0_15px_rgba(var(--theme-rgb),0.1)]`}>
             <Dices className="w-5 h-5" />
           </button>
+
+          {/* SUPPLIER DROPDOWN ADDED HERE */}
+          <select 
+            value={supplier} 
+            onChange={(e) => {
+              setSupplier(e.target.value);
+              localStorage.setItem('capy-supplier', e.target.value);
+            }}
+            className={`text-[10px] font-bold uppercase py-2 px-2 rounded-lg border transition-all outline-none cursor-pointer ${
+              isLightMode 
+                ? 'bg-black/5 border-black/10 text-black' 
+                : 'bg-white/5 border-white/10 text-white'
+            } focus:border-[var(--theme)]`}
+            style={{ appearance: 'none' }}
+          >
+            <option value="Default" className="bg-[#09090b] text-white">Default</option>
+            <option value="GN Math" className="bg-[#09090b] text-white">GN Math</option>
+            <option value="Truffled" className="bg-[#09090b] text-white">Truffled</option>
+          </select>
         </div>
 
         {/* STATS & PROFILE SECTION */}
