@@ -630,31 +630,34 @@ useEffect(() => {
     link.href = currentIdentity.icon;
   }, [currentIdentity]);
 
- const filteredGames = useMemo(() => {
-  const q = (searchQuery || "").toLowerCase();
-  const sourceData = gamesData || [];
+const filteredGames = useMemo(() => {
+    const q = (searchQuery || "").toLowerCase();
+    const sourceData = gamesData || [];
 
-  return sourceData.filter(g => {
-    // 1. Check Search Match
-    const matchesSearch = g?.title?.toLowerCase().includes(q);
-    if (!matchesSearch) return false;
+    return sourceData.filter(g => {
+      // 1. Check Search Match
+      const matchesSearch = g?.title?.toLowerCase().includes(q);
+      if (!matchesSearch) return false;
 
-    // 2. Check Supplier Match (GN Math / Truffled)
-    if (supplier === 'GN Math') {
-      if (!g.urls || !g.urls['GN Math']) return false;
-    } else if (supplier === 'Truffled') {
-      if (!g.urls || !g.urls['Truffled']) return false;
-    }
+      // 2. Check Supplier Match (STRICT FILTERING)
+      if (supplier === 'GN Math') {
+        if (!g.urls?.['GN Math']) return false;
+      } else if (supplier === 'Truffled') {
+        if (!g.urls?.['Truffled']) return false;
+      } else {
+        // Default (Capybara Science) - Hide if it belongs to GN Math or Truffled
+        if (g.urls?.['GN Math'] || g.urls?.['Truffled']) return false;
+      }
 
-    // 3. Check Category / Favorites Match
-    if (activeCategory === 'Favorites') {
-      return (favorites || []).includes(g?.id);
-    }
-    
-    const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
-    return matchesCategory;
-  });
-}, [searchQuery, activeCategory, gamesData, favorites, supplier]); 
+      // 3. Check Category / Favorites Match
+      if (activeCategory === 'Favorites') {
+        return (favorites || []).includes(g?.id);
+      }
+      
+      const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
+      return matchesCategory;
+    });
+  }, [searchQuery, activeCategory, gamesData, favorites, supplier]); 
   
   const recentGamesData = useMemo(() => {
     if (!recentlyPlayed || !Array.isArray(recentlyPlayed)) return [];
@@ -663,8 +666,11 @@ useEffect(() => {
       .map(id => (gamesData || []).find(g => g.id === id))
       .filter(g => {
         if (!g) return false;
-        if (supplier === 'GN Math') return g.urls && g.urls['GN Math'];
-        if (supplier === 'Truffled') return g.urls && g.urls['Truffled'];
+        if (supplier === 'GN Math') return g.urls?.['GN Math'];
+        if (supplier === 'Truffled') return g.urls?.['Truffled'];
+        
+        // Default: Hide recent games from other suppliers
+        if (g.urls?.['GN Math'] || g.urls?.['Truffled']) return false;
         return true;
       });
   }, [recentlyPlayed, gamesData, supplier]);
