@@ -129,35 +129,60 @@ function App() {
     }
     return id;
   });
-const getLaunchUrl = (game) => {
-    // 1. Check if the chosen Supplier (GN Math/Truffled) has a specific link
-    const supplierUrl = game.urls?.[supplier];
-    if (supplierUrl) return supplierUrl;
+const getLaunchUrl = (game, currentSupplier) => {
+  // 1. Check for supplier-specific link (e.g., /stores/gn-math/date.html)
+  if (currentSupplier !== 'Default' && game.urls && game.urls[currentSupplier]) {
+    return game.urls[currentSupplier];
+  }
+  
+  // 2. Fallback to the main URL or a default file path
+  // If it's a standard link, it uses game.url. 
+  // If nothing is found, it looks for the ID.html in /stores/
+  return game.url || `/stores/${game.id}.html`;
+};
 
-    // 2. If no supplier link, use the standard 'url' from your JSON
-    if (game.url) {
-      if (game.url.startsWith('http')) return game.url;
-      return `/play.html?launch=/stores/${game.url}`;
-    }
+  const launchContent = (item) => {
+  // 1. Get the correct URL based on the current Supplier
+  const finalUrl = getLaunchUrl(item, supplier); 
+  if (!finalUrl) return;
 
-    // 3. Fallback to using the ID as a filename
-    return `/play.html?launch=/stores/${game.id}.html`;
-  };
+  // 2. Update Recently Played (keeps the last 10 games)
+  setRecentlyPlayed(prev => {
+    const filtered = prev.filter(id => id !== item.id);
+    const updated = [item.id, ...filtered].slice(0, 10);
+    localStorage.setItem('capy-recent', JSON.stringify(updated));
+    return updated;
+  });
 
-  const launchContent = (game) => {
-    const url = getLaunchUrl(game); // <--- This belongs INSIDE here!
-    if (!url) return;
+  const startTime = Date.now();
+  const win = window.open('about:blank', '_blank');
 
-    const win = window.open('about:blank', '_blank');
-    if (win) {
-      win.document.title = "DO NOT REFRESH";
-      win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
-      const iframe = win.document.createElement('iframe');
-      iframe.src = url;
-      iframe.style = 'width:100vw;height:100vh;border:none;';
-      win.document.body.appendChild(iframe);
-    }
-  };
+  if (win) {
+    win.document.title = "DO NOT REFRESH";
+    win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
+    
+    const iframe = win.document.createElement('iframe');
+    iframe.src = finalUrl; 
+    iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
+    iframe.allow = "fullscreen";
+    win.document.body.appendChild(iframe);
+
+    // 3. Track how long you play (saves to local storage when tab closes)
+    const trackPlaytime = setInterval(() => {
+      if (win.closed) {
+        clearInterval(trackPlaytime);
+        const endTime = Date.now();
+        const elapsedSeconds = Math.floor((endTime - startTime) / 1000);
+        
+        setPlaytimes(prev => {
+          const updated = { ...prev, [item.id]: (prev[item.id] || 0) + elapsedSeconds };
+          localStorage.setItem('capy-playtimes', JSON.stringify(updated));
+          return updated;
+        });
+      }
+    }, 1000);
+  }
+};
 
   // --- EMERGENCY BLACKOUT KILL SWITCH ---
   useEffect(() => {
