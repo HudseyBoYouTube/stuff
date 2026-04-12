@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import gamesData from './games.json';
+// import gamesData from './games.json'; // Removed to allow dynamic loading of both files
 import { useAchievements } from './hooks/useAchievements.js';
 import { 
   Search, Gamepad2, Play, Settings, X, ShieldAlert, 
@@ -8,7 +8,6 @@ import {
   Cpu, Users, UserPlus, UserCircle, CheckCircle2, History, ChevronLeft, ChevronRight
 } from 'lucide-react';
 
-import gamesDataRaw from './games.json';
 import { GameCard } from './components/GameCard';
 import { SettingsModal } from './components/SettingsModal';
 import { Header } from './components/Header';
@@ -16,7 +15,6 @@ import { FriendViewModal } from './components/FriendViewModal';
 import { tracklist } from './components/tracklist'; 
 
 // 2. CONSTANTS (Line 19+)
-// Note: Delete all that 'recentKey' stuff that was here!
 const DEFAULT_COLOR = '#10A5F5';
 const DEFAULT_GLOW = 50;
 const DEFAULT_TITLE = "Capybara Science";
@@ -62,10 +60,30 @@ export default function App() {
 
   const achievements = useAchievements(userData);
 
-  const gamesData = useMemo(() => {
-    if (!gamesDataRaw || !Array.isArray(gamesDataRaw)) return [];
-    return gamesDataRaw;
-  }, [gamesDataRaw]);
+  const [gamesData, setGamesData] = useState([]);
+
+  // --- NEW DATA LOADER ---
+  useEffect(() => {
+    const loadAllGames = async () => {
+      try {
+        const [mainRes, gnRes] = await Promise.all([
+          fetch('/games.json'),
+          fetch('/gn-math-games.json')
+        ]);
+        const mainData = await mainRes.json();
+        const gnData = await gnRes.json();
+        const formattedGN = gnData.map(game => ({
+          ...game,
+          urls: { "GN Math": game.url }, 
+          url: "" 
+        }));
+        setGamesData([...mainData, ...formattedGN]);
+      } catch (err) {
+        console.error("Error loading game files:", err);
+      }
+    };
+    loadAllGames();
+  }, []);
 
   const audioRef = useRef(null);
   const categoryScrollRef = useRef(null);
@@ -100,7 +118,7 @@ export default function App() {
   const [panicUrl, setPanicUrl] = useState(() => localStorage.getItem('capy-panic-url') || 'https://google.com');
   const [panicKey, setPanicKey] = useState(() => localStorage.getItem('capy-panic-key') || '');
 
- const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
+  const [recentlyPlayed, setRecentlyPlayed] = useState(() => {
     try {
       const recentKey = `capy-recent-${supplier || 'Default'}`;
       const saved = localStorage.getItem(recentKey);
