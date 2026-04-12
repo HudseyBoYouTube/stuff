@@ -15,27 +15,8 @@ import { Header } from './components/Header';
 import { FriendViewModal } from './components/FriendViewModal';
 import { tracklist } from './components/tracklist'; 
 
-    // Save to the supplier-specific history
-    const recentKey = `capy-recent-${supplier}`;
-    setRecentlyPlayed(prev => {
-      const filtered = prev.filter(id => id !== item.id);
-      const updated = [item.id, ...filtered].slice(0, 10);
-      localStorage.setItem(recentKey, JSON.stringify(updated));
-      return updated;
-    });
-
-    const win = window.open('about:blank', '_blank');
-    if (win) {
-      win.document.title = "DO NOT REFRESH";
-      win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
-      const iframe = win.document.createElement('iframe');
-      iframe.src = finalUrl; 
-      iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
-      iframe.allow = "fullscreen";
-      win.document.body.appendChild(iframe);
-    }
-  };
-
+// 2. CONSTANTS (Line 19+)
+// Note: Delete all that 'recentKey' stuff that was here!
 const DEFAULT_COLOR = '#10A5F5';
 const DEFAULT_GLOW = 50;
 const DEFAULT_TITLE = "Capybara Science";
