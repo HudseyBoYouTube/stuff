@@ -58,8 +58,8 @@ export function Header({
             } focus:border-[var(--theme)]`}
             style={{ appearance: 'none' }}
           >
-            <option value="Default" className="bg-[#09090b] text-white">Default</option>
-            <option value="GN Math" className="bg-[#09090b] text-white">GN Math</option>
+            <option value="Default" className="bg-[#09090b] text-white">Capybara Science</option>
+            <option value="GN Math" className="bg-[#09090b] text-white">gn-math</option>
             <option value="Truffled" className="bg-[#09090b] text-white">Truffled</option>
           </select>
         </div>
