@@ -47,6 +47,11 @@
     "url": "/stores/gn-math/3dbowling.html",
     "thumbnail": "https://imgs.crazygames.com/auto-covers/3d-bowling_1x1.png?format=auto&quality=70&metadata=none",
     "category": "Sports"
-  }
-]
+  },
+  {
+    "id": "8-ball-billiards-classic",
+    "title": "8 Ball Billiards Classic",
+    "url": "/stores/gn-math/8ballbilliardsclassic.html",
+    "thumbnail": "https://imgs.crazygames.com/8-ball-billiards-classic_1x1/20231108025958/8-ball-billiards-classic_1x1-cover?format=auto&quality=100&metadata=none&width=1200",
+    "category": "Sports"
     
