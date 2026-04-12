@@ -33,6 +33,13 @@
     "url": "/stores/gn-math/2048.html",
     "thumbnail": "https://m.media-amazon.com/images/I/41RCIHMHFDL.png",
     "category": "Puzzle"
+  },
+  {
+    "id": "3d-bolt-master",
+    "title": "3D Bolt Master",
+    "url": "/stores/gn-math/3dboltmaster.html",
+    "thumbnail": "https://sudoku.nono-games.com/img/icon1.png",
+    "category": "Puzzle"
   }
 ]
     
