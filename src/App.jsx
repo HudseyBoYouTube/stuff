@@ -622,23 +622,32 @@ useEffect(() => {
     link.href = currentIdentity.icon;
   }, [currentIdentity]);
 
-  const filteredGames = useMemo(() => {
-    const q = (searchQuery || "").toLowerCase();
-    const sourceData = gamesData || [];
+ const filteredGames = useMemo(() => {
+  const q = (searchQuery || "").toLowerCase();
+  const sourceData = gamesData || [];
 
-    return sourceData.filter(g => {
-      const matchesSearch = g?.title?.toLowerCase().includes(q);
-      
-      if (activeCategory === 'Favorites') {
-        return (favorites || []).includes(g?.id) && matchesSearch;
-      }
-      
-      const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
+  return sourceData.filter(g => {
+    // 1. Check Search Match
+    const matchesSearch = g?.title?.toLowerCase().includes(q);
+    if (!matchesSearch) return false;
 
-      return matchesSearch && matchesCategory;
-    });
-  }, [searchQuery, activeCategory, gamesData, favorites]);
+    // 2. Check Supplier Match (GN Math / Truffled)
+    if (supplier === 'GN Math') {
+      if (!g.urls || !g.urls['GN Math']) return false;
+    } else if (supplier === 'Truffled') {
+      if (!g.urls || !g.urls['Truffled']) return false;
+    }
 
+    // 3. Check Category / Favorites Match
+    if (activeCategory === 'Favorites') {
+      return (favorites || []).includes(g?.id);
+    }
+    
+    const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
+    return matchesCategory;
+  });
+}, [searchQuery, activeCategory, gamesData, favorites, supplier]); // Added supplier here!
+  
   const recentGamesData = useMemo(() => {
     return recentlyPlayed
       .map(id => gamesData.find(g => g.id === id))
