@@ -586,7 +586,7 @@ const toggleFavorite = (id) => {
     return { title: customTitle || DEFAULT_TITLE, icon: customIcon || DEFAULT_ICON };
   }, [disguise, customTitle, customIcon]);
 
-  useEffect(() => {
+useEffect(() => {
     document.title = currentIdentity.title;
     let link = document.querySelector("link[rel*='icon']");
     if (!link) {
@@ -596,51 +596,6 @@ const toggleFavorite = (id) => {
     }
     link.href = currentIdentity.icon;
   }, [currentIdentity]);
-
-  const launchContent = (item) => {
-    const gameFile = item.file || `${item.id}.html`;
-
-    setRecentlyPlayed(prev => {
-      const filtered = prev.filter(id => id !== item.id);
-      const updated = [item.id, ...filtered].slice(0, 4);
-      localStorage.setItem('capy-recent', JSON.stringify(updated));
-      return updated;
-    });
-
-    const startTime = Date.now();
-
-    // ✅ NEW: use URL if it exists
-    const finalUrl = item.url || `/play.html?launch=/stores/${gameFile}`;
-
-    const win = window.open('about:blank', '_blank');
-    
-    if (win) {
-      win.document.title = "DO NOT REFRESH";
-      
-      win.document.body.style = 'margin:0;padding:0;overflow:hidden;background:#000;';
-      const iframe = win.document.createElement('iframe');
-      
-      iframe.src = finalUrl; 
-      
-      iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
-      iframe.allow = "fullscreen";
-      win.document.body.appendChild(iframe);
-
-      const trackPlaytime = setInterval(() => {
-        if (win.closed) {
-          clearInterval(trackPlaytime);
-          const endTime = Date.now();
-          const elapsedSeconds = Math.floor((endTime - startTime) / 1000);
-          
-          setPlaytimes(prev => {
-            const updated = { ...prev, [item.id]: (prev[item.id] || 0) + elapsedSeconds };
-            localStorage.setItem('capy-playtimes', JSON.stringify(updated));
-            return updated;
-          });
-        }
-      }, 1000);
-    }
-  };
 
   const filteredGames = useMemo(() => {
     const q = (searchQuery || "").toLowerCase();
@@ -673,7 +628,7 @@ const toggleFavorite = (id) => {
     return decoded ? { ...friend, decoded } : friend;
   }, [friends, selectedFriendId]);
 
-return (
+  return (
     <div
       className={`min-h-screen pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'} ${isLightMode ? 'light-mode bg-white text-zinc-900' : 'bg-[#0a0a0a] text-zinc-100'}`} 
       style={{ 
