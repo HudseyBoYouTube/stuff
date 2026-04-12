@@ -44,25 +44,30 @@ export function Header({
             <Dices className="w-5 h-5" />
           </button>
 
-          {/* SUPPLIER DROPDOWN ADDED HERE */}
-          <select 
-            value={supplier} 
-            onChange={(e) => {
-              setSupplier(e.target.value);
-              localStorage.setItem('capy-supplier', e.target.value);
-            }}
-            className={`text-[10px] font-bold uppercase py-2 px-2 rounded-lg border transition-all outline-none cursor-pointer ${
-              isLightMode 
-                ? 'bg-black/5 border-black/10 text-black' 
-                : 'bg-white/5 border-white/10 text-white'
-            } focus:border-[var(--theme)]`}
-            style={{ appearance: 'none' }}
-          >
-            <option value="Default" className="bg-[#09090b] text-white">Capybara Science</option>
-            <option value="GN Math" className="bg-[#09090b] text-white">gn-math</option>
-            <option value="Truffled" className="bg-[#09090b] text-white">Truffled</option>
-          </select>
-        </div>
+          {/* SUPPLIER DROPDOWN WRAPPER */}
+          <div className="relative flex items-center">
+            <select 
+              value={supplier} 
+              onChange={(e) => {
+                setSupplier(e.target.value);
+                localStorage.setItem('capy-supplier', e.target.value);
+              }}
+              className={`text-[10px] font-bold uppercase py-2 pl-3 pr-8 rounded-lg border transition-all outline-none cursor-pointer appearance-none ${
+                isLightMode 
+                  ? 'bg-black/5 border-black/10 text-black' 
+                  : 'bg-white/5 border-white/10 text-white'
+              } focus:border-[var(--theme)]`}
+            >
+              <option value="Default" className="bg-[#09090b] text-white">Capybara Science</option>
+              <option value="GN Math" className="bg-[#09090b] text-white">gn-math</option>
+              <option value="Truffled" className="bg-[#09090b] text-white">Truffled</option>
+            </select>
+            
+            <div className="absolute right-2 pointer-events-none flex items-center justify-center">
+              <span style={{ fontSize: '8px', color: 'var(--theme)', opacity: 0.8 }}>▼</span>
+            </div>
+          </div>
+        </div> {/* <--- ADD THIS CLOSING DIV HERE */}
 
         {/* STATS & PROFILE SECTION */}
         <div className="flex items-center justify-end gap-4">
