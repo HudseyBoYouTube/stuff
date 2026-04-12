@@ -669,10 +669,11 @@ const filteredGames = useMemo(() => {
         if (supplier === 'GN Math') return g.urls?.['GN Math'];
         if (supplier === 'Truffled') return g.urls?.['Truffled'];
         
-        // Default: Hide recent games from other suppliers
+       // Default: Hide recent games from other suppliers
         if (g.urls?.['GN Math'] || g.urls?.['Truffled']) return false;
         return true;
-      });
+      })
+      .slice(0, 4); // <--- Add this line here
   }, [recentlyPlayed, gamesData, supplier]);
 
   const currentFriend = useMemo(() => {
