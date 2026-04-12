@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 
 import gamesDataRaw from './games.json';
+import gnMathDataRaw from './gn-math-games.json';
 import { GameCard } from './components/GameCard';
 import { SettingsModal } from './components/SettingsModal';
 import { Header } from './components/Header';
@@ -62,31 +63,17 @@ export default function App() {
 
   const achievements = useAchievements(userData);
 
- const [gamesData, setGamesData] = useState([]);
+ const gamesData = useMemo(() => {
+  const main = Array.isArray(gamesDataRaw) ? gamesDataRaw : [];
 
-  useEffect(() => {
-    const loadAllGames = async () => {
-      try {
-        const [mainRes, gnRes] = await Promise.all([
-          fetch('/games.json'),
-          fetch('/gn-math-games.json')
-        ]);
-        const mainData = await mainRes.json();
-        const gnData = await gnRes.json();
+  const gn = Array.isArray(gnMathDataRaw) ? gnMathDataRaw.map(game => ({
+    ...game,
+    urls: { "GN Math": game.url },
+    url: ""
+  })) : [];
 
-        const formattedGN = gnData.map(game => ({
-          ...game,
-          urls: { "GN Math": game.url }, 
-          url: "" 
-        }));
-
-        setGamesData([...mainData, ...formattedGN]);
-      } catch (err) {
-        console.error("Error loading game files:", err);
-      }
-    };
-    loadAllGames();
-  }, []);
+  return [...main, ...gn];
+}, []);
 
   const audioRef = useRef(null);
   const categoryScrollRef = useRef(null);
