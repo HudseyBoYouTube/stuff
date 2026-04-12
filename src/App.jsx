@@ -15,41 +15,6 @@ import { Header } from './components/Header';
 import { FriendViewModal } from './components/FriendViewModal';
 import { tracklist } from './components/tracklist'; 
 
-export default function App() {
-  // 1. STATE DEFINITIONS
-  const [supplier, setSupplier] = useState('Default');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState('All');
-  const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem('capy-favorites');
-    return saved ? JSON.parse(saved) : [];
-  });
-  
-  const [recentlyPlayed, setRecentlyPlayed] = useState([]);
-  const [playtimes, setPlaytimes] = useState(() => {
-    const saved = localStorage.getItem('capy-playtimes');
-    return saved ? JSON.parse(saved) : {};
-  });
-
-  // 2. LOADING LOGIC (Swaps history when you change supplier)
-  useEffect(() => {
-    const recentKey = `capy-recent-${supplier}`;
-    const saved = localStorage.getItem(recentKey);
-    setRecentlyPlayed(saved ? JSON.parse(saved) : []);
-  }, [supplier]);
-
-  // 3. ENGINE LOGIC
-  const getLaunchUrl = (game, currentSupplier) => {
-    if (currentSupplier !== 'Default' && game.urls && game.urls[currentSupplier]) {
-      return game.urls[currentSupplier];
-    }
-    return game.url || null; 
-  };
-
-  const launchContent = (item) => {
-    const finalUrl = getLaunchUrl(item, supplier); 
-    if (!finalUrl) return;
-
     // Save to the supplier-specific history
     const recentKey = `capy-recent-${supplier}`;
     setRecentlyPlayed(prev => {
@@ -105,8 +70,9 @@ const updateThemeVariables = (color, glow) => {
   root.style.setProperty('--glow', `${glow}px`);
 };
 
-function App() {
-  // We define the data first so the computer knows what "userData" is
+export default function App() {
+  // 1. Core States
+  const [supplier, setSupplier] = useState(() => localStorage.getItem('capy-supplier') || 'Default');
   const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favs') || '[]'));
   const [themeChangeCount] = useState(() => parseInt(localStorage.getItem('capy-theme-changes') || '0'));
@@ -1022,5 +988,3 @@ useEffect(() => {
     </div>
   );
 }
-
-export default App;
