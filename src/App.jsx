@@ -63,7 +63,7 @@ export default function App() {
 
   const achievements = useAchievements(userData);
 
- const gamesData = useMemo(() => {
+const gamesData = useMemo(() => {
   const main = Array.isArray(gamesDataRaw) ? gamesDataRaw : [];
 
   const gn = Array.isArray(gnMathDataRaw) ? gnMathDataRaw.map(game => ({
