@@ -651,18 +651,20 @@ useEffect(() => {
     const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
     return matchesCategory;
   });
-}, [searchQuery, activeCategory, gamesData, favorites, supplier]); // Added supplier here!
+}, [searchQuery, activeCategory, gamesData, favorites, supplier]); 
   
-  const recentGames = useMemo(() => {
-  return (recentlyPlayed || [])
-    .map(id => gamesData.find(g => g.id === id))
-    .filter(g => {
-      if (!g) return false;
-      if (supplier === 'GN Math') return g.urls && g.urls['GN Math'];
-      if (supplier === 'Truffled') return g.urls && g.urls['Truffled'];
-      return true;
-    });
-}, [recentlyPlayed, gamesData, supplier]);
+  const recentGamesData = useMemo(() => {
+    if (!recentlyPlayed || !Array.isArray(recentlyPlayed)) return [];
+    
+    return recentlyPlayed
+      .map(id => (gamesData || []).find(g => g.id === id))
+      .filter(g => {
+        if (!g) return false;
+        if (supplier === 'GN Math') return g.urls && g.urls['GN Math'];
+        if (supplier === 'Truffled') return g.urls && g.urls['Truffled'];
+        return true;
+      });
+  }, [recentlyPlayed, gamesData, supplier]);
 
   const currentFriend = useMemo(() => {
     if (!selectedFriendId || selectedFriendId === 'me') return null;
