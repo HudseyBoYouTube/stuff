@@ -153,3 +153,17 @@
   scrollbar-width: thin;
   scrollbar-color: var(--theme) transparent;
 }
+
+/* --- Added for Search Bar Centering & Sizing --- */
+.search-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 1.5rem 0;
+}
+
+.search-container input {
+  width: 90%;
+  max-width: 450px;
+  margin: 0 auto;
+}
