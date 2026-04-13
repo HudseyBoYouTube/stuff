@@ -189,13 +189,6 @@
     "category": "Action"
   },
   {
-    "id": "getaway-shootout",
-    "title": "Getaway Shootout",
-    "url": "https://wwww.o.bostoncareercounselor.com/games/getaway-shootout/index.html",
-    "thumbnail": "https://imgs.crazygames.com/getaway-shootout_1x1/20241230044730/getaway-shootout_1x1-cover?format=auto&quality=100&metadata=none&width=1200",
-    "category": "Action"
-  },
-  {
     "id": "paper.io-(fake)",
     "title": "Paper.io (fake)",
     "url": "https://play.coolmathgames.eu.org.cdn.cloudflare.net/storage/ag/originals/paperio/",
@@ -238,13 +231,6 @@
     "category": "Strategy"
   },
   {
-    "id": "bloons-td-3",
-    "title": "Bloons TD 3",
-    "url": "https://wwww.o.bostoncareercounselor.com/games/btd3/index.html",
-    "thumbnail": "https://imgs.crazygames.com/auto-covers2/bloons-tower-defense-3_1x1.png?format=auto&quality=70&metadata=none",
-    "category": "Strategy"
-  },
-  {
     "id": "dune",
     "title": "Dune",
     "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/dune/",
@@ -254,14 +240,14 @@
   {
     "id": "poly-track",
     "title": "PolyTrack",
-    "url": "https://wwww.o.bostoncareercounselor.com/games/polytrack/index.html",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/originals/polytrack/",
     "thumbnail": "https://cdn2.steamgriddb.com/thumb/9442e15eadaf27455b8b4f25dbc1f182.jpg",
     "category": "Driving"
   },
   {
     "id": "level-devil",
     "title": "Level Devil",
-    "url": "https://wwww.o.bostoncareercounselor.com/games/lvldevil/index.html",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/level-devil/",
     "thumbnail": "https://store-images.s-microsoft.com/image/apps.10593.14411882092909650.e59c3c06-872a-420e-9804-eb29fddbff61.77661cd9-b4c3-4816-bc9a-019ff9af1073?h=210",
     "category": "Platformer"
   },
@@ -296,7 +282,7 @@
   {
     "id": "space-waves",
     "title": "Space Waves",
-    "url": "https://wwww.o.bostoncareercounselor.com/gamefile/spacewaves.html",
+    "url": "https://healthyedu.installgentoo.com/filestorage/gd/space-waves/index.html",
     "thumbnail": "https://imgs.crazygames.com/space-waves_1x1/20241203031650/space-waves_1x1-cover?format=auto&quality=100&metadata=none&width=1200",
     "category": "Skill"
   },
@@ -441,13 +427,6 @@
     "category": "Arcade"
   },
   {
-    "id": "learn-2-fly",
-    "title": "Learn 2 Fly",
-    "url": "https://wwww.o.bostoncareercounselor.com/games/learntofly/index.html",
-    "thumbnail": "https://e.snmc.io/lk/lv/x/77e0aedce501ea412351ef15386c75e4/9441677",
-    "category": "Arcade"
-  },
-  {
     "id": "doge-miner",
     "title": "Doge Miner",
     "url": "https://play.coolmathgames.eu.org/storage/ag/gn/511.html",
@@ -457,14 +436,14 @@
   {
     "id": "slow-roads",
     "title": "Slow Roads",
-    "url": "https://wwww.o.bostoncareercounselor.com/games/slowroads/index.html",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/slow-roads/",
     "thumbnail": "https://cdn-1.webcatalog.io/catalog/slow-roads/slow-roads-icon-filled-256.png?v=1714780308395",
     "category": "Driving"
   },
   {
     "id": "subway-surfers",
     "title": "Subway Surfers",
-    "url": "https://wwww.o.bostoncareercounselor.com/games/subway-surfers/index.html",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/subway-surfers/",
     "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/7f4c7dc492227ec127a47e4b3197754e/subway-surfers.png",
     "category": "Runner"
   },
@@ -499,23 +478,16 @@
   {
     "id": "basketball-stars",
     "title": "Basketball Stars",
-    "url": "https://wwww.o.bostoncareercounselor.com/games/basketballstars/index.html",
+    "url": "https://wildcard.grittytravel.com/zones/h/basketballstars/",
     "thumbnail": "https://m.media-amazon.com/images/I/81BL1Hx2KuL.png",
     "category": "Sports"
   },
   {
     "id": "getting-over-it",
     "title": "Getting Over It ",
-    "url": "https://wwww.o.bostoncareercounselor.com/gamefile/goi.html",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/gn/557.html",
     "thumbnail": "https://sm.ign.com/ign_nl/cover/g/getting-ov/getting-over-it-with-bennett-foddy_z7y4.jpg",
     "category": "Skill"
-  },
-  {
-    "id": "house-of-hazards",
-    "title": "House Of Hazards",
-    "url": "https://wwww.o.bostoncareercounselor.com/games/houseofhazards/index.html",
-    "thumbnail": "https://imgs.crazygames.com/house-of-hazards_1x1/20250108101728/house-of-hazards_1x1-cover?format=auto&quality=100&metadata=none&width=1200",
-    "category": "Action"
   },
   {
     "id": "achievement-unlocked",
@@ -597,7 +569,7 @@
   {
     "id": "super-mario-64",
     "title": "Super Mario 64",
-    "url": "https://wwww.o.bostoncareercounselor.com/games/sm64/index.html",
+    "url": "https://msbabkiesclass.com/resources/sm64/index.html",
     "thumbnail": "https://upload.wikimedia.org/wikipedia/en/thumb/e/e9/Super_Mario_64.png/250px-Super_Mario_64.png",
     "category": "Classic"
   },
@@ -611,7 +583,7 @@
   {
     "id": "boxing-random",
     "title": "Boxing Random",
-    "url": "https://wwww.o.bostoncareercounselor.com/gamefile/boxing.html",
+    "url": "https://wildcard.grittytravel.com/zones/h/boxingrandom/",
     "thumbnail": "https://imgs.crazygames.com/auto-covers/boxing-random_1x1.jpeg?format=auto&quality=100&metadata=none&width=1200",
     "category": "Random"
   },
@@ -639,14 +611,14 @@
   {
     "id": "world's-hardest-game",
     "title": "World's Hardest Game",
-    "url": "https://wwww.o.bostoncareercounselor.com/gamefile/twhg.html",
+    "url": "https://msbabkiesclass.com/resources/twhg/index.html",
     "thumbnail": "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/61368b108e1e8625e6f7b2daccb98324/worlds-hardest-game.png",
     "category": "Skill"
   },
   {
     "id": "world's-hardest-game-2",
     "title": "World's Hardest Game 2",
-    "url": "https://wwww.o.bostoncareercounselor.com/games/worlds-hardest-game-2/index.html",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/echo/worlds-hardest-game-2/",
     "thumbnail": "https://www.coolmathgames.com/sites/default/files/WorldsHardestGame2_OG-logo.jpg",
     "category": "Skill"
   },
@@ -840,13 +812,6 @@
     "category": "Action"
   },
   {
-    "id": "gladi-hoppers",
-    "title": "Gladihoppers",
-    "url": "https://wwww.o.bostoncareercounselor.com/gamefile/Gladihoppers.html",
-    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNAr1A5XDPj_A-DstsmCwi-aV5wYSGzL7O4Q&s",
-    "category": "Action"
-  },
-  {
     "id": "super-star-car",
     "title": "Super Star Car",
     "url": "https://play.coolmathgames.eu.org/storage/ag/originals/superstarcar/",
@@ -891,7 +856,7 @@
   {
     "id": "jetpack-joyride",
     "title": "Jetpack Joyride",
-    "url": "https://wwww.o.bostoncareercounselor.com/games/jetpackjoyride/index.html",
+    "url": "https://play.coolmathgames.eu.org/storage/ag/echo/jetpack-joyride/",
     "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMp6a83tWwzGzLQdtI12IvUwzOThFf2nMMIA&s",
     "category": "Easy"
   },
