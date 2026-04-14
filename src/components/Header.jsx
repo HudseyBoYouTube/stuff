@@ -17,7 +17,10 @@ export function Header({
         {/* LOGO SECTION - LEFT COLUMN */}
         <div className="flex items-center gap-2 justify-self-start">
           <img src={DEFAULT_ICON} alt="Logo" className="w-7 h-7 object-contain" />
-          <span className="text-xl font-black hidden lg:block tracking-tighter">
+          <span 
+            className="text-xl font-black hidden lg:block tracking-tighter"
+            style={{ fontFamily: "'Fredoka', sans-serif" }}
+          >
             Capybara <span className="text-[var(--theme)]">Science</span>
           </span>
         </div>
