@@ -12,7 +12,7 @@ export function Header({
 }) {
   return (
     <header className={`${isLightMode ? 'bg-white text-black' : 'bg-[#09090b]/95 text-white'} h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors`}>
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-[1fr_2fr_1fr] items-center">
         
         {/* LOGO SECTION */}
         <div className="flex items-center gap-2">
@@ -22,32 +22,28 @@ export function Header({
           </span>
         </div>
 
-        {/* SEARCH & RANDOM SECTION - CENTERED */}
-        <div className="flex items-center gap-2 w-full justify-self-center justify-center">
-          <div className="search-container w-full max-w-[300px]">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-              <input 
-                type="text" 
-                placeholder="Search games..." 
-                value={searchQuery} 
-                onChange={(e) => setSearchQuery(e.target.value)} 
-                className={`w-full ${isLightMode ? 'bg-black/5 border-black/10 text-black' : 'bg-white/5 border-white/10 text-white'} border rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 transition-colors`} 
-              />
-              {searchQuery && (
-                <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-white/10 rounded-full text-[var(--theme)]">
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
+        {/* SEARCH & RANDOM SECTION - CENTERED GROUP */}
+        <div className="flex items-center justify-center gap-3 w-full">
+          <div className="relative w-full max-w-[300px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+            <input 
+              type="text" 
+              placeholder="Search games..." 
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)} 
+              className={`w-full ${isLightMode ? 'bg-black/5 border-black/10 text-black' : 'bg-white/5 border-white/10 text-white'} border rounded-full py-2 pl-10 pr-10 text-xs outline-none focus:border-[var(--theme)]/50 transition-colors`} 
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-white/10 rounded-full text-[var(--theme)]">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
-          {/* RANDOM BUTTON MOVED TO RIGHT OF SEARCH */}
           <button onClick={onRandomGame} className={`p-2 ${isLightMode ? 'bg-black/5 border-black/10' : 'bg-white/5 border-white/10'} border rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all shadow-[0_0_15px_rgba(var(--theme-rgb),0.1)]`}>
             <Dices className="w-5 h-5" />
           </button>
 
-          {/* SUPPLIER DROPDOWN MOVED TO RIGHT OF RANDOM */}
           <div className="relative flex items-center">
             <select 
               value={supplier} 
@@ -65,7 +61,6 @@ export function Header({
               <option value="GN Math" className="bg-[#09090b] text-white">gn-math</option>
               <option value="Truffled" className="bg-[#09090b] text-white">Truffled</option>
             </select>
-            
             <div className="absolute right-2 pointer-events-none flex items-center justify-center">
               <span style={{ fontSize: '8px', color: 'var(--theme)', opacity: 0.8 }}>▼</span>
             </div>
