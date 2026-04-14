@@ -75,7 +75,9 @@ export function Header({
           <div className={`hidden sm:flex items-center gap-3 text-[9px] font-black uppercase text-[var(--theme)] ${isLightMode ? 'bg-black/5 border-black/5' : 'bg-white/5 border-white/5'} px-3 py-1.5 rounded-full border`}>
             <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
             <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
-            <div className={`flex items-center gap-1 border-l ${isLightMode ? 'border-black/10' : 'border-white/10'} pl-3`}>
+            
+            {/* UPDATED BATTERY SECTION: Removed border and padding for a perfect gap */}
+            <div className="flex items-center gap-1">
               <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500 animate-pulse' : ''}`} />
               <span>{battery.level}%</span>
             </div>
