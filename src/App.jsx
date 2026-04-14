@@ -153,7 +153,24 @@ const getLaunchUrl = (game, currentSupplier) => {
   // If nothing is found, it looks for the ID.html in /stores/
   return game.url || `/stores/${game.id}.html`;
 };
-  
+
+ const launchContent = (item) => {
+    const finalUrl = getLaunchUrl(item, supplier); 
+    if (!finalUrl) return;
+
+    // --- UPDATE THIS SECTION ---
+    // This creates a unique history key like "capy-recent-GN Math"
+    const recentKey = `capy-recent-${supplier}`; 
+    
+    setRecentlyPlayed(prev => {
+      const filtered = prev.filter(id => id !== item.id);
+      const updated = [item.id, ...filtered].slice(0, 4);
+      
+      // Save it to the specific supplier bucket
+      localStorage.setItem(recentKey, JSON.stringify(updated));
+      return updated;
+    });
+
   const startTime = Date.now();
   const win = window.open('about:blank', '_blank');
 
@@ -165,6 +182,7 @@ const getLaunchUrl = (game, currentSupplier) => {
     iframe.src = finalUrl; 
     iframe.style = 'width:100vw;height:100vh;border:none;display:block;';
     iframe.allow = "fullscreen";
+   // ... inside launchContent ...
     win.document.body.appendChild(iframe);
     
     const checkInterval = setInterval(() => {
