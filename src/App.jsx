@@ -796,20 +796,23 @@ const filteredGames = useMemo(() => {
       className="flex gap-2 overflow-x-auto pb-4 no-scrollbar scroll-smooth px-2 w-full"
     >
       {categoriesWithCounts.map(cat => (
-        <button 
-          key={cat.name} 
-          onClick={() => setActiveCategory(cat.name)} 
-          className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${
-            activeCategory === cat.name 
-              ? 'bg-[var(--theme)] border-[var(--theme)] text-black' 
-              : isLightMode 
-                ? 'bg-zinc-100 border-zinc-200 text-zinc-600 hover:bg-zinc-200' 
-                : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'
-          }`}
-        >
-          {cat.name} <span className="opacity-40 ml-1">{cat.count}</span>
-        </button>
-      ))}
+  <button 
+    key={cat.name} 
+    onClick={() => {
+      setActiveCategory(cat.name); 
+      setVisibleCount(24);         
+    }} 
+    className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${
+      activeCategory === cat.name 
+        ? 'bg-[var(--theme)] border-[var(--theme)] text-black' 
+        : isLightMode 
+          ? 'bg-zinc-100 border-zinc-200 text-zinc-600 hover:bg-zinc-200' 
+          : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'
+    }`}
+  >
+    {cat.name} <span className="opacity-40 ml-1">{cat.count}</span>
+  </button>
+))}
     </div>
 
     {canScrollRight && (
