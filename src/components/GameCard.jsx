@@ -5,7 +5,7 @@ export function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorit
   const isUtility = ['request', 'report'].includes(game.id);
   
   return (
-    <div className="group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer shadow-lg" onClick={() => onLaunch(game)}>
+    <div className={`group bg-zinc-900/40 rounded-[2rem] overflow-hidden border border-white/5 hover:border-[var(--theme)]/30 transition-all flex flex-col cursor-pointer ${performanceMode ? '' : 'shadow-lg'}`} onClick={() => onLaunch(game)}>
       <div className={`relative w-full aspect-[4/3] bg-black/20 overflow-hidden transition-all duration-500 ${performanceMode ? '' : 'group-hover:shadow-[inset_0_0_var(--glow)_var(--theme)]'}`}>
         <img 
           src={game.thumbnail} 
@@ -15,19 +15,19 @@ export function GameCard({ game, onLaunch, playtime, isFavorite, onToggleFavorit
         />
         {!isUtility && (
           <button 
-  onClick={(e) => { 
-    e.stopPropagation(); // Prevents the game from launching when you click heart
-    onToggleFavorite(); 
-  }} 
-  className="absolute top-4 right-4 z-10 p-2 bg-zinc-900/80 backdrop-blur-sm rounded-full border border-white/10 hover:scale-110 transition-transform shadow-lg"
->
-  <Heart 
-    className="w-4 h-4 transition-colors" 
-    stroke={isFavorite ? "var(--theme)" : "#71717a"} 
-    strokeWidth={2.5} 
-    fill={isFavorite ? 'var(--theme)' : 'none'} 
-  />
-</button>
+            onClick={(e) => { 
+              e.stopPropagation(); // Prevents the game from launching when you click heart
+              onToggleFavorite(); 
+            }} 
+            className={`absolute top-4 right-4 z-10 p-2 bg-zinc-900/80 rounded-full border border-white/10 transition-transform ${performanceMode ? '' : 'backdrop-blur-sm hover:scale-110 shadow-lg'}`}
+          >
+            <Heart 
+              className="w-4 h-4 transition-colors" 
+              stroke={isFavorite ? "var(--theme)" : "#71717a"} 
+              strokeWidth={2.5} 
+              fill={isFavorite ? 'var(--theme)' : 'none'} 
+            />
+          </button>
         )}
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <div className={`w-12 h-12 bg-[var(--theme)] rounded-full flex items-center justify-center ${performanceMode ? '' : 'shadow-[0_0_20px_var(--theme)]'}`}>
