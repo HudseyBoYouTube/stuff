@@ -84,7 +84,6 @@ const gamesData = useMemo(() => {
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmClearSettings, setConfirmClearSettings] = useState(false);
   const [notification, setNotification] = useState(null);
-  const [visibleCount, setVisibleCount] = useState(24);
 
   const [time, setTime] = useState(new Date());
   const [battery, setBattery] = useState({ level: 100, charging: false });
@@ -796,23 +795,20 @@ const filteredGames = useMemo(() => {
       className="flex gap-2 overflow-x-auto pb-4 no-scrollbar scroll-smooth px-2 w-full"
     >
       {categoriesWithCounts.map(cat => (
-  <button 
-    key={cat.name} 
-    onClick={() => {
-      setActiveCategory(cat.name); 
-      setVisibleCount(24);         
-    }} 
-    className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${
-      activeCategory === cat.name 
-        ? 'bg-[var(--theme)] border-[var(--theme)] text-black' 
-        : isLightMode 
-          ? 'bg-zinc-100 border-zinc-200 text-zinc-600 hover:bg-zinc-200' 
-          : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'
-    }`}
-  >
-    {cat.name} <span className="opacity-40 ml-1">{cat.count}</span>
-  </button>
-))}
+        <button 
+          key={cat.name} 
+          onClick={() => setActiveCategory(cat.name)} 
+          className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${
+            activeCategory === cat.name 
+              ? 'bg-[var(--theme)] border-[var(--theme)] text-black' 
+              : isLightMode 
+                ? 'bg-zinc-100 border-zinc-200 text-zinc-600 hover:bg-zinc-200' 
+                : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'
+          }`}
+        >
+          {cat.name} <span className="opacity-40 ml-1">{cat.count}</span>
+        </button>
+      ))}
     </div>
 
     {canScrollRight && (
@@ -852,8 +848,7 @@ const filteredGames = useMemo(() => {
   )}
 
 <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-    {/* This line is changed to only show 24 games at a time */}
-    {filteredGames.slice(0, visibleCount).map(game => (
+    {filteredGames.map(game => (
       <GameCard 
         key={game.id} 
         game={game} 
@@ -865,18 +860,6 @@ const filteredGames = useMemo(() => {
       />
     ))}
   </section>
-
-  {/* NEW: This button appears at the bottom if there are more games to load */}
-  {visibleCount < filteredGames.length && (
-    <div className="flex justify-center py-12">
-      <button 
-        onClick={() => setVisibleCount(prev => prev + 24)}
-        className="px-10 py-4 bg-zinc-900 border border-white/10 rounded-full font-bold text-[var(--theme)] hover:scale-105 transition-all active:scale-95 shadow-xl hover:bg-zinc-800"
-      >
-        Load More Games
-      </button>
-    </div>
-  )}
 </main>
 
       <FriendViewModal 
