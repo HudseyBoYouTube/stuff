@@ -12,19 +12,19 @@ export function Header({
 }) {
   return (
     <header className={`${isLightMode ? 'bg-white text-black' : 'bg-[#09090b]/95 text-white'} h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors`}>
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-[1fr_2fr_1fr] items-center">
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
         
-        {/* LOGO SECTION */}
-        <div className="flex items-center gap-2">
+        {/* LOGO SECTION - LEFT COLUMN */}
+        <div className="flex items-center gap-2 justify-self-start">
           <img src={DEFAULT_ICON} alt="Logo" className="w-7 h-7 object-contain" />
           <span className="text-xl font-black hidden lg:block tracking-tighter">
             Capybara <span className="text-[var(--theme)]">Science</span>
           </span>
         </div>
 
-        {/* SEARCH & RANDOM SECTION - CENTERED GROUP */}
-        <div className="flex items-center justify-center gap-3 w-full">
-          <div className="relative w-full max-w-[300px]">
+        {/* SEARCH & RANDOM SECTION - PERFECTLY CENTERED COLUMN */}
+        <div className="flex items-center justify-center gap-3 w-full justify-self-center">
+          <div className="relative w-full max-w-[280px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
             <input 
               type="text" 
@@ -67,8 +67,8 @@ export function Header({
           </div>
         </div>
 
-        {/* STATS & PROFILE SECTION */}
-        <div className="flex items-center justify-end gap-4">
+        {/* STATS & PROFILE SECTION - RIGHT COLUMN */}
+        <div className="flex items-center justify-end gap-4 justify-self-end">
           <div className={`hidden sm:flex items-center gap-3 text-[9px] font-black uppercase text-[var(--theme)] ${isLightMode ? 'bg-black/5 border-black/5' : 'bg-white/5 border-white/5'} px-3 py-1.5 rounded-full border`}>
             <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
             <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
