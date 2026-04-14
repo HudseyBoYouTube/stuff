@@ -849,7 +849,8 @@ const filteredGames = useMemo(() => {
   )}
 
 <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-    {filteredGames.map(game => (
+    {/* This line is changed to only show 24 games at a time */}
+    {filteredGames.slice(0, visibleCount).map(game => (
       <GameCard 
         key={game.id} 
         game={game} 
@@ -861,6 +862,18 @@ const filteredGames = useMemo(() => {
       />
     ))}
   </section>
+
+  {/* NEW: This button appears at the bottom if there are more games to load */}
+  {visibleCount < filteredGames.length && (
+    <div className="flex justify-center py-12">
+      <button 
+        onClick={() => setVisibleCount(prev => prev + 24)}
+        className="px-10 py-4 bg-zinc-900 border border-white/10 rounded-full font-bold text-[var(--theme)] hover:scale-105 transition-all active:scale-95 shadow-xl hover:bg-zinc-800"
+      >
+        Load More Games
+      </button>
+    </div>
+  )}
 </main>
 
       <FriendViewModal 
