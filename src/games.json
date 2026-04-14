@@ -1090,6 +1090,13 @@
     "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/double-panda/",
     "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_86_XNGhmbt7WmAHkd67mkcs--wjCwNl_mQ&s",
     "category": "Platformer"
+  },
+  {
+    "id": "pac-man",
+    "title": "Pac-Man",
+    "url": "https://www.edslap.com/amusements/Games/Pacman/pacman.html",
+    "thumbnail": "https://imgs.search.brave.com/MPleW1-7eXLQsAD844bQaXxejSsV-vVn5okqxWvxNgg/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTU3/NzM5MzkxL3Bob3Rv/L3ZpbnRhZ2UtcGFj/bWFuLXZpZGVvLWdh/bWUuanBnP3M9NjEy/eDYxMiZ3PTAmaz0y/MCZjPTktRmN3MDJo/ZjRhc2F4NnVpQUtv/Ri1wNnJRVlRON2lm/cEZ1dm5yeHlTMVk9",
+    "category": "Arcade"
   }
 ]
   
