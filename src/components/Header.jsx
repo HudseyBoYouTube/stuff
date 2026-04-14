@@ -22,9 +22,9 @@ export function Header({
           </span>
         </div>
 
-        {/* SEARCH & RANDOM SECTION */}
-        <div className="flex items-center gap-2 w-full justify-self-center">
-          <div className="search-container">
+        {/* SEARCH & RANDOM SECTION - CENTERED */}
+        <div className="flex items-center gap-2 w-full justify-self-center justify-center">
+          <div className="search-container w-full max-w-[300px]">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
               <input 
@@ -42,11 +42,12 @@ export function Header({
             </div>
           </div>
 
+          {/* RANDOM BUTTON MOVED TO RIGHT OF SEARCH */}
           <button onClick={onRandomGame} className={`p-2 ${isLightMode ? 'bg-black/5 border-black/10' : 'bg-white/5 border-white/10'} border rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all shadow-[0_0_15px_rgba(var(--theme-rgb),0.1)]`}>
             <Dices className="w-5 h-5" />
           </button>
 
-          {/* SUPPLIER DROPDOWN WRAPPER */}
+          {/* SUPPLIER DROPDOWN MOVED TO RIGHT OF RANDOM */}
           <div className="relative flex items-center">
             <select 
               value={supplier} 
