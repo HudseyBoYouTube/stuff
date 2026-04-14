@@ -153,22 +153,7 @@ const getLaunchUrl = (game, currentSupplier) => {
   // If nothing is found, it looks for the ID.html in /stores/
   return game.url || `/stores/${game.id}.html`;
 };
-
- const getLaunchUrl = (item, supplier) => {
-  if (!item) return null;
-
-  const isGnMath = supplier === 'GN Math' || item.category === 'gn-math';
   
-  const folder = isGnMath ? 'gn-math/' : '';
-
-  let gameId = item.id;
-  if (isGnMath) {
-    gameId = gameId.replace(/-/g, ''); 
-  }
-
-  return `https://puppy-math.canvasforschool.workers.dev/stores/${folder}${gameId}.html`;
-};
-
   const startTime = Date.now();
   const win = window.open('about:blank', '_blank');
 
