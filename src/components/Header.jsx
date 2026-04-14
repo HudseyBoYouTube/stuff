@@ -18,8 +18,11 @@ export function Header({
         <div className="flex items-center gap-2 justify-self-start">
           <img src={DEFAULT_ICON} alt="Logo" className="w-7 h-7 object-contain" />
           <span 
-            className="text-xl font-black hidden lg:block tracking-tighter"
-            style={{ fontFamily: "'Fredoka', sans-serif" }}
+            className="text-xl font-semibold hidden lg:block tracking-tighter"
+            style={{ 
+              fontFamily: "'Fredoka', sans-serif",
+              fontWeight: 600 
+            }}
           >
             Capybara <span className="text-[var(--theme)]">Science</span>
           </span>
@@ -76,7 +79,7 @@ export function Header({
             <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
             <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
             
-            {/* UPDATED BATTERY SECTION: Removed border and padding for a perfect gap */}
+            {/* UPDATED BATTERY SECTION: Perfectly spaced and vertical line removed */}
             <div className="flex items-center gap-1">
               <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500 animate-pulse' : ''}`} />
               <span>{battery.level}%</span>
