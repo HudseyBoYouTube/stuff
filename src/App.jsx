@@ -84,6 +84,7 @@ const gamesData = useMemo(() => {
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmClearSettings, setConfirmClearSettings] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(24);
 
   const [time, setTime] = useState(new Date());
   const [battery, setBattery] = useState({ level: 100, charging: false });
