@@ -772,9 +772,8 @@ const filteredGames = useMemo(() => {
         launchContent(playable[Math.floor(Math.random() * playable.length)]);
       }
     }}
-    isLightMode={isLightMode} 
-    supplier={supplier}
-    setSupplier={setSupplier}
+    isChatOpen={isChatOpen}
+    setIsChatOpen={setIsChatOpen}
   />
 <div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors group`}>
   <div className="max-w-7xl mx-auto relative flex items-center">
