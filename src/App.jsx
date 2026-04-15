@@ -995,7 +995,7 @@ const filteredGames = useMemo(() => {
           setSelectedFriendId(null);
           setTimeout(() => setSelectedFriendId(friend.code), 10);
         }}
-        onRefreshFriend={(code) => {
+       onRefreshFriend={(code) => {
             setIsSyncing(true);
             const freshFriends = [...friends];
             setFriends(freshFriends);
@@ -1010,6 +1010,15 @@ const filteredGames = useMemo(() => {
         }}
         myAchievements={achievements}
       />
+      {/* CHAT WINDOW OVERLAY */}
+      {isChatOpen && (
+        <div className="fixed bottom-6 right-6 w-80 h-[500px] z-[999] drop-shadow-2xl">
+          <ChatCard 
+            isLightMode={isLightMode} 
+            setIsChatOpen={setIsChatOpen} 
+          />
+        </div>
+      )}
     </div>
   );
 }
