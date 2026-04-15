@@ -848,15 +848,9 @@ const filteredGames = useMemo(() => {
     </section>
   )}
 
-  {/* PASTE THE CHAT CARD RIGHT HERE */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
-       <ChatCard isLightMode={isLightMode} />
-       
-       {/* If you don't have a ReportCard yet, just leave this line out */}
-       <ReportCard isLightMode={isLightMode} /> 
-    </div>
-
-    {/* This is where your main "All Games" grid usually starts */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
+   <ChatCard isLightMode={isLightMode} />
+</div>
   
 <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
     {filteredGames.map(game => (
