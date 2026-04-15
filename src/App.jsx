@@ -713,43 +713,72 @@ const filteredGames = useMemo(() => {
     }
   }, [supplier]); // This runs every time you change the dropdown
   
-  return (
-    <div
-      className={`min-h-screen pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'} ${isLightMode ? 'light-mode bg-white text-zinc-900' : 'bg-[#0a0a0a] text-zinc-100'}`} 
-      style={{ 
-        '--theme': theme, 
-        '--glow': `${performanceMode ? 0 : glowIntensity}px`,
-        backgroundColor: isLightMode ? '#ffffff' : '#0a0a0a' 
-      }}
-    >
-      {/* 1. Keep your Header at the top so it stays visible */}
-<Header 
-  /* ... your props ... */ 
-/>
+ return (
+  <div
+    className={`min-h-screen pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'} ${isLightMode ? 'light-mode bg-white text-zinc-900' : 'bg-[#0a0a0a] text-zinc-100'}`} 
+    style={{ 
+      '--theme': theme, 
+      '--glow': `${performanceMode ? 0 : glowIntensity}px`,
+      backgroundColor: isLightMode ? '#ffffff' : '#0a0a0a' 
+    }}
+  >
+    {/* 1. Header is OUTSIDE so it stays at the top of every page */}
+    <Header 
+      searchQuery={searchQuery}
+      setSearchQuery={setSearchQuery}
+      time={time}
+      battery={battery}
+      profilePic={profilePic}
+      setShowSettings={setShowSettings}
+      onRandomGame={onRandomGame}
+      DEFAULT_ICON={DEFAULT_ICON}
+      onViewProfile={onViewProfile}
+      isLightMode={isLightMode}
+      supplier={supplier}
+      setSupplier={setSupplier}
+      isChatOpen={isChatOpen}
+      setIsChatOpen={setIsChatOpen}
+    />
 
-{/* 2. Wrap EVERYTHING else in Routes */}
-<Routes>
-  {/* This is the "Home" route. It restores your site! */}
-  <Route path="/" element={
-    <>
-      {/* PASTE ALL YOUR GAME GRID / MAIN CONTENT CODE HERE */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* Your games list, sidebar, etc. goes here */}
-      </main>
-    </>
-  } />
+    <Routes>
+        {/* ROUTE 1: THE HOME PAGE */}
+        <Route path="/" element={
+          <main className="max-w-7xl mx-auto px-4 py-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {filteredGames.map((game) => (
+                <GameCard
+                  key={game.id}
+                  game={game}
+                  isLightMode={isLightMode}
+                  onPlay={() => setSelectedGame(game)}
+                />
+              ))}
+            </div>
+          </main>
+        } />
 
-  {/* This is the "Identity" route for the terminal */}
-  <Route path="/chat-identity" element={
-    <div className="fixed inset-0 bg-black flex items-center justify-center z-[100]">
-       <ChatCard isLightMode={isLightMode} setIsChatOpen={setIsChatOpen} />
+        {/* ROUTE 2: THE FULL SCREEN IDENTITY TERMINAL */}
+        <Route path="/chat-identity" element={
+          <div className="fixed inset-0 bg-black z-[100] flex items-center justify-center">
+            <ChatCard 
+              isLightMode={isLightMode} 
+              setIsChatOpen={setIsChatOpen} 
+            />
+          </div>
+        } />
+      </Routes>
+
+      {/* MODALS stay outside so they pop up over everything */}
+      {showSettings && (
+        <SettingsModal 
+          setShowSettings={setShowSettings}
+          isLightMode={isLightMode}
+          theme={theme}
+        />
+      )}
     </div>
-  } />
-</Routes>
-
-      {/* Keep your existing modals and notifications below this */}
-      
-      {notification && (
+  );
+            {notification && (
         <div className="fixed bottom-40 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
           <div className="bg-zinc-900 border border-[var(--theme)]/50 px-6 py-3 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 text-[var(--theme)]" />
