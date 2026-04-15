@@ -769,7 +769,7 @@ const filteredGames = useMemo(() => {
       {/* 1. All your Routes are finished above here */}
     </Routes>
 
-    {/* 2. Modals (Settings, etc.) stay here */}
+   {/* 2. Modals (Settings, etc.) stay here */}
     {showSettings && (
       <SettingsModal 
         setShowSettings={setShowSettings}
@@ -781,6 +781,9 @@ const filteredGames = useMemo(() => {
     {/* 3. This is the final closing tag for your main "App" div */}
   </div>
 );
+
+export default App;
+  
             {notification && (
         <div className="fixed bottom-40 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
           <div className="bg-zinc-900 border border-[var(--theme)]/50 px-6 py-3 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] flex items-center gap-3">
