@@ -709,17 +709,18 @@ const filteredGames = useMemo(() => {
       console.error("History error:", e);
       setRecentlyPlayed([]);
     }
-  }, [supplier]); // This runs every time you change the dropdown
+  }, [supplier]); 
   
   return (
     <div
-      className={`min-h-screen pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'} ${isLightMode ? 'light-mode bg-white text-zinc-900' : 'bg-[#0a0a0a] text-zinc-100'}`} 
-      style={{ 
-        '--theme': theme, 
-        '--glow': `${performanceMode ? 0 : glowIntensity}px`,
-        backgroundColor: isLightMode ? '#ffffff' : '#0a0a0a' 
-      }}
-    >
+  className={`min-h-screen pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'} ${isLightMode ? 'light-mode text-zinc-900' : 'text-zinc-100'}`} 
+  style={{ 
+    '--theme': theme, 
+    '--glow': `${performanceMode ? 0 : glowIntensity}px`,
+    backgroundColor: isLightMode ? '#ffffff' : 'rgba(var(--theme-rgb), 0.1)', 
+    transition: 'background-color duration-700' 
+  }}
+>
       
       {notification && (
         <div className="fixed bottom-40 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
