@@ -54,11 +54,11 @@ const updateThemeVariables = (color, glow) => {
 };
 
 export default function App() {
-  // 1. Core States
   const [supplier, setSupplier] = useState(() => localStorage.getItem('capy-supplier') || 'Default');
   const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favs') || '[]'));
   const [themeChangeCount] = useState(() => parseInt(localStorage.getItem('capy-theme-changes') || '0'));
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const userData = { times: playtimes, favs: favorites, themeChanges: themeChangeCount };
 
