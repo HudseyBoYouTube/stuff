@@ -709,16 +709,17 @@ const filteredGames = useMemo(() => {
       console.error("History error:", e);
       setRecentlyPlayed([]);
     }
-  }, [supplier]); 
+  }, [supplier]); // This runs every time you change the dropdown
   
   return (
     <div
-  className={`min-h-screen pb-20 antialiased relative ${isLightMode ? 'bg-white text-zinc-900' : 'bg-[#0a0a0a] text-zinc-100'}`} 
-  style={{ 
-    '--theme': theme, 
-    '--glow': '0px'
-  }}
->
+      className={`min-h-screen pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'} ${isLightMode ? 'light-mode bg-white text-zinc-900' : 'bg-[#0a0a0a] text-zinc-100'}`} 
+      style={{ 
+        '--theme': theme, 
+        '--glow': `${performanceMode ? 0 : glowIntensity}px`,
+        backgroundColor: isLightMode ? '#ffffff' : '#0a0a0a' 
+      }}
+    >
       
       {notification && (
         <div className="fixed bottom-40 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -774,7 +775,7 @@ const filteredGames = useMemo(() => {
     supplier={supplier}
     setSupplier={setSupplier}
   />
-<div className={`${isLightMode ? 'bg-white/80' : 'bg-transparent'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors group`}>
+<div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors group`}>
   <div className="max-w-7xl mx-auto relative flex items-center">
     
     {canScrollLeft && (
