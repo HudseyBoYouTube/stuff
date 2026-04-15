@@ -1,4 +1,5 @@
 import { Search, Dices, Calendar, Clock, Battery, UserCircle, Settings, X, MessageSquare } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export function Header({ 
   searchQuery, setSearchQuery, 
@@ -8,9 +9,10 @@ export function Header({
   onViewProfile,
   isLightMode,
   supplier, setSupplier,
-  /* ADDED PROPS */
   isChatOpen, setIsChatOpen
 }) {
+  const navigate = useNavigate();
+
   return (
     <header className={`${isLightMode ? 'bg-white text-black' : 'bg-[#09090b]/95 text-white'} h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors`}>
       <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
@@ -74,9 +76,9 @@ export function Header({
               </div>
             </div>
 
-            {/* CHAT TOGGLE BUTTON */}
+            {/* CHAT TOGGLE BUTTON - UPDATED TO NAVIGATE */}
             <button 
-              onClick={() => setIsChatOpen(!isChatOpen)}
+              onClick={() => navigate('/chat-identity')}
               className={`p-2 border rounded-lg transition-all hover:scale-105 active:scale-95 ${
                 isChatOpen 
                   ? 'bg-[var(--theme)] border-[var(--theme)] text-black shadow-[0_0_10px_var(--theme)]' 
