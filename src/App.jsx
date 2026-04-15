@@ -16,7 +16,6 @@ import { Header } from './components/Header';
 import { FriendViewModal } from './components/FriendViewModal';
 import { tracklist } from './components/tracklist'; 
 import { ChatCard } from './components/ChatCard';
-import { Routes, Route } from 'react-router-dom';
 
 // 2. CONSTANTS (Line 19+)
 // Note: Delete all that 'recentKey' stuff that was here!
@@ -713,78 +712,17 @@ const filteredGames = useMemo(() => {
     }
   }, [supplier]); // This runs every time you change the dropdown
   
- return (
-  <div
-    className={`min-h-screen pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'} ${isLightMode ? 'light-mode bg-white text-zinc-900' : 'bg-[#0a0a0a] text-zinc-100'}`} 
-    style={{ 
-      '--theme': theme, 
-      '--glow': `${performanceMode ? 0 : glowIntensity}px`,
-      backgroundColor: isLightMode ? '#ffffff' : '#0a0a0a' 
-    }}
-  >
-    {/* 1. Header is OUTSIDE so it stays at the top of every page */}
-    <Header 
-      searchQuery={searchQuery}
-      setSearchQuery={setSearchQuery}
-      time={time}
-      battery={battery}
-      profilePic={profilePic}
-      setShowSettings={setShowSettings}
-      onRandomGame={onRandomGame}
-      DEFAULT_ICON={DEFAULT_ICON}
-      onViewProfile={onViewProfile}
-      isLightMode={isLightMode}
-      supplier={supplier}
-      setSupplier={setSupplier}
-      isChatOpen={isChatOpen}
-      setIsChatOpen={setIsChatOpen}
-    />
-
-    <Routes>
-        {/* ROUTE 1: THE HOME PAGE */}
-        <Route path="/" element={
-          <main className="max-w-7xl mx-auto px-4 py-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {filteredGames.map((game) => (
-                <GameCard
-                  key={game.id}
-                  game={game}
-                  isLightMode={isLightMode}
-                  onPlay={() => setSelectedGame(game)}
-                />
-              ))}
-            </div>
-          </main>
-        } />
-
-        {/* ROUTE 2: THE FULL SCREEN IDENTITY TERMINAL */}
-        <Route path="/chat-identity" element={
-          <div className="fixed inset-0 bg-black z-[100] flex items-center justify-center">
-            <ChatCard 
-              isLightMode={isLightMode} 
-              setIsChatOpen={setIsChatOpen} 
-            />
-          </div>
-        } />
-      {/* 1. All your Routes are finished above here */}
-    </Routes>
-
-   {/* 2. Modals (Settings, etc.) stay here */}
-    {showSettings && (
-      <SettingsModal 
-        setShowSettings={setShowSettings}
-        isLightMode={isLightMode}
-        theme={theme}
-      />
-    )}
-
-    {/* 3. This is the final closing tag for your main "App" div */}
-  </div>
-);
-
-export default App;
-  
-            {notification && (
+  return (
+    <div
+      className={`min-h-screen pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'} ${isLightMode ? 'light-mode bg-white text-zinc-900' : 'bg-[#0a0a0a] text-zinc-100'}`} 
+      style={{ 
+        '--theme': theme, 
+        '--glow': `${performanceMode ? 0 : glowIntensity}px`,
+        backgroundColor: isLightMode ? '#ffffff' : '#0a0a0a' 
+      }}
+    >
+      
+      {notification && (
         <div className="fixed bottom-40 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
           <div className="bg-zinc-900 border border-[var(--theme)]/50 px-6 py-3 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 text-[var(--theme)]" />
@@ -818,108 +756,45 @@ export default App;
         />
       )}
      
-    {/* 1. Start the Fragment here */}
-  <> 
-    <Header 
-      searchQuery={searchQuery} 
-      setSearchQuery={setSearchQuery}
-      time={time}
-      battery={battery}
-      profilePic={profilePic}
-      setShowSettings={setShowSettings}
-      DEFAULT_ICON={DEFAULT_ICON}   
-      theme={theme}   
-      onViewProfile={() => setSelectedFriendId('me')} 
-      onRandomGame={() => {
-        const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
-        if (playable.length > 0) {
-          launchContent(playable[Math.floor(Math.random() * playable.length)]);
-        }
-      }}
-      isChatOpen={isChatOpen}
-      setIsChatOpen={setIsChatOpen}
-    />
+     <Header 
+    searchQuery={searchQuery} 
+    setSearchQuery={setSearchQuery}
+    time={time}
+    battery={battery}
+    profilePic={profilePic}
+    setShowSettings={setShowSettings}
+    DEFAULT_ICON={DEFAULT_ICON}   
+    theme={theme}   
+    onViewProfile={() => setSelectedFriendId('me')} 
+    onRandomGame={() => {
+      const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
+      if (playable.length > 0) {
+        launchContent(playable[Math.floor(Math.random() * playable.length)]);
+      }
+    }}
+    isChatOpen={isChatOpen}
+    setIsChatOpen={setIsChatOpen}
+  />
+<div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors group`}>
+  <div className="max-w-7xl mx-auto relative flex items-center">
+    
+    {canScrollLeft && (
+      <div className={`absolute left-0 z-50 flex items-center pr-12 h-full bg-gradient-to-r ${isLightMode ? 'from-white via-white/80' : 'from-[#09090b] via-[#09090b]/80'} to-transparent pointer-events-none`}>
+        <button 
+          onClick={() => scrollCategories('left')}
+          className="p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20 pointer-events-auto"
+        >
+          <ChevronLeft className="w-4 h-4 text-black" />
+        </button>
+      </div>
+    )}
 
-    <Routes>
-      {/* ROUTE 1: THE HOME PAGE (Games + Categories) */}
-      <Route path="/" element={
-        <>
-          {/* CATEGORY BAR WITH CHEVRONS */}
-          <div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors group`}>
-            <div className="max-w-7xl mx-auto relative flex items-center">
-              
-              {canScrollLeft && (
-                <div className={`absolute left-0 z-50 flex items-center pr-12 h-full bg-gradient-to-r ${isLightMode ? 'from-white via-white/80' : 'from-[#09090b] via-[#09090b]/80'} to-transparent pointer-events-none`}>
-                  <button 
-                    onClick={() => scrollCategories('left')}
-                    className="p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20 pointer-events-auto"
-                  >
-                    <ChevronLeft className="w-4 h-4 text-black" />
-                  </button>
-                </div>
-              )}
-
-              <div 
-                ref={categoryScrollRef}
-                onScroll={checkScroll}
-                className="flex gap-2 overflow-x-auto pb-4 no-scrollbar scroll-smooth px-2 w-full"
-              >
-                {categoriesWithCounts.map((cat) => (
-                  <button 
-                    key={cat.name} 
-                    onClick={() => setActiveCategory(cat.name)} 
-                    className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${
-                      activeCategory === cat.name 
-                        ? 'bg-[var(--theme)] border-[var(--theme)] text-black' 
-                        : isLightMode 
-                          ? 'bg-zinc-100 border-zinc-200 text-zinc-600 hover:bg-zinc-200' 
-                          : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'
-                    }`}
-                  >
-                    {cat.name} <span className="opacity-40 ml-1">{cat.count}</span>
-                  </button>
-                ))}
-              </div>
-
-              {canScrollRight && (
-                <div className={`absolute right-0 z-50 flex items-center pl-12 h-full bg-gradient-to-l ${isLightMode ? 'from-white via-white/80' : 'from-[#09090b] via-[#09090b]/80'} to-transparent pointer-events-none`}>
-                  <button 
-                    onClick={() => scrollCategories('right')}
-                    className="p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20 pointer-events-auto"
-                  >
-                    <ChevronRight className="w-4 h-4 text-black" />
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* THE GAME GRID */}
-          <main className="max-w-7xl mx-auto px-4 py-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {filteredGames.map((game) => (
-                <GameCard key={game.id} game={game} isLightMode={isLightMode} />
-              ))}
-            </div>
-          </main>
-        </>
-      } />
-
-      {/* ROUTE 2: THE IDENTITY TERMINAL */}
-      <Route path="/chat-identity" element={
-        <div className="fixed inset-0 bg-black z-[100] flex items-center justify-center">
-          <ChatCard isLightMode={isLightMode} setIsChatOpen={setIsChatOpen} />
-        </div>
-      } />
-    </Routes>
-
-    {/* SCROLLABLE CATEGORIES */}
     <div 
       ref={categoryScrollRef}
       onScroll={checkScroll}
       className="flex gap-2 overflow-x-auto pb-4 no-scrollbar scroll-smooth px-2 w-full"
     >
-      {categoriesWithCounts.map((cat) => (
+      {categoriesWithCounts.map(cat => (
         <button 
           key={cat.name} 
           onClick={() => setActiveCategory(cat.name)} 
@@ -935,21 +810,6 @@ export default App;
         </button>
       ))}
     </div>
-
-    {/* RIGHT CHEVRON */}
-    {canScrollRight && (
-      <div className={`absolute right-0 z-50 flex items-center pl-12 h-full bg-gradient-to-l ${isLightMode ? 'from-white via-white/80' : 'from-[#09090b] via-[#09090b]/80'} to-transparent pointer-events-none`}>
-        <button 
-          onClick={() => scrollCategories('right')}
-          className="p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20 pointer-events-auto"
-        >
-          <ChevronRight className="w-4 h-4 text-black" />
-        </button>
-      </div>
-    )}
-
-  </div>
-</div>
 
     {canScrollRight && (
       <div className={`absolute -right-9 z-50 flex items-center pl-12 h-full bg-gradient-to-l ${isLightMode ? 'from-white via-white/80' : 'from-[#09090b] via-[#09090b]/80'} to-transparent pointer-events-none`}>
