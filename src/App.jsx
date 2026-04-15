@@ -812,38 +812,62 @@ const filteredGames = useMemo(() => {
         />
       )}
      
-     <Header 
-    searchQuery={searchQuery} 
-    setSearchQuery={setSearchQuery}
-    time={time}
-    battery={battery}
-    profilePic={profilePic}
-    setShowSettings={setShowSettings}
-    DEFAULT_ICON={DEFAULT_ICON}   
-    theme={theme}   
-    onViewProfile={() => setSelectedFriendId('me')} 
-    onRandomGame={() => {
-      const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
-      if (playable.length > 0) {
-        launchContent(playable[Math.floor(Math.random() * playable.length)]);
-      }
-    }}
-    isChatOpen={isChatOpen}
-    setIsChatOpen={setIsChatOpen}
-  />
-<div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors group`}>
-  <div className="max-w-7xl mx-auto relative flex items-center">
-    
-    {canScrollLeft && (
-      <div className={`absolute left-0 z-50 flex items-center pr-12 h-full bg-gradient-to-r ${isLightMode ? 'from-white via-white/80' : 'from-[#09090b] via-[#09090b]/80'} to-transparent pointer-events-none`}>
-        <button 
-          onClick={() => scrollCategories('left')}
-          className="p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20 pointer-events-auto"
-        >
-          <ChevronLeft className="w-4 h-4 text-black" />
-        </button>
+    {/* 1. Start the Fragment here */}
+  <> 
+    <Header 
+      searchQuery={searchQuery} 
+      setSearchQuery={setSearchQuery}
+      time={time}
+      battery={battery}
+      profilePic={profilePic}
+      setShowSettings={setShowSettings}
+      DEFAULT_ICON={DEFAULT_ICON}   
+      theme={theme}   
+      onViewProfile={() => setSelectedFriendId('me')} 
+      onRandomGame={() => {
+        const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
+        if (playable.length > 0) {
+          launchContent(playable[Math.floor(Math.random() * playable.length)]);
+        }
+      }}
+      isChatOpen={isChatOpen}
+      setIsChatOpen={setIsChatOpen}
+    />
+
+    <div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors group`}>
+      <div className="max-w-7xl mx-auto relative flex items-center">
+        {canScrollLeft && (
+          <div className={`absolute left-0 z-50 flex items-center pr-12 h-full bg-gradient-to-r ${isLightMode ? 'from-white via-white/80' : 'from-[#09090b] via-[#09090b]/80'} to-transparent pointer-events-none`}>
+            <button 
+              onClick={() => scrollCategories('left')}
+              className="p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20 pointer-events-auto"
+            >
+              <ChevronLeft className="w-4 h-4 text-black" />
+            </button>
+          </div>
+        )}
+        {/* ... the rest of your category bar code ... */}
       </div>
-    )}
+    </div>
+
+    <Routes>
+      <Route path="/" element={
+        <main className="max-w-7xl mx-auto px-4 py-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {filteredGames.map((game) => (
+              <GameCard key={game.id} game={game} isLightMode={isLightMode} />
+            ))}
+          </div>
+        </main>
+      } />
+
+      <Route path="/chat-identity" element={
+        <div className="fixed inset-0 bg-black z-[100] flex items-center justify-center">
+          <ChatCard isLightMode={isLightMode} setIsChatOpen={setIsChatOpen} />
+        </div>
+      } />
+    </Routes>
+  </> 
 
     <div 
       ref={categoryScrollRef}
