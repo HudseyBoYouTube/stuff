@@ -717,13 +717,7 @@ const filteredGames = useMemo(() => {
   style={{ 
         '--theme': theme, 
         '--glow': `${performanceMode ? 0 : glowIntensity}px`,
-        backgroundColor: isLightMode 
-          ? '#ffffff' 
-          : (theme === '#00aaff' ? '#0a0a0a' : theme),
-        backgroundBlendMode: 'overlay',
-        backgroundImage: isLightMode 
-          ? 'none' 
-          : `linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85))`
+        backgroundColor: isLightMode ? '#ffffff' : '#0a0a0a'
       }}
     >
       
