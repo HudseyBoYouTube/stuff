@@ -1,12 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Send, UserPlus, LogOut } from 'lucide-react'; // Added LogOut icon
+import { Send, UserPlus, RefreshCcw } from 'lucide-react'; 
 import { supabase } from '../supabaseClient';
+
+// Generates a secret ID for your browser so the database knows it's you
+const getPersistentId = () => {
+  let id = localStorage.getItem('capy-uid');
+  if (!id) {
+    id = 'user_' + Math.random().toString(36).substring(2, 11);
+    localStorage.setItem('capy-uid', id);
+  }
+  return id;
+};
 
 export function ChatCard({ isLightMode }) {
   const [username, setUsername] = useState(localStorage.getItem('capy-username') || '');
   const [isJoined, setIsJoined] = useState(!!username);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
+  const myId = getPersistentId();
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -20,88 +31,77 @@ export function ChatCard({ isLightMode }) {
 
     fetchMessages();
 
+    // Listen for inserts AND updates (so names change live!)
     const channel = supabase
       .channel('realtime-messages')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, 
-        (payload) => {
-          setMessages((prev) => [...prev, payload.new]);
-        }
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, 
+        () => fetchMessages() 
       )
       .subscribe();
 
     return () => supabase.removeChannel(channel);
   }, []);
 
-  const handleJoin = (e) => {
+  const handleJoinOrUpdate = async (e) => {
     e.preventDefault();
-    const val = e.target.username.value.trim();
-    if (val) {
-      localStorage.setItem('capy-username', val);
-      setUsername(val);
-      setIsJoined(true);
-    }
-  };
+    const newName = e.target.username?.value.trim() || username;
+    if (!newName) return;
 
-  // NEW: Function to change your name
-  const handleSwitchName = () => {
-    localStorage.removeItem('capy-username');
-    setUsername('');
-    setIsJoined(false);
+    // This is the magic part: it finds every message with your ID and renames them
+    await supabase
+      .from('messages')
+      .update({ username: newName })
+      .eq('user_id', myId);
+
+    localStorage.setItem('capy-username', newName);
+    setUsername(newName);
+    setIsJoined(true);
   };
 
   const handleSend = async () => {
     if (!text.trim()) return;
-    const { error } = await supabase
+    await supabase
       .from('messages')
-      .insert([{ username, content: text }]);
-    if (error) console.error("Error sending:", error);
+      .insert([{ username, content: text, user_id: myId }]);
     setText('');
   };
 
   return (
     <div className={`group relative overflow-hidden rounded-2xl border transition-all duration-300 ${
-      isLightMode 
-        ? 'bg-white border-black/5 shadow-sm' 
-        : 'bg-[#0f0f11] border-white/5 hover:border-[var(--theme)]/50'
+      isLightMode ? 'bg-white border-black/5 shadow-sm' : 'bg-[#0f0f11] border-white/5 hover:border-[var(--theme)]/50'
     } p-5 h-full flex flex-col gap-4`}>
       
-      {/* CARD HEADER */}
       <div className="flex items-center justify-between">
         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--theme)]">
           Live Comms Terminal
         </h3>
-        <div className="flex items-center gap-2">
-          {/* NEW: Switch Name Button - Only shows when joined */}
-          {isJoined && (
-            <button 
-              onClick={handleSwitchName}
-              title="Change Chat Name"
-              className="text-zinc-500 hover:text-[var(--theme)] transition-colors"
-            >
-              <LogOut className="w-3 h-3" />
-            </button>
-          )}
-          <div className={`w-2 h-2 rounded-full animate-pulse bg-[var(--theme)] shadow-[0_0_8px_var(--theme)]`} />
-        </div>
+        {isJoined && (
+          <button 
+            onClick={() => setIsJoined(false)} 
+            className="text-zinc-500 hover:text-[var(--theme)] p-1 hover:bg-white/5 rounded-md transition-all"
+            title="Change Identity"
+          >
+            <RefreshCcw className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
 
       {!isJoined ? (
-        <form onSubmit={handleJoin} className="flex flex-col gap-3 my-auto">
+        <form onSubmit={handleJoinOrUpdate} className="flex flex-col gap-3 my-auto">
           <div className="space-y-1">
             <p className="text-[11px] font-medium text-zinc-500">IDENTIFICATION REQUIRED</p>
             <input 
               name="username"
               type="text"
+              defaultValue={username}
               placeholder="Enter Custom Handle..."
               className={`w-full text-xs p-3 rounded-xl border outline-none transition-all ${
-                isLightMode 
-                  ? 'bg-black/5 border-black/10 focus:border-black/20' 
-                  : 'bg-white/5 border-white/10 focus:border-[var(--theme)]'
+                isLightMode ? 'bg-black/5 border-black/10' : 'bg-white/5 border-white/10 focus:border-[var(--theme)]'
               }`}
             />
           </div>
-          <button className="w-full py-3 bg-[var(--theme)] text-black font-bold text-[10px] rounded-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
-            <UserPlus className="w-3.5 h-3.5" /> AUTHORIZE ACCESS
+          <button className="w-full py-3 bg-[var(--theme)] text-black font-bold text-[10px] rounded-xl hover:scale-[1.02] active:scale-95 transition-all">
+            {username ? "UPDATE ALL PREVIOUS TRANSMISSIONS" : "AUTHORIZE ACCESS"}
           </button>
         </form>
       ) : (
@@ -111,7 +111,7 @@ export function ChatCard({ isLightMode }) {
               <div className="text-zinc-500 italic opacity-50">Waiting for transmissions...</div>
             ) : (
               messages.map((m, i) => (
-                <div key={i} className="mb-1 text-left">
+                <div key={m.id || i} className="mb-1 text-left">
                   <span className="text-[var(--theme)] font-bold">{m.username}:</span> 
                   <span className={isLightMode ? 'text-black' : 'text-zinc-300'}> {m.content}</span>
                 </div>
