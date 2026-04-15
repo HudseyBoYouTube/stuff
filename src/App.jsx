@@ -722,6 +722,35 @@ const filteredGames = useMemo(() => {
         backgroundColor: isLightMode ? '#ffffff' : '#0a0a0a' 
       }}
     >
+      <Header 
+        /* ... your existing header props ... */
+        isChatOpen={isChatOpen}
+        setIsChatOpen={setIsChatOpen}
+      />
+
+      <Routes>
+        {/* ROUTE 1: THE MAIN PAGE */}
+        <Route path="/" element={
+          <>
+            {/* Everything that was previously below your Header goes HERE */}
+            <main className="max-w-7xl mx-auto px-4 py-8">
+               {/* Your existing game grid and main content */}
+            </main>
+          </>
+        } />
+
+        {/* ROUTE 2: THE FULL SCREEN IDENTITY PAGE */}
+        <Route path="/chat-identity" element={
+          <div className="fixed inset-0 bg-black z-[100] flex items-center justify-center">
+            <ChatCard 
+              isLightMode={isLightMode} 
+              setIsChatOpen={setIsChatOpen} 
+            />
+          </div>
+        } />
+      </Routes>
+
+      {/* Keep your existing modals and notifications below this */}
       
       {notification && (
         <div className="fixed bottom-40 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
