@@ -1,9 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Send, UserPlus } from 'lucide-react';
+import { supabase } from '../supabaseClient';
 
 export function ChatCard({ isLightMode }) {
   const [username, setUsername] = useState(localStorage.getItem('capy-username') || '');
   const [isJoined, setIsJoined] = useState(!!username);
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState('');
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      const { data } = await supabase
+        .from('messages')
+        .select('*')
+        .order('created_at', { ascending: true })
+        .limit(50);
+      if (data) setMessages(data);
+    };
+
+    fetchMessages();
+
+    const channel = supabase
+      .channel('realtime-messages')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, 
+        (payload) => {
+          setMessages((prev) => [...prev, payload.new]);
+        }
+      )
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
+  }, []);
 
   const handleJoin = (e) => {
     e.preventDefault();
@@ -13,6 +40,15 @@ export function ChatCard({ isLightMode }) {
       setUsername(val);
       setIsJoined(true);
     }
+  };
+
+  const handleSend = async () => {
+    if (!text.trim()) return;
+    const { error } = await supabase
+      .from('messages')
+      .insert([{ username, content: text }]);
+    if (error) console.error("Error sending:", error);
+    setText('');
   };
 
   return (
@@ -50,20 +86,34 @@ export function ChatCard({ isLightMode }) {
           </button>
         </form>
       ) : (
-<div className="flex flex-col h-full gap-3">
-  <div className={`flex-1 overflow-y-auto rounded-xl p-3 text-[10px] font-mono ${isLightMode ? 'bg-black/5' : 'bg-black/40'}`}>
-    {/* This is now empty, ready for your real database messages! */}
-    <div className="text-zinc-500 italic opacity-50">Waiting for transmissions...</div>
-  </div>
+        <div className="flex flex-col h-full gap-3">
+          <div className={`flex-1 overflow-y-auto rounded-xl p-3 text-[10px] font-mono ${isLightMode ? 'bg-black/5' : 'bg-black/40'}`}>
+            {messages.length === 0 ? (
+              <div className="text-zinc-500 italic opacity-50">Waiting for transmissions...</div>
+            ) : (
+              messages.map((m, i) => (
+                <div key={i} className="mb-1">
+                  <span className="text-[var(--theme)] font-bold">{m.username}:</span> 
+                  <span className={isLightMode ? 'text-black' : 'text-zinc-300'}> {m.content}</span>
+                </div>
+              ))
+            )}
+          </div>
           
           <div className="relative">
             <input 
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Transmit message..."
               className={`w-full text-[10px] p-2 pr-8 rounded-lg border outline-none ${
                 isLightMode ? 'bg-black/5' : 'bg-white/5 border-white/10 focus:border-[var(--theme)]'
               }`}
             />
-            <Send className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-[var(--theme)] cursor-pointer" />
+            <Send 
+              onClick={handleSend}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-[var(--theme)] cursor-pointer" 
+            />
           </div>
         </div>
       )}
