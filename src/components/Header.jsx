@@ -10,8 +10,7 @@ export function Header({
   supplier, setSupplier
 }) {
   return (
-    <header 
-  className={`h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors ${isLightMode ? 'text-black' : 'text-white'}`}
+    <header className={`${isLightMode ? 'bg-white text-black' : 'bg-[#09090b]/95 text-white'} h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors`}>
   style={{
     backgroundColor: isLightMode 
       ? '#ffffff' 
