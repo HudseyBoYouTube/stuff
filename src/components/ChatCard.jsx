@@ -50,14 +50,11 @@ export function ChatCard({ isLightMode }) {
           </button>
         </form>
       ) : (
-        <div className="flex flex-col h-full gap-3">
-          <div className={`flex-1 overflow-y-auto rounded-xl p-3 text-[10px] font-mono ${isLightMode ? 'bg-black/5' : 'bg-black/40'}`}>
-            <div className="mb-2 text-zinc-500 uppercase italic">[ SYSTEM: Welcome, {username} ]</div>
-            {/* Messages would map here */}
-            <div className="text-zinc-400">
-              <span className="text-[var(--theme)] font-bold">HudseyBo:</span> Anyone want to speedrun Roblox Rivals?
-            </div>
-          </div>
+<div className="flex flex-col h-full gap-3">
+  <div className={`flex-1 overflow-y-auto rounded-xl p-3 text-[10px] font-mono ${isLightMode ? 'bg-black/5' : 'bg-black/40'}`}>
+    {/* This is now empty, ready for your real database messages! */}
+    <div className="text-zinc-500 italic opacity-50">Waiting for transmissions...</div>
+  </div>
           
           <div className="relative">
             <input 
