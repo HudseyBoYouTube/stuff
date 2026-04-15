@@ -766,18 +766,21 @@ const filteredGames = useMemo(() => {
             />
           </div>
         } />
-      </Routes>
+      {/* 1. All your Routes are finished above here */}
+    </Routes>
 
-      {/* MODALS stay outside so they pop up over everything */}
-      {showSettings && (
-        <SettingsModal 
-          setShowSettings={setShowSettings}
-          isLightMode={isLightMode}
-          theme={theme}
-        />
-      )}
-    </div>
-  );
+    {/* 2. Modals (Settings, etc.) stay here */}
+    {showSettings && (
+      <SettingsModal 
+        setShowSettings={setShowSettings}
+        isLightMode={isLightMode}
+        theme={theme}
+      />
+    )}
+
+    {/* 3. This is the final closing tag for your main "App" div */}
+  </div>
+);
             {notification && (
         <div className="fixed bottom-40 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
           <div className="bg-zinc-900 border border-[var(--theme)]/50 px-6 py-3 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] flex items-center gap-3">
