@@ -13,7 +13,9 @@ export function Header({
     <header 
   className={`h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors ${isLightMode ? 'text-black' : 'text-white'}`}
   style={{
-    backgroundColor: isLightMode ? '#ffffff' : '#0a0a0a', 
+    backgroundColor: isLightMode 
+      ? '#ffffff' 
+      : `color-mix(in srgb, var(--theme) 15%, #0a0a0a)`,
   }}
 >
       <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
