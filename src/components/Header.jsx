@@ -7,11 +7,16 @@ export function Header({
   onRandomGame, DEFAULT_ICON,
   onViewProfile,
   isLightMode,
-  /* ADDED PROPS */
   supplier, setSupplier
 }) {
   return (
-    <header className={`${isLightMode ? 'bg-white text-black' : 'bg-[#09090b]/95 text-white'} h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors`}>
+    <header 
+      className={`h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors ${isLightMode ? 'text-black' : 'text-white'}`}
+      style={{
+        backgroundColor: isLightMode ? '#ffffff' : 'color-mix(in srgb, var(--theme), black 90%)',
+        borderBottom: `1px solid ${isLightMode ? 'rgba(0,0,0,0.1)' : 'var(--theme)'}`
+      }}
+    >
       <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
         
         {/* LOGO SECTION - LEFT COLUMN */}
@@ -79,7 +84,6 @@ export function Header({
             <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
             <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
             
-            {/* UPDATED BATTERY SECTION: Perfectly spaced and vertical line removed */}
             <div className="flex items-center gap-1">
               <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500 animate-pulse' : ''}`} />
               <span>{battery.level}%</span>
