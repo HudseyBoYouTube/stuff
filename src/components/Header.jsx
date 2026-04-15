@@ -11,12 +11,11 @@ export function Header({
 }) {
   return (
     <header 
-      className={`h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors ${isLightMode ? 'text-black' : 'text-white'}`}
-      style={{
-        backgroundColor: isLightMode ? '#ffffff' : 'color-mix(in srgb, var(--theme), black 90%)',
-        borderBottom: `1px solid ${isLightMode ? 'rgba(0,0,0,0.1)' : 'var(--theme)'}`
-      }}
-    >
+  className={`h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors ${isLightMode ? 'text-black' : 'text-white'}`}
+  style={{
+    backgroundColor: isLightMode ? '#ffffff' : '#0a0a0a', 
+  }}
+>
       <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
         
         {/* LOGO SECTION - LEFT COLUMN */}
