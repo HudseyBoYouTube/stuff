@@ -713,13 +713,12 @@ const filteredGames = useMemo(() => {
   
   return (
     <div
-  className={`min-h-screen pb-20 antialiased relative ${performanceMode ? '' : 'transition-all'} ${isLightMode ? 'light-mode bg-white text-zinc-900' : 'text-zinc-100'}`} 
+  className={`min-h-screen pb-20 antialiased relative ${isLightMode ? 'bg-white text-zinc-900' : 'bg-[#0a0a0a] text-zinc-100'}`} 
   style={{ 
-        '--theme': theme, 
-        '--glow': `${performanceMode ? 0 : glowIntensity}px`,
-        backgroundColor: isLightMode ? '#ffffff' : '#0a0a0a'
-      }}
-    >
+    '--theme': theme, 
+    '--glow': '0px'
+  }}
+>
       
       {notification && (
         <div className="fixed bottom-40 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
