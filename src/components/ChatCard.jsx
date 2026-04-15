@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Send, UserPlus } from 'lucide-react';
+import { Send, UserPlus, LogOut } from 'lucide-react'; // Added LogOut icon
 import { supabase } from '../supabaseClient';
 
 export function ChatCard({ isLightMode }) {
@@ -42,6 +42,13 @@ export function ChatCard({ isLightMode }) {
     }
   };
 
+  // NEW: Function to change your name
+  const handleSwitchName = () => {
+    localStorage.removeItem('capy-username');
+    setUsername('');
+    setIsJoined(false);
+  };
+
   const handleSend = async () => {
     if (!text.trim()) return;
     const { error } = await supabase
@@ -63,7 +70,19 @@ export function ChatCard({ isLightMode }) {
         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--theme)]">
           Live Comms Terminal
         </h3>
-        <div className={`w-2 h-2 rounded-full animate-pulse bg-[var(--theme)] shadow-[0_0_8px_var(--theme)]`} />
+        <div className="flex items-center gap-2">
+          {/* NEW: Switch Name Button - Only shows when joined */}
+          {isJoined && (
+            <button 
+              onClick={handleSwitchName}
+              title="Change Chat Name"
+              className="text-zinc-500 hover:text-[var(--theme)] transition-colors"
+            >
+              <LogOut className="w-3 h-3" />
+            </button>
+          )}
+          <div className={`w-2 h-2 rounded-full animate-pulse bg-[var(--theme)] shadow-[0_0_8px_var(--theme)]`} />
+        </div>
       </div>
 
       {!isJoined ? (
@@ -92,7 +111,7 @@ export function ChatCard({ isLightMode }) {
               <div className="text-zinc-500 italic opacity-50">Waiting for transmissions...</div>
             ) : (
               messages.map((m, i) => (
-                <div key={i} className="mb-1">
+                <div key={i} className="mb-1 text-left">
                   <span className="text-[var(--theme)] font-bold">{m.username}:</span> 
                   <span className={isLightMode ? 'text-black' : 'text-zinc-300'}> {m.content}</span>
                 </div>
