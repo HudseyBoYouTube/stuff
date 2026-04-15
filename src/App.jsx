@@ -722,33 +722,30 @@ const filteredGames = useMemo(() => {
         backgroundColor: isLightMode ? '#ffffff' : '#0a0a0a' 
       }}
     >
-      <Header 
-        /* ... your existing header props ... */
-        isChatOpen={isChatOpen}
-        setIsChatOpen={setIsChatOpen}
-      />
+      {/* 1. Keep your Header at the top so it stays visible */}
+<Header 
+  /* ... your props ... */ 
+/>
 
-      <Routes>
-        {/* ROUTE 1: THE MAIN PAGE */}
-        <Route path="/" element={
-          <>
-            {/* Everything that was previously below your Header goes HERE */}
-            <main className="max-w-7xl mx-auto px-4 py-8">
-               {/* Your existing game grid and main content */}
-            </main>
-          </>
-        } />
+{/* 2. Wrap EVERYTHING else in Routes */}
+<Routes>
+  {/* This is the "Home" route. It restores your site! */}
+  <Route path="/" element={
+    <>
+      {/* PASTE ALL YOUR GAME GRID / MAIN CONTENT CODE HERE */}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        {/* Your games list, sidebar, etc. goes here */}
+      </main>
+    </>
+  } />
 
-        {/* ROUTE 2: THE FULL SCREEN IDENTITY PAGE */}
-        <Route path="/chat-identity" element={
-          <div className="fixed inset-0 bg-black z-[100] flex items-center justify-center">
-            <ChatCard 
-              isLightMode={isLightMode} 
-              setIsChatOpen={setIsChatOpen} 
-            />
-          </div>
-        } />
-      </Routes>
+  {/* This is the "Identity" route for the terminal */}
+  <Route path="/chat-identity" element={
+    <div className="fixed inset-0 bg-black flex items-center justify-center z-[100]">
+       <ChatCard isLightMode={isLightMode} setIsChatOpen={setIsChatOpen} />
+    </div>
+  } />
+</Routes>
 
       {/* Keep your existing modals and notifications below this */}
       
