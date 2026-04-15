@@ -15,7 +15,7 @@ export function Header({
   style={{
     backgroundColor: isLightMode 
       ? '#ffffff' 
-      : `color-mix(in srgb, var(--theme) 15%, #0a0a0a)`,
+      : (theme === '#00aaff' ? '#0a0a0a' : `color-mix(in srgb, var(--theme) 15%, #0a0a0a)`),
   }}
 >
       <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
