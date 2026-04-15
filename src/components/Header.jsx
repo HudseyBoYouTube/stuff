@@ -1,4 +1,4 @@
-import { Search, Dices, Calendar, Clock, Battery, UserCircle, Settings, X } from 'lucide-react';
+import { Search, Dices, Calendar, Clock, Battery, UserCircle, Settings, X, MessageSquare } from 'lucide-react';
 
 export function Header({ 
   searchQuery, setSearchQuery, 
@@ -7,7 +7,6 @@ export function Header({
   onRandomGame, DEFAULT_ICON,
   onViewProfile,
   isLightMode,
-  /* ADDED PROPS */
   supplier, setSupplier
 }) {
   return (
@@ -50,26 +49,44 @@ export function Header({
             <Dices className="w-5 h-5" />
           </button>
 
-          <div className="relative flex items-center">
-            <select 
-              value={supplier} 
-              onChange={(e) => {
-                setSupplier(e.target.value);
-                localStorage.setItem('capy-supplier', e.target.value);
-              }}
-              className={`text-[10px] font-bold uppercase py-2 pl-3 pr-8 rounded-lg border transition-all outline-none cursor-pointer appearance-none ${
-                isLightMode 
-                  ? 'bg-black/5 border-black/10 text-black' 
-                  : 'bg-white/5 border-white/10 text-white'
-              } focus:border-[var(--theme)]`}
-            >
-              <option value="Default" className="bg-[#09090b] text-white">Capybara Science</option>
-              <option value="GN Math" className="bg-[#09090b] text-white">gn-math</option>
-              <option value="Truffled" className="bg-[#09090b] text-white">Truffled</option>
-            </select>
-            <div className="absolute right-2 pointer-events-none flex items-center justify-center">
-              <span style={{ fontSize: '8px', color: 'var(--theme)', opacity: 0.8 }}>▼</span>
+          <div className="flex items-center gap-2">
+            <div className="relative flex items-center">
+              <select 
+                value={supplier} 
+                onChange={(e) => {
+                  setSupplier(e.target.value);
+                  localStorage.setItem('capy-supplier', e.target.value);
+                }}
+                className={`text-[10px] font-bold uppercase py-2 pl-3 pr-8 rounded-lg border transition-all outline-none cursor-pointer appearance-none ${
+                  isLightMode 
+                    ? 'bg-black/5 border-black/10 text-black' 
+                    : 'bg-white/5 border-white/10 text-white'
+                } focus:border-[var(--theme)]`}
+              >
+                <option value="Default" className="bg-[#09090b] text-white">Capybara Science</option>
+                <option value="GN Math" className="bg-[#09090b] text-white">gn-math</option>
+                <option value="Truffled" className="bg-[#09090b] text-white">Truffled</option>
+              </select>
+              <div className="absolute right-2 pointer-events-none flex items-center justify-center">
+                <span style={{ fontSize: '8px', color: 'var(--theme)', opacity: 0.8 }}>▼</span>
+              </div>
             </div>
+
+            {/* CHAT IDENTITY BUTTON */}
+            {localStorage.getItem('capy-username') && (
+              <button 
+                onClick={() => {
+                  localStorage.removeItem('capy-username');
+                  window.location.reload();
+                }}
+                className={`p-2 border rounded-lg transition-all hover:scale-105 active:scale-95 ${
+                  isLightMode ? 'bg-black/5 border-black/10 text-black' : 'bg-white/5 border-white/10 text-[var(--theme)]'
+                }`}
+                title="Change Chat Identity"
+              >
+                <MessageSquare className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -79,7 +96,6 @@ export function Header({
             <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
             <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
             
-            {/* UPDATED BATTERY SECTION: Perfectly spaced and vertical line removed */}
             <div className="flex items-center gap-1">
               <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500 animate-pulse' : ''}`} />
               <span>{battery.level}%</span>
