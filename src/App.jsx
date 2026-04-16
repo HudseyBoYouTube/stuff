@@ -755,116 +755,136 @@ const filteredGames = useMemo(() => {
           }}
         />
       )}
-     
-     <Header 
-    searchQuery={searchQuery} 
-    setSearchQuery={setSearchQuery}
-    time={time}
-    battery={battery}
-    profilePic={profilePic}
-    setShowSettings={setShowSettings}
-    DEFAULT_ICON={DEFAULT_ICON}   
-    theme={theme}   
-    onViewProfile={() => setSelectedFriendId('me')} 
-    onRandomGame={() => {
-      const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
-      if (playable.length > 0) {
-        launchContent(playable[Math.floor(Math.random() * playable.length)]);
-      }
-    }}
-    isChatOpen={isChatOpen}
-    setIsChatOpen={setIsChatOpen}
-  />
-<div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors group`}>
-  <div className="max-w-7xl mx-auto relative flex items-center">
-    
-    {canScrollLeft && (
-      <div className={`absolute left-0 z-50 flex items-center pr-12 h-full bg-gradient-to-r ${isLightMode ? 'from-white via-white/80' : 'from-[#09090b] via-[#09090b]/80'} to-transparent pointer-events-none`}>
-        <button 
-          onClick={() => scrollCategories('left')}
-          className="p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20 pointer-events-auto"
-        >
-          <ChevronLeft className="w-4 h-4 text-black" />
-        </button>
-      </div>
-    )}
 
-    <div 
-      ref={categoryScrollRef}
-      onScroll={checkScroll}
-      className="flex gap-2 overflow-x-auto pb-4 no-scrollbar scroll-smooth px-2 w-full"
-    >
-      {categoriesWithCounts.map(cat => (
-        <button 
-          key={cat.name} 
-          onClick={() => setActiveCategory(cat.name)} 
-          className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${
-            activeCategory === cat.name 
-              ? 'bg-[var(--theme)] border-[var(--theme)] text-black' 
-              : isLightMode 
-                ? 'bg-zinc-100 border-zinc-200 text-zinc-600 hover:bg-zinc-200' 
-                : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'
-          }`}
-        >
-          {cat.name} <span className="opacity-40 ml-1">{cat.count}</span>
-        </button>
-      ))}
-    </div>
+      {/* --- CHAT FULL SCREEN LOGIC START --- */}
+      {isChatOpen ? (
+        <div className="fixed inset-0 z-[9999] bg-[#0a0a0a] flex flex-col p-4 animate-in fade-in duration-300">
+          {/* THE X BUTTON AT TOP RIGHT */}
+          <button 
+            onClick={() => setIsChatOpen(false)}
+            className="absolute top-6 right-6 p-2 bg-white/10 hover:bg-white/20 rounded-full z-[10000] transition-transform active:scale-95 text-white"
+          >
+            <X className="w-8 h-8" />
+          </button>
 
-    {canScrollRight && (
-      <div className={`absolute -right-9 z-50 flex items-center pl-12 h-full bg-gradient-to-l ${isLightMode ? 'from-white via-white/80' : 'from-[#09090b] via-[#09090b]/80'} to-transparent pointer-events-none`}>
-        <button 
-          onClick={() => scrollCategories('right')}
-          className="p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20 pointer-events-auto"
-        >
-          <ChevronRight className="w-4 h-4 text-black" />
-        </button>
-      </div>
-    )}
-  </div>
-</div>
-
-<main className="max-w-7xl mx-auto px-4 mt-8 space-y-12">
-  {recentGamesData.length > 0 && activeCategory === 'All' && !searchQuery && (
-    <section className="space-y-4">
-      <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${isLightMode ? 'text-zinc-500' : 'text-zinc-400'}`}>
-        <History className="w-3 h-3 text-[var(--theme)]" />
-        Recently On
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {recentGamesData.map(game => (
-          <GameCard 
-            key={`recent-${game.id}`} 
-            game={game} 
-            onLaunch={launchContent} 
-            playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
-            isFavorite={favorites.includes(String(game.id))}
-            onToggleFavorite={() => toggleFavorite(game.id)}
-            performanceMode={performanceMode}
+          {/* CHAT CONTENT */}
+          <div className="flex-1 w-full max-w-5xl mx-auto flex items-center justify-center">
+            <div className="w-full h-[85vh]">
+               <ChatCard isLightMode={isLightMode} setIsChatOpen={setIsChatOpen} />
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* --- EVERYTHING INSIDE HERE IS THE NORMAL SITE --- */
+        <>
+          <Header 
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery}
+            time={time}
+            battery={battery}
+            profilePic={profilePic}
+            setShowSettings={setShowSettings}
+            DEFAULT_ICON={DEFAULT_ICON}   
+            theme={theme}   
+            onViewProfile={() => setSelectedFriendId('me')} 
+            onRandomGame={() => {
+              const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
+              if (playable.length > 0) {
+                launchContent(playable[Math.floor(Math.random() * playable.length)]);
+              }
+            }}
+            isChatOpen={isChatOpen}
+            setIsChatOpen={setIsChatOpen}
           />
-        ))}
-      </div>
-    </section>
-  )}
 
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
-   <ChatCard isLightMode={isLightMode} />
-</div>
-  
-<section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-    {filteredGames.map(game => (
-      <GameCard 
-        key={game.id} 
-        game={game} 
-        onLaunch={launchContent} 
-        playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
-        isFavorite={favorites.includes(String(game.id))} 
-        onToggleFavorite={() => toggleFavorite(game.id)}
-        performanceMode={performanceMode}
-      />
-    ))}
-  </section>
-</main>
+          <div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors group`}>
+            <div className="max-w-7xl mx-auto relative flex items-center">
+              {canScrollLeft && (
+                <div className={`absolute left-0 z-50 flex items-center pr-12 h-full bg-gradient-to-r ${isLightMode ? 'from-white via-white/80' : 'from-[#09090b] via-[#09090b]/80'} to-transparent pointer-events-none`}>
+                  <button 
+                    onClick={() => scrollCategories('left')}
+                    className="p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20 pointer-events-auto"
+                  >
+                    <ChevronLeft className="w-4 h-4 text-black" />
+                  </button>
+                </div>
+              )}
+
+              <div 
+                ref={categoryScrollRef}
+                onScroll={checkScroll}
+                className="flex gap-2 overflow-x-auto pb-4 no-scrollbar scroll-smooth px-2 w-full"
+              >
+                {categoriesWithCounts.map(cat => (
+                  <button 
+                    key={cat.name} 
+                    onClick={() => setActiveCategory(cat.name)} 
+                    className={`px-4 py-2 rounded-full text-[10px] font-black uppercase border shrink-0 transition-all ${
+                      activeCategory === cat.name 
+                        ? 'bg-[var(--theme)] border-[var(--theme)] text-black' 
+                        : isLightMode 
+                          ? 'bg-zinc-100 border-zinc-200 text-zinc-600 hover:bg-zinc-200' 
+                          : 'bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10'
+                    }`}
+                  >
+                    {cat.name} <span className="opacity-40 ml-1">{cat.count}</span>
+                  </button>
+                ))}
+              </div>
+
+              {canScrollRight && (
+                <div className={`absolute -right-9 z-50 flex items-center pl-12 h-full bg-gradient-to-l ${isLightMode ? 'from-white via-white/80' : 'from-[#09090b] via-[#09090b]/80'} to-transparent pointer-events-none`}>
+                  <button 
+                    onClick={() => scrollCategories('right')}
+                    className="p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20 pointer-events-auto"
+                  >
+                    <ChevronRight className="w-4 h-4 text-black" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <main className="max-w-7xl mx-auto px-4 mt-8 space-y-12">
+            {recentGamesData.length > 0 && activeCategory === 'All' && !searchQuery && (
+              <section className="space-y-4">
+                <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${isLightMode ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                  <History className="w-3 h-3 text-[var(--theme)]" />
+                  Recently On
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                  {recentGamesData.map(game => (
+                    <GameCard 
+                      key={`recent-${game.id}`} 
+                      game={game} 
+                      onLaunch={launchContent} 
+                      playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
+                      isFavorite={favorites.includes(String(game.id))}
+                      onToggleFavorite={() => toggleFavorite(game.id)}
+                      performanceMode={performanceMode}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {filteredGames.map(game => (
+                <GameCard 
+                  key={game.id} 
+                  game={game} 
+                  onLaunch={launchContent} 
+                  playtime={playtimes[game.id] ? Math.floor(playtimes[game.id]/60) + 'm' : '0m'}
+                  isFavorite={favorites.includes(String(game.id))} 
+                  onToggleFavorite={() => toggleFavorite(game.id)}
+                  performanceMode={performanceMode}
+                />
+              ))}
+            </section>
+          </main>
+        </>
+      )}
+      {/* --- CHAT LOGIC END --- */}
 
       <FriendViewModal 
         friend={selectedFriendId === 'me' 
@@ -878,7 +898,7 @@ const filteredGames = useMemo(() => {
         myAchievements={achievements}
       />
 
-    <SettingsModal 
+      <SettingsModal 
         show={showSettings} 
         onClose={() => setShowSettings(false)}
         tracklist={tracklist} 
@@ -945,8 +965,6 @@ const filteredGames = useMemo(() => {
               setGlowIntensity(decoded.g);
               localStorage.setItem('capy-glow', decoded.g);
             }
-            if (decoded.ach) {
-            }
             setNotification("Profile Synced Successfully!");
             setTimeout(() => window.location.reload(), 1000);
           } else {
@@ -1010,15 +1028,5 @@ const filteredGames = useMemo(() => {
         }}
         myAchievements={achievements}
       />
-      {/* CHAT WINDOW OVERLAY */}
-      {isChatOpen && (
-        <div className="fixed bottom-6 right-6 w-80 h-[500px] z-[999] drop-shadow-2xl">
-          <ChatCard 
-            isLightMode={isLightMode} 
-            setIsChatOpen={setIsChatOpen} 
-          />
-        </div>
-      )}
     </div>
   );
-}
