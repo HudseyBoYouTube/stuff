@@ -76,9 +76,9 @@ export function Header({
               </div>
             </div>
 
-            {/* CHAT TOGGLE BUTTON - UPDATED TO NAVIGATE */}
+            {/* CHAT TOGGLE BUTTON - UPDATED TO USE STATE */}
             <button 
-              onClick={() => navigate('/chat-identity')}
+              onClick={() => setIsChatOpen(true)} // Changed from navigate to state
               className={`p-2 border rounded-lg transition-all hover:scale-105 active:scale-95 ${
                 isChatOpen 
                   ? 'bg-[var(--theme)] border-[var(--theme)] text-black shadow-[0_0_10px_var(--theme)]' 
