@@ -1031,5 +1031,4 @@ const filteredGames = useMemo(() => {
     </div>
   );
 }
-
-export default App;
+// NOTHING SHOULD BE BELOW THIS BRACKET
