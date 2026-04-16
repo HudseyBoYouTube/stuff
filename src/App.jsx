@@ -721,6 +721,47 @@ const filteredGames = useMemo(() => {
         backgroundColor: isLightMode ? '#ffffff' : '#0a0a0a' 
       }}
     >
+      {/* 1. CHECK IF CHAT IS OPEN */}
+      {isChatOpen ? (
+        <div className="fixed inset-0 z-[9999] bg-[#0a0a0a] flex flex-col p-4">
+          {/* THE X BUTTON */}
+          <button 
+            onClick={() => setIsChatOpen(false)}
+            className="absolute top-6 right-6 p-2 bg-white/10 hover:bg-white/20 rounded-full z-[10000] transition-transform active:scale-95"
+          >
+            <X className="w-8 h-8 text-white" />
+          </button>
+
+          {/* FULL SCREEN CHAT */}
+          <div className="flex-1 w-full max-w-5xl mx-auto flex items-center justify-center">
+            <div className="w-full h-[85vh]">
+               <ChatCard isLightMode={isLightMode} />
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* 2. SHOW NORMAL SITE IF CHAT IS CLOSED */
+        <>
+          <Header 
+            isLightMode={isLightMode} 
+            setIsChatOpen={setIsChatOpen}
+            // keep your other existing props here
+          />
+          
+          <main className="max-w-7xl mx-auto px-4 mt-8 space-y-12">
+            {/* PASTE YOUR CATEGORIES AND GAME GRID CODE HERE */}
+          </main>
+        </>
+      )}
+
+      {/* 3. KEEP SETTINGS/MODALS AT THE VERY BOTTOM */}
+      <SettingsModal 
+        isOpen={showSettings} 
+        onClose={() => setShowSettings(false)} 
+        // ... rest of your settings props
+      />
+    </div>
+  );
       
       {notification && (
         <div className="fixed bottom-40 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-bottom-4 duration-300">
