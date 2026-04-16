@@ -124,7 +124,7 @@ export function ChatCard({ isLightMode }) {
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Message"
+              placeholder="Message..."
               className={`w-full text-[10px] p-2 pr-8 rounded-lg border outline-none ${
                 isLightMode ? 'bg-black/5' : 'bg-white/5 border-white/10 focus:border-[var(--theme)]'
               }`}
