@@ -794,7 +794,7 @@ const filteredGames = useMemo(() => {
             battery={battery}
             profilePic={profilePic}
             setShowSettings={setShowSettings}
-            DEFAULT_ICON={DEFAULT_ICON}   
+            DEFAULT_ICON="https://img.icons8.com/color/32/capybara.png"
             theme={theme}   
             onViewProfile={() => setSelectedFriendId('me')} 
             onRandomGame={() => {
