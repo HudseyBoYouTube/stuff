@@ -75,18 +75,18 @@ export default function App() {
   const achievements = useAchievements(userData);
 
 const gamesData = useMemo(() => {
-  // 1. Ensure main games have the 'Capybara Science' supplier
+  // 1. Tag your main games as "Capybara Science"
   const main = Array.isArray(gamesDataRaw) ? gamesDataRaw.map(game => ({
     ...game,
-    supplier: game.supplier || 'Capybara Science'
+    supplier: 'Capybara Science' 
   })) : [];
 
-  // 2. Ensure gn-math games have the 'gn-math' supplier
+  // 2. Tag the gn-math games as "gn-math"
   const gn = Array.isArray(gnMathDataRaw) ? gnMathDataRaw.map(game => ({
     ...game,
-    urls: { "GN-MATH": game.url },
-    url: "", // Keeps the multi-link setup you have
-    supplier: 'GN-MATH' // <--- THIS FIXES THE FILTER
+    urls: { "GN Math": game.url },
+    url: "", 
+    supplier: 'gn-math' 
   })) : [];
 
   return [...main, ...gn];
