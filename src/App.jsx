@@ -660,28 +660,13 @@ const filteredGames = useMemo(() => {
     const sourceData = gamesData || [];
 
     return sourceData.filter(g => {
-      // 1. Search Match
       const matchesSearch = g?.title?.toLowerCase().includes(q);
-      
-      // 2. Supplier Match
       const matchesSupplier = (supplier === 'All' || g.supplier === supplier);
-      
-      // 3. Category Match
       const matchesCategory = (activeCategory === 'All' || g?.category === activeCategory);
 
       return matchesSearch && matchesSupplier && matchesCategory;
-    });
-  }, [searchQuery, activeCategory, gamesData, supplier]);
-  
-      // 3. Check Category / Favorites Match
-      if (activeCategory === 'Favorites') {
-        return (favorites || []).includes(g?.id);
-      }
-      
-      const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
-      return matchesCategory;
-    });
-  }, [searchQuery, activeCategory, gamesData, favorites, supplier]); 
+    }); // This closes the .filter()
+  }, [searchQuery, activeCategory, gamesData, favorites, supplier]); // This closes the useMemo()
   
   const recentGamesData = useMemo(() => {
     if (!recentlyPlayed || !Array.isArray(recentlyPlayed)) return [];
