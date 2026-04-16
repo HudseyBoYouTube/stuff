@@ -53,7 +53,7 @@ const updateThemeVariables = (color, glow) => {
   root.style.setProperty('--glow', `${glow}px`);
 };
 
-export default function App() {
+function App() {
   const [supplier, setSupplier] = useState(() => localStorage.getItem('capy-supplier') || 'Default');
   const [playtimes, setPlaytimes] = useState(() => JSON.parse(localStorage.getItem('capy-playtimes') || '{}'));
   const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('capy-favs') || '[]'));
