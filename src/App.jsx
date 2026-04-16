@@ -666,12 +666,12 @@ const filteredGames = useMemo(() => {
       // 2. Supplier Match
       const matchesSupplier = (supplier === 'All' || g.supplier === supplier);
       
-      // 3. Category Match (keeps your 'Strategy', 'Action', etc. working)
+      // 3. Category Match
       const matchesCategory = (activeCategory === 'All' || g?.category === activeCategory);
 
       return matchesSearch && matchesSupplier && matchesCategory;
     });
-}, [searchQuery, activeCategory, gamesData, supplier]);
+  }, [searchQuery, activeCategory, gamesData, supplier]);
   
       // 3. Check Category / Favorites Match
       if (activeCategory === 'Favorites') {
