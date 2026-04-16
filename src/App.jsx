@@ -665,13 +665,11 @@ const filteredGames = useMemo(() => {
       if (!matchesSearch) return false;
 
       // 2. Check Supplier Match
-      // If "All" is selected, show everything
       if (supplier === 'All') return true;
-      
-      // Otherwise, match the game's supplier to the dropdown selection
       return g.supplier === supplier;
-    });
-
+    }); // <--- THIS WAS LIKELY THE MISSING PIECE
+}, [searchQuery, gamesData, supplier]);
+  
       // 3. Check Category / Favorites Match
       if (activeCategory === 'Favorites') {
         return (favorites || []).includes(g?.id);
