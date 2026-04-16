@@ -108,7 +108,7 @@ export function ChatCard({ isLightMode }) {
         <div className="flex flex-col h-full gap-3">
           <div className={`flex-1 overflow-y-auto rounded-xl p-3 text-[10px] font-mono ${isLightMode ? 'bg-black/5' : 'bg-black/40'}`}>
             {messages.length === 0 ? (
-              <div className="text-zinc-500 italic opacity-50">Waiting for transmissions...</div>
+              <div className="text-zinc-500 italic opacity-50">Waiting for Messages</div>
             ) : (
               messages.map((m, i) => (
                 <div key={m.id || i} className="mb-1 text-left">
