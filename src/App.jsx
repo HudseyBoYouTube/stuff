@@ -75,17 +75,23 @@ export default function App() {
   const achievements = useAchievements(userData);
 
 const gamesData = useMemo(() => {
-  const main = Array.isArray(gamesDataRaw) ? gamesDataRaw : [];
+  // 1. Ensure main games have the 'Capybara Science' supplier
+  const main = Array.isArray(gamesDataRaw) ? gamesDataRaw.map(game => ({
+    ...game,
+    supplier: game.supplier || 'Capybara Science'
+  })) : [];
 
+  // 2. Ensure gn-math games have the 'gn-math' supplier
   const gn = Array.isArray(gnMathDataRaw) ? gnMathDataRaw.map(game => ({
     ...game,
     urls: { "GN Math": game.url },
-    url: ""
+    url: "", // Keeps the multi-link setup you have
+    supplier: 'gn-math' // <--- THIS FIXES THE FILTER
   })) : [];
 
   return [...main, ...gn];
 }, []);
-
+  
   const audioRef = useRef(null);
   const categoryScrollRef = useRef(null);
   
