@@ -664,15 +664,13 @@ const filteredGames = useMemo(() => {
       const matchesSearch = g?.title?.toLowerCase().includes(q);
       if (!matchesSearch) return false;
 
-      // 2. Check Supplier Match (STRICT FILTERING)
-      if (supplier === 'GN Math') {
-        if (!g.urls?.['GN Math']) return false;
-      } else if (supplier === 'Truffled') {
-        if (!g.urls?.['Truffled']) return false;
-      } else {
-        // Default (Capybara Science) - Hide if it belongs to GN Math or Truffled
-        if (g.urls?.['GN Math'] || g.urls?.['Truffled']) return false;
-      }
+      // 2. Check Supplier Match
+      // If "All" is selected, show everything
+      if (supplier === 'All') return true;
+      
+      // Otherwise, match the game's supplier to the dropdown selection
+      return g.supplier === supplier;
+    });
 
       // 3. Check Category / Favorites Match
       if (activeCategory === 'Favorites') {
