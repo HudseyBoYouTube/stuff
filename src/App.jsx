@@ -660,15 +660,18 @@ const filteredGames = useMemo(() => {
     const sourceData = gamesData || [];
 
     return sourceData.filter(g => {
-      // 1. Check Search Match
+      // 1. Search Match
       const matchesSearch = g?.title?.toLowerCase().includes(q);
-      if (!matchesSearch) return false;
+      
+      // 2. Supplier Match
+      const matchesSupplier = (supplier === 'All' || g.supplier === supplier);
+      
+      // 3. Category Match (keeps your 'Strategy', 'Action', etc. working)
+      const matchesCategory = (activeCategory === 'All' || g?.category === activeCategory);
 
-      // 2. Check Supplier Match
-      if (supplier === 'All') return true;
-      return g.supplier === supplier;
-    }); // <--- THIS WAS LIKELY THE MISSING PIECE
-}, [searchQuery, gamesData, supplier]);
+      return matchesSearch && matchesSupplier && matchesCategory;
+    });
+}, [searchQuery, activeCategory, gamesData, supplier]);
   
       // 3. Check Category / Favorites Match
       if (activeCategory === 'Favorites') {
