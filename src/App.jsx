@@ -21,8 +21,8 @@ import { ChatCard } from './components/ChatCard';
 // Note: Delete all that 'recentKey' stuff that was here!
 const DEFAULT_COLOR = '#10A5F5';
 const DEFAULT_GLOW = 50;
-const DEFAULT_TITLE = "Capybara Science";
-const DEFAULT_ICON = "https://img.icons8.com/color/32/capybara.png";
+const DEFAULT_TITLE = "Google";
+const DEFAULT_ICON = "https://www.google.com/images/branding/product/ico/googleg_lodp.ico";
 
 // --- ACHIEVEMENT DEFINITIONS ---
 const TROPHIES = [
