@@ -1115,3 +1115,5 @@ const filteredGames = useMemo(() => {
   );
 };
 
+export default App;
+
