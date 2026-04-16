@@ -73,7 +73,7 @@ export function ChatCard({ isLightMode }) {
       
       <div className="flex items-center justify-between">
         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--theme)]">
-          Live Comms Terminal
+          Chat
         </h3>
         {isJoined && (
           <button 
@@ -89,7 +89,7 @@ export function ChatCard({ isLightMode }) {
       {!isJoined ? (
         <form onSubmit={handleJoinOrUpdate} className="flex flex-col gap-3 my-auto">
           <div className="space-y-1">
-            <p className="text-[11px] font-medium text-zinc-500">IDENTIFICATION REQUIRED</p>
+            <p className="text-[11px] font-medium text-zinc-500">Change Name</p>
             <input 
               name="username"
               type="text"
@@ -101,7 +101,7 @@ export function ChatCard({ isLightMode }) {
             />
           </div>
           <button className="w-full py-3 bg-[var(--theme)] text-black font-bold text-[10px] rounded-xl hover:scale-[1.02] active:scale-95 transition-all">
-            {username ? "UPDATE ALL PREVIOUS TRANSMISSIONS" : "AUTHORIZE ACCESS"}
+            {username ? "Update Name" : "AUTHORIZE ACCESS"}
           </button>
         </form>
       ) : (
@@ -124,7 +124,7 @@ export function ChatCard({ isLightMode }) {
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Transmit message..."
+              placeholder="Message"
               className={`w-full text-[10px] p-2 pr-8 rounded-lg border outline-none ${
                 isLightMode ? 'bg-black/5' : 'bg-white/5 border-white/10 focus:border-[var(--theme)]'
               }`}
