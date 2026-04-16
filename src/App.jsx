@@ -21,8 +21,8 @@ import { ChatCard } from './components/ChatCard';
 // Note: Delete all that 'recentKey' stuff that was here!
 const DEFAULT_COLOR = '#10A5F5';
 const DEFAULT_GLOW = 50;
-const DEFAULT_TITLE = "Google";
-const DEFAULT_ICON = "https://www.google.com/images/branding/product/ico/googleg_lodp.ico";
+const DEFAULT_TITLE = "Capybara Science";
+const DEFAULT_ICON = "https://img.icons8.com/color/32/capybara.png";
 
 // --- ACHIEVEMENT DEFINITIONS ---
 const TROPHIES = [
@@ -60,38 +60,22 @@ export default function App() {
   const [themeChangeCount] = useState(() => parseInt(localStorage.getItem('capy-theme-changes') || '0'));
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  // This handles the "Google" disguise for the tab
-  useEffect(() => {
-    document.title = DEFAULT_TITLE; // Sets tab text to "Google"
-    
-    const favicon = document.querySelector("link[rel*='icon']");
-    if (favicon) {
-      favicon.href = DEFAULT_ICON; // Sets tab icon to Google
-    }
-  }, []);
-
   const userData = { times: playtimes, favs: favorites, themeChanges: themeChangeCount };
 
   const achievements = useAchievements(userData);
 
 const gamesData = useMemo(() => {
-  // 1. Tag your main games as "Capybara Science"
-  const main = Array.isArray(gamesDataRaw) ? gamesDataRaw.map(game => ({
-    ...game,
-    supplier: game.supplier || 'Capybara Science' 
-  })) : [];
+  const main = Array.isArray(gamesDataRaw) ? gamesDataRaw : [];
 
-  // 2. Tag the gn-math games as "GN-MATH" (Matched to your screenshot)
   const gn = Array.isArray(gnMathDataRaw) ? gnMathDataRaw.map(game => ({
     ...game,
     urls: { "GN Math": game.url },
-    url: "", 
-    supplier: 'GN-MATH' // <--- MATCHED EXACTLY TO YOUR SCREENSHOT
+    url: ""
   })) : [];
 
   return [...main, ...gn];
 }, []);
-  
+
   const audioRef = useRef(null);
   const categoryScrollRef = useRef(null);
   
@@ -660,13 +644,29 @@ const filteredGames = useMemo(() => {
     const sourceData = gamesData || [];
 
     return sourceData.filter(g => {
+      // 1. Check Search Match
       const matchesSearch = g?.title?.toLowerCase().includes(q);
-      const matchesSupplier = (supplier === 'All' || g.supplier === supplier);
-      const matchesCategory = (activeCategory === 'All' || g?.category === activeCategory);
+      if (!matchesSearch) return false;
 
-      return matchesSearch && matchesSupplier && matchesCategory;
-    }); // This closes the .filter()
-  }, [searchQuery, activeCategory, gamesData, favorites, supplier]); // This closes the useMemo()
+      // 2. Check Supplier Match (STRICT FILTERING)
+      if (supplier === 'GN Math') {
+        if (!g.urls?.['GN Math']) return false;
+      } else if (supplier === 'Truffled') {
+        if (!g.urls?.['Truffled']) return false;
+      } else {
+        // Default (Capybara Science) - Hide if it belongs to GN Math or Truffled
+        if (g.urls?.['GN Math'] || g.urls?.['Truffled']) return false;
+      }
+
+      // 3. Check Category / Favorites Match
+      if (activeCategory === 'Favorites') {
+        return (favorites || []).includes(g?.id);
+      }
+      
+      const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
+      return matchesCategory;
+    });
+  }, [searchQuery, activeCategory, gamesData, favorites, supplier]); 
   
   const recentGamesData = useMemo(() => {
     if (!recentlyPlayed || !Array.isArray(recentlyPlayed)) return [];
@@ -784,7 +784,7 @@ const filteredGames = useMemo(() => {
             battery={battery}
             profilePic={profilePic}
             setShowSettings={setShowSettings}
-            DEFAULT_ICON="https://img.icons8.com/color/32/capybara.png"
+            DEFAULT_ICON={DEFAULT_ICON}   
             theme={theme}   
             onViewProfile={() => setSelectedFriendId('me')} 
             onRandomGame={() => {
