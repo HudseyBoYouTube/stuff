@@ -1,5 +1,5 @@
 import { Search, Dices, Calendar, Clock, Battery, UserCircle, Settings, X, MessageSquare } from 'lucide-react';
-// We don't need useNavigate if we aren't changing the URL!
+import { useNavigate } from 'react-router-dom';
 
 export function Header({ 
   searchQuery, setSearchQuery, 
@@ -11,6 +11,7 @@ export function Header({
   supplier, setSupplier,
   isChatOpen, setIsChatOpen
 }) {
+  const navigate = useNavigate();
 
   return (
     <header className={`${isLightMode ? 'bg-white text-black' : 'bg-[#09090b]/95 text-white'} h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors`}>
@@ -75,15 +76,15 @@ export function Header({
               </div>
             </div>
 
-            {/* CHAT TOGGLE BUTTON - NOW STAYS ON PAGE */}
+            {/* CHAT TOGGLE BUTTON - UPDATED TO NAVIGATE */}
             <button 
-              onClick={() => setIsChatOpen(true)} // Changed from navigate
+              onClick={() => navigate('/chat-identity')}
               className={`p-2 border rounded-lg transition-all hover:scale-105 active:scale-95 ${
                 isChatOpen 
                   ? 'bg-[var(--theme)] border-[var(--theme)] text-black shadow-[0_0_10px_var(--theme)]' 
                   : (isLightMode ? 'bg-black/5 border-black/10 text-black' : 'bg-white/5 border-white/10 text-[var(--theme)]')
               }`}
-              title="Open Chat"
+              title="Toggle Chat"
             >
               <MessageSquare className="w-4 h-4" />
             </button>
