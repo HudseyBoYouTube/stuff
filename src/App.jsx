@@ -60,6 +60,16 @@ export default function App() {
   const [themeChangeCount] = useState(() => parseInt(localStorage.getItem('capy-theme-changes') || '0'));
   const [isChatOpen, setIsChatOpen] = useState(false);
 
+  // This handles the "Google" disguise for the tab
+  useEffect(() => {
+    document.title = DEFAULT_TITLE; // Sets tab text to "Google"
+    
+    const favicon = document.querySelector("link[rel*='icon']");
+    if (favicon) {
+      favicon.href = DEFAULT_ICON; // Sets tab icon to Google
+    }
+  }, []);
+
   const userData = { times: playtimes, favs: favorites, themeChanges: themeChangeCount };
 
   const achievements = useAchievements(userData);
