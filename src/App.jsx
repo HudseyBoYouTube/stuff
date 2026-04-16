@@ -909,16 +909,16 @@ const filteredGames = useMemo(() => {
           onClick={() => scrollCategories('right')}
           className="p-1.5 bg-[var(--theme)] rounded-full shadow-lg transition-all hover:scale-110 active:scale-95 border border-white/20 pointer-events-auto"
         >
-          <ChevronRight className="w-4 h-4 text-black" />
+         <ChevronRight className="w-4 h-4 text-black" />
         </button>
       </div>
     )}
-  </div>
-</div>
+  {/* DELETE THE EXTRA </div> TAGS THAT WERE HERE */}
 
-<main className="max-w-7xl mx-auto px-4 mt-8 space-y-12">
-  {recentGamesData.length > 0 && activeCategory === 'All' && !searchQuery && (
-    <section className="space-y-4">
+  <main className="max-w-7xl mx-auto px-4 mt-8 space-y-12">
+    {recentGamesData.length > 0 && activeCategory === 'All' && !searchQuery && (
+    
+      <section className="space-y-4">
       <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${isLightMode ? 'text-zinc-500' : 'text-zinc-400'}`}>
         <History className="w-3 h-3 text-[var(--theme)]" />
         Recently On
