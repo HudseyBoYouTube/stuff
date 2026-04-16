@@ -84,9 +84,9 @@ const gamesData = useMemo(() => {
   // 2. Ensure gn-math games have the 'gn-math' supplier
   const gn = Array.isArray(gnMathDataRaw) ? gnMathDataRaw.map(game => ({
     ...game,
-    urls: { "GN Math": game.url },
+    urls: { "GN-MATH": game.url },
     url: "", // Keeps the multi-link setup you have
-    supplier: 'gn-math' // <--- THIS FIXES THE FILTER
+    supplier: 'GN-MATH' // <--- THIS FIXES THE FILTER
   })) : [];
 
   return [...main, ...gn];
