@@ -1030,3 +1030,6 @@ const filteredGames = useMemo(() => {
       />
     </div>
   );
+}
+
+export default App;
