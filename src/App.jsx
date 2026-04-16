@@ -78,15 +78,15 @@ const gamesData = useMemo(() => {
   // 1. Tag your main games as "Capybara Science"
   const main = Array.isArray(gamesDataRaw) ? gamesDataRaw.map(game => ({
     ...game,
-    supplier: 'Capybara Science' 
+    supplier: game.supplier || 'Capybara Science' 
   })) : [];
 
-  // 2. Tag the gn-math games as "gn-math"
+  // 2. Tag the gn-math games as "GN-MATH" (Matched to your screenshot)
   const gn = Array.isArray(gnMathDataRaw) ? gnMathDataRaw.map(game => ({
     ...game,
     urls: { "GN Math": game.url },
     url: "", 
-    supplier: 'gn-math' 
+    supplier: 'GN-MATH' // <--- MATCHED EXACTLY TO YOUR SCREENSHOT
   })) : [];
 
   return [...main, ...gn];
