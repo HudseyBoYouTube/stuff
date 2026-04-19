@@ -62,7 +62,7 @@ export default function App() {
 
   const userData = { playtimes: playtimes, favorites: favorites, themeChangeCount: themeChangeCount };
 
-  const achievements = useAchievements(userData);
+  const [achievements, setAchievements] = useState([]);
 
 const gamesData = useMemo(() => {
   const main = Array.isArray(gamesDataRaw) ? gamesDataRaw : [];
@@ -477,9 +477,13 @@ useEffect(() => {
       setNotification("🏃 Achievement Unlocked: Marathoner!");
     }
 
-    // This was the crash site! We added a safety check here:
-    if (earnedNew && typeof setAchievements === 'function') {
-      setAchievements(newAchievements);
+    // --- FIXED SYNC LOGIC ---
+    // 1. Update if we JUST earned a new trophy (triggers the popup)
+    // 2. Update if the list we found doesn't match the current state (fixes 0/5 on refresh)
+    if (typeof setAchievements === 'function') {
+      if (earnedNew || newAchievements.length !== (achievements?.length || 0)) {
+        setAchievements(newAchievements);
+      }
     }
   }, [playtimes, favorites, themeChangeCount, achievements]);
 
