@@ -19,8 +19,8 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
   
   // Get achievements: checks the friend object, the prop, AND localstorage as a backup
   const displayAchievements = isOwnProfile 
-    ? (friend?.achievements || myAchievements || ['first_game', 'marathon', 'collector', 'loyal', 'styler'].filter(id => localStorage.getItem(`achievement_${id}`) === 'true'))
-    : (friend?.decoded?.a || []);
+  ? (friend?.achievements || []) 
+  : (friend?.decoded?.a || []);
 
   return (
     <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
