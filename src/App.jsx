@@ -899,9 +899,9 @@ const filteredGames = useMemo(() => {
 
       <FriendViewModal 
         friend={selectedFriendId === 'me' 
-          ? { name: displayName, favs: favorites, times: playtimes } 
-          : currentFriend
-        } 
+  ? { name: displayName, favs: favorites, times: playtimes, achievements: achievements } 
+  : currentFriend
+}
         gamesData={gamesData} 
         ownPfp={profilePic} 
         isOwnProfile={selectedFriendId === 'me'}
