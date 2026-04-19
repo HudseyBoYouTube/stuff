@@ -60,7 +60,7 @@ export default function App() {
   const [themeChangeCount] = useState(() => parseInt(localStorage.getItem('capy-theme-changes') || '0'));
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  const userData = { times: playtimes, favs: favorites, themeChanges: themeChangeCount };
+  const userData = { playtimes: playtimes, favorites: favorites, themeChangeCount: themeChangeCount };
 
   const achievements = useAchievements(userData);
 
