@@ -31,8 +31,8 @@ export function Header({
           </span>
         </div>
 
-        {/* SEARCH & RANDOM SECTION - PERFECTLY CENTERED COLUMN */}
-        <div className="flex items-center justify-center gap-3 w-full justify-self-center">
+        {/* CENTERED SEARCH BAR */}
+        <div className="flex items-center justify-center w-full justify-self-center">
           <div className="relative w-full max-w-[280px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
             <input 
@@ -48,12 +48,19 @@ export function Header({
               </button>
             )}
           </div>
+        </div>
 
-          <button onClick={onRandomGame} className={`p-2 ${isLightMode ? 'bg-black/5 border-black/10' : 'bg-white/5 border-white/10'} border rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all shadow-[0_0_15px_rgba(var(--theme-rgb),0.1)]`}>
-            <Dices className="w-5 h-5" />
-          </button>
+        {/* RIGHT SECTION - DICE, SUPPLIER, CHAT, AND PROFILE */}
+        <div className="flex items-center justify-end gap-3 justify-self-end">
+          
+          {/* Action Buttons Group (Dice, Supplier, Chat) */}
+          <div className="flex items-center gap-2 mr-2">
+            {/* Random Game Button */}
+            <button onClick={onRandomGame} className={`p-2 ${isLightMode ? 'bg-black/5 border-black/10' : 'bg-white/5 border-white/10'} border rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all shadow-[0_0_15px_rgba(var(--theme-rgb),0.1)]`}>
+              <Dices className="w-4 h-4" />
+            </button>
 
-          <div className="flex items-center gap-2">
+            {/* Supplier Dropdown */}
             <div className="relative flex items-center">
               <select 
                 value={supplier} 
@@ -61,7 +68,7 @@ export function Header({
                   setSupplier(e.target.value);
                   localStorage.setItem('capy-supplier', e.target.value);
                 }}
-                className={`text-[10px] font-bold uppercase py-2 pl-3 pr-8 rounded-lg border transition-all outline-none cursor-pointer appearance-none ${
+                className={`text-[9px] font-bold uppercase py-2 pl-2 pr-6 rounded-lg border transition-all outline-none cursor-pointer appearance-none ${
                   isLightMode 
                     ? 'bg-black/5 border-black/10 text-black' 
                     : 'bg-white/5 border-white/10 text-white'
@@ -76,9 +83,9 @@ export function Header({
               </div>
             </div>
 
-            {/* CHAT TOGGLE BUTTON - UPDATED TO USE STATE */}
+            {/* Chat Toggle Button */}
             <button 
-              onClick={() => setIsChatOpen(true)} // Changed from navigate to state
+              onClick={() => setIsChatOpen(true)} 
               className={`p-2 border rounded-lg transition-all hover:scale-105 active:scale-95 ${
                 isChatOpen 
                   ? 'bg-[var(--theme)] border-[var(--theme)] text-black shadow-[0_0_10px_var(--theme)]' 
@@ -89,24 +96,12 @@ export function Header({
               <MessageSquare className="w-4 h-4" />
             </button>
           </div>
-        </div>
 
-        {/* STATS & PROFILE SECTION - RIGHT COLUMN */}
-        <div className="flex items-center justify-end gap-4 justify-self-end">
-          <div className={`hidden sm:flex items-center gap-3 text-[9px] font-black uppercase text-[var(--theme)] ${isLightMode ? 'bg-black/5 border-black/5' : 'bg-white/5 border-white/5'} px-3 py-1.5 rounded-full border`}>
-            <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-            <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
-            
-            <div className="flex items-center gap-1">
-              <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500 animate-pulse' : ''}`} />
-              <span>{battery.level}%</span>
-            </div>
-          </div>
-          
+          {/* User Profile & Settings */}
           <div className={`flex items-center gap-1 ${isLightMode ? 'bg-black/5 border-black/5' : 'bg-white/5 border-white/5'} rounded-full p-1 border`}>
               <button 
                 onClick={() => onViewProfile?.()} 
-                className="w-8 h-8 rounded-full border border-transparent hover:border-[var(--theme)] overflow-hidden bg-zinc-800 transition-all active:scale-90"
+                className="w-7 h-7 rounded-full border border-transparent hover:border-[var(--theme)] overflow-hidden bg-zinc-800 transition-all active:scale-90"
               >
                 {profilePic ? (
                   <img src={profilePic} className="w-full h-full object-cover" alt="Profile" />
@@ -117,10 +112,10 @@ export function Header({
 
               <button 
                 onClick={() => setShowSettings(true)} 
-                className="p-1.5 transition-all hover:scale-110 active:rotate-90 group flex items-center justify-center"
+                className="p-1 transition-all hover:scale-110 active:rotate-90 group flex items-center justify-center"
               >
                 <Settings 
-                  className="w-5 h-5" 
+                  className="w-4 h-4" 
                   style={{ 
                     color: 'var(--theme)',
                     filter: 'drop-shadow(0 0 8px var(--theme))'
@@ -129,6 +124,7 @@ export function Header({
               </button>
           </div>
         </div>
+
       </div>
     </header>
   );
