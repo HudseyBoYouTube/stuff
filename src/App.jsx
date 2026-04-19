@@ -1038,9 +1038,6 @@ const filteredGames = useMemo(() => {
         marginTop: '40px'
       }}>
         <p>&copy; 2026 Capybara Science. All rights reserved.</p>
-        <p style={{ fontSize: '12px', marginTop: '5px' }}>
-          Developed by HudseyBo &bull; v1.4.2
-        </p>
       </footer>
     </div>
   );
