@@ -902,16 +902,22 @@ const filteredGames = useMemo(() => {
       {/* --- CHAT LOGIC END --- */}
 
       <FriendViewModal 
-        friend={selectedFriendId === 'me' 
-  ? { name: displayName, favs: favorites, times: playtimes, achievements: achievements } 
-  : currentFriend
-}
-        gamesData={gamesData} 
-        ownPfp={profilePic} 
-        isOwnProfile={selectedFriendId === 'me'}
-        onClose={() => setSelectedFriendId(null)} 
-        achievements={achievements}
-      />
+  friend={selectedFriendId === 'me' 
+    ? { 
+        name: displayName, 
+        favs: favorites, 
+        times: playtimes,
+        // THIS IS THE NUKE FIX:
+        achievements: ['first_game', 'marathon', 'collector', 'capy_loyalist', 'fashionista'].filter(id => localStorage.getItem(`achievement_${id}`) === 'true')
+      } 
+    : currentFriend
+  } 
+  gamesData={gamesData} 
+  ownPfp={profilePic} 
+  isOwnProfile={selectedFriendId === 'me'}
+  onClose={() => setSelectedFriendId(null)} 
+  achievements={achievements}
+/>
 
       <SettingsModal 
         show={showSettings} 
