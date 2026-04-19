@@ -1034,7 +1034,7 @@ const filteredGames = useMemo(() => {
         textAlign: 'center', 
         color: '#666', 
         fontSize: '14px',
-        borderTop: '1px solid #222',
+        borderTop: 'none', // Changes from '1px solid #222' to 'none'
         marginTop: '40px'
       }}>
         <p>&copy; 2026 Capybara Science. All rights reserved.</p>
