@@ -438,6 +438,17 @@ const getLaunchUrl = (game, currentSupplier) => {
     }
   }, [confirmClearSettings]);
 
+  // --- NEW: STARTUP SYNC ---
+// This ensures your 0/5 becomes 1/5 as soon as the site loads
+useEffect(() => {
+  const ids = ['first_game', 'marathon', 'collector', 'capy_loyalist', 'fashionista'];
+  const alreadyEarned = ids.filter(id => localStorage.getItem(`achievement_${id}`) === 'true');
+  
+  if (alreadyEarned.length > 0 && typeof setAchievements === 'function') {
+    setAchievements(alreadyEarned);
+  }
+}, []); // Runs once on refresh
+  
  // --- 1. FIXED ACHIEVEMENT TRACKING ---
   // Added a check to make sure setAchievements exists before calling it
   useEffect(() => {
