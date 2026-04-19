@@ -162,9 +162,9 @@
 
 /* --- CAPYBARA CURSOR ADDED BELOW --- */
 .bg-zinc-900\/40, .bg-zinc-900\/50 {
-  cursor: url('https://img.icons8.com/color/32/capybara.png'), pointer !important;
+  cursor: url('https://img.icons8.com/color/28/capybara.png'), pointer !important;
 }
 
 .bg-zinc-900\/40:active, .bg-zinc-900\/50:active {
-  cursor: url('https://img.icons8.com/color/32/test-tube.png'), pointer !important;
+  cursor: url('https://img.icons8.com/color/28/test-tube.png'), pointer !important;
 }
