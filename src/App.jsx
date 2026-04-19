@@ -906,7 +906,7 @@ const filteredGames = useMemo(() => {
         ownPfp={profilePic} 
         isOwnProfile={selectedFriendId === 'me'}
         onClose={() => setSelectedFriendId(null)} 
-        myAchievements={achievements}
+        achievements={achievements}
       />
 
       <SettingsModal 
