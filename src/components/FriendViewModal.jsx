@@ -18,7 +18,9 @@ export function FriendViewModal({ friend, gamesData, onClose, ownPfp, isOwnProfi
   const displayTimes = isOwnProfile ? (friend?.times || {}) : (friend?.decoded?.t || {});
   
   // Get achievements: either from your live state or the friend's decoded data
-  const displayAchievements = isOwnProfile ? myAchievements : (friend?.decoded?.a || []);
+  const displayAchievements = isOwnProfile 
+  ? (friend?.achievements || myAchievements || []) 
+  : (friend?.decoded?.a || []);
 
   return (
     <div className="fixed inset-0 z-[600] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
