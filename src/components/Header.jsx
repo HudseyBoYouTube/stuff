@@ -68,7 +68,7 @@ export function Header({
                 } focus:border-[var(--theme)]`}
               >
                 <option value="Default" className="bg-[#09090b] text-white">Capybara Science</option>
-                <option value="GN Math" className="bg-[#09090b] text-white">gn-math</option>
+                <option value="gn-math" className="bg-[#09090b] text-white">gn-math</option>
                 <option value="Truffled" className="bg-[#09090b] text-white">Truffled</option>
               </select>
               <div className="absolute right-2 pointer-events-none flex items-center justify-center">
