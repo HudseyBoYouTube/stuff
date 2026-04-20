@@ -17,7 +17,7 @@ export function Header({
     <header className={`${isLightMode ? 'bg-white text-black' : 'bg-[#09090b]/95 text-white'} h-16 flex items-center px-4 backdrop-blur-md sticky top-0 z-50 transition-colors`}>
       <div className="max-w-7xl mx-auto w-full grid grid-cols-3 items-center">
         
-        {/* LEFT COLUMN: LOGO */}
+        {/* LOGO SECTION - LEFT COLUMN */}
         <div className="flex items-center gap-2 justify-self-start">
           <img src={DEFAULT_ICON} alt="Logo" className="w-7 h-7 object-contain" />
           <span 
@@ -31,12 +31,9 @@ export function Header({
           </span>
         </div>
 
-        {/* CENTER COLUMN: SEARCH & BUTTON GROUP */}
-        {/* We use a flex container here to keep the search bar the priority for centering */}
-        <div className="flex items-center justify-center gap-2 w-full justify-self-center">
-          
-          {/* Centered Search Bar */}
-          <div className="relative w-[180px] md:w-[240px] lg:w-[280px]">
+        {/* SEARCH & RANDOM SECTION - PERFECTLY CENTERED COLUMN */}
+        <div className="flex items-center justify-center gap-3 w-full justify-self-center">
+          <div className="relative w-full max-w-[280px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
             <input 
               type="text" 
@@ -52,13 +49,11 @@ export function Header({
             )}
           </div>
 
-          {/* Grouped Right-of-Search Buttons */}
-          <div className="flex items-center gap-1.5">
-            <button onClick={onRandomGame} className={`p-2 ${isLightMode ? 'bg-black/5 border-black/10' : 'bg-white/5 border-white/10'} border rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all`}>
-              <Dices className="w-4 h-4" />
-            </button>
+          <button onClick={onRandomGame} className={`p-2 ${isLightMode ? 'bg-black/5 border-black/10' : 'bg-white/5 border-white/10'} border rounded-full text-[var(--theme)] hover:bg-[var(--theme)] hover:text-black transition-all shadow-[0_0_15px_rgba(var(--theme-rgb),0.1)]`}>
+            <Dices className="w-5 h-5" />
+          </button>
 
-            {/* Supplier Dropdown - Fixed Value Mismatches */}
+          <div className="flex items-center gap-2">
             <div className="relative flex items-center">
               <select 
                 value={supplier} 
@@ -66,47 +61,74 @@ export function Header({
                   setSupplier(e.target.value);
                   localStorage.setItem('capy-supplier', e.target.value);
                 }}
-                className={`text-[9px] font-bold uppercase py-2 pl-2 pr-7 rounded-lg border transition-all outline-none cursor-pointer appearance-none ${
+                className={`text-[10px] font-bold uppercase py-2 pl-3 pr-8 rounded-lg border transition-all outline-none cursor-pointer appearance-none ${
                   isLightMode 
                     ? 'bg-black/5 border-black/10 text-black' 
                     : 'bg-white/5 border-white/10 text-white'
                 } focus:border-[var(--theme)]`}
               >
-                {/* Ensure values match your game data tags (lowercase/kebab-case) */}
-                <option value="Default">Default</option>
-                <option value="gn-math">GN Math</option>
-                <option value="truffled">Truffled</option>
+                <option value="Default" className="bg-[#09090b] text-white">Capybara Science</option>
+                <option value="GN Math" className="bg-[#09090b] text-white">gn-math</option>
+                <option value="Truffled" className="bg-[#09090b] text-white">Truffled</option>
               </select>
               <div className="absolute right-2 pointer-events-none flex items-center justify-center">
                 <span style={{ fontSize: '8px', color: 'var(--theme)', opacity: 0.8 }}>▼</span>
               </div>
             </div>
 
+            {/* CHAT TOGGLE BUTTON - UPDATED TO USE STATE */}
             <button 
-              onClick={() => setIsChatOpen(true)} 
-              className={`p-2 border rounded-lg transition-all ${
+              onClick={() => setIsChatOpen(true)} // Changed from navigate to state
+              className={`p-2 border rounded-lg transition-all hover:scale-105 active:scale-95 ${
                 isChatOpen 
-                  ? 'bg-[var(--theme)] text-black shadow-[0_0_10px_var(--theme)]' 
+                  ? 'bg-[var(--theme)] border-[var(--theme)] text-black shadow-[0_0_10px_var(--theme)]' 
                   : (isLightMode ? 'bg-black/5 border-black/10 text-black' : 'bg-white/5 border-white/10 text-[var(--theme)]')
               }`}
+              title="Toggle Chat"
             >
               <MessageSquare className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: PROFILE & SETTINGS */}
-        <div className="flex items-center justify-end gap-2 justify-self-end">
+        {/* STATS & PROFILE SECTION - RIGHT COLUMN */}
+        <div className="flex items-center justify-end gap-4 justify-self-end">
+          <div className={`hidden sm:flex items-center gap-3 text-[9px] font-black uppercase text-[var(--theme)] ${isLightMode ? 'bg-black/5 border-black/5' : 'bg-white/5 border-white/5'} px-3 py-1.5 rounded-full border`}>
+            <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+            <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
+            
+            <div className="flex items-center gap-1">
+              <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500 animate-pulse' : ''}`} />
+              <span>{battery.level}%</span>
+            </div>
+          </div>
+          
           <div className={`flex items-center gap-1 ${isLightMode ? 'bg-black/5 border-black/5' : 'bg-white/5 border-white/5'} rounded-full p-1 border`}>
-              <button onClick={() => onViewProfile?.()} className="w-7 h-7 rounded-full overflow-hidden bg-zinc-800 transition-all active:scale-90">
-                {profilePic ? <img src={profilePic} className="w-full h-full object-cover" alt="Profile" /> : <UserCircle className="w-full h-full p-1 text-[var(--theme)]" />}
+              <button 
+                onClick={() => onViewProfile?.()} 
+                className="w-8 h-8 rounded-full border border-transparent hover:border-[var(--theme)] overflow-hidden bg-zinc-800 transition-all active:scale-90"
+              >
+                {profilePic ? (
+                  <img src={profilePic} className="w-full h-full object-cover" alt="Profile" />
+                ) : (
+                  <UserCircle className="w-full h-full p-1 text-[var(--theme)]" />
+                )}
               </button>
-              <button onClick={() => setShowSettings(true)} className="p-1 transition-all hover:scale-110">
-                <Settings className="w-4 h-4 text-[var(--theme)]" />
+
+              <button 
+                onClick={() => setShowSettings(true)} 
+                className="p-1.5 transition-all hover:scale-110 active:rotate-90 group flex items-center justify-center"
+              >
+                <Settings 
+                  className="w-5 h-5" 
+                  style={{ 
+                    color: 'var(--theme)',
+                    filter: 'drop-shadow(0 0 8px var(--theme))'
+                  }}
+                />
               </button>
           </div>
         </div>
-
       </div>
     </header>
   );
