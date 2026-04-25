@@ -81,12 +81,15 @@ export default function App() {
 
   const [achievements, setAchievements] = useState([]);
 
-  // This version sets Google as the DEFAULT
-  const [isCloaked, setIsCloaked] = useState(() => {
-    const saved = localStorage.getItem('capy-cloak');
-    // If nothing is saved yet, return true (On by default)
-    return saved === null ? true : saved === 'true';
-  });
+  // 1. Set the state to true by default
+const [isCloaked] = useState(true);
+
+// 2. Run the cloak function immediately on load
+useEffect(() => {
+  // We use the 'google' config from your DISGUISE_CONFIG
+  const config = DISGUISE_CONFIG.google;
+  applyCloak(config);
+}, []); // Empty brackets means this runs once as soon as the app starts
 
   useEffect(() => {
     applyCloak(isCloaked);
