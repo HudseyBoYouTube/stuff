@@ -65,16 +65,17 @@ export default function App() {
 
   const [achievements, setAchievements] = useState([]);
 
-  // --- NEW CLOAK LOGIC ADDED BELOW ---
+  // This version sets Google as the DEFAULT
   const [isCloaked, setIsCloaked] = useState(() => {
-    return localStorage.getItem('capy-cloak') === 'true';
+    const saved = localStorage.getItem('capy-cloak');
+    // If nothing is saved yet, return true (On by default)
+    return saved === null ? true : saved === 'true';
   });
 
   useEffect(() => {
     applyCloak(isCloaked);
     localStorage.setItem('capy-cloak', isCloaked);
   }, [isCloaked]);
-  // ------------------------------------
 
 const gamesData = useMemo(() => {
   const main = Array.isArray(gamesDataRaw) ? gamesDataRaw : [];
