@@ -87,17 +87,17 @@ export default function App() {
   // 1. Set the state to true by default
 const [isCloaked] = useState(true);
 
-// 2. Run the cloak function immediately on load
+// 2. This effect handles the initial load AND any changes
 useEffect(() => {
-  // We use the 'google' config from your DISGUISE_CONFIG
-  const config = DISGUISE_CONFIG.google;
-  applyCloak(config);
-}, []); // Empty brackets means this runs once as soon as the app starts
-
-  useEffect(() => {
-    applyCloak(isCloaked);
-    localStorage.setItem('capy-cloak', isCloaked);
-  }, [isCloaked]);
+  if (isCloaked) {
+    // Pass the actual Google object, not just 'true'
+    applyCloak(DISGUISE_CONFIG.google);
+  } else {
+    // If you ever add a toggle to turn it off, this goes back to 'none'
+    applyCloak(DISGUISE_CONFIG.none);
+  }
+  localStorage.setItem('capy-cloak', isCloaked);
+}, [isCloaked]);
 
 const gamesData = useMemo(() => {
   const main = Array.isArray(gamesDataRaw) ? gamesDataRaw : [];
