@@ -16,6 +16,7 @@ import { Header } from './components/Header';
 import { FriendViewModal } from './components/FriendViewModal';
 import { tracklist } from './components/tracklist'; 
 import { ChatCard } from './components/ChatCard';
+import { applyCloak } from './utils';
 
 // 2. CONSTANTS (Line 19+)
 // Note: Delete all that 'recentKey' stuff that was here!
