@@ -696,7 +696,7 @@ const filteredGames = useMemo(() => {
     
     // 1. Pick the correct data source first!
     let sourceData = gamesDataRaw || []; 
-    if (supplier === 'GN-MATH') {
+    if (supplier === 'GN MATH') {
       sourceData = gnMathDataRaw || [];
     } else if (supplier === 'TRUFFLED') {
       // sourceData = truffledDataRaw || []; 
