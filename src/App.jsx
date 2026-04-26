@@ -66,7 +66,7 @@ const DISGUISE_CONFIG = {
   },
   powerschool: { 
     title: "Grades and Attendance", 
-    icon: "https://ps.bhmsd.org/android-chrome-192x192.png" 
+    icon: "https://ps.bhmsd.org/favicon.ico" 
   }
 };
 
