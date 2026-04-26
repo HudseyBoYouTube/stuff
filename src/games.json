@@ -17,7 +17,7 @@
     "id": "flappy-bird",
     "title": "Flappy Bird",
     "url": "https://personal.denison.edu/~lalla/314f20/ladi/index.html",
-    "thumbnail": "https://images.weserv.nl/?url=https://upload.wikimedia.org/wikipedia/en/0/0a/Flappy_Bird_icon.png&w=240&h=240&fit=cover",
+    "thumbnail": "/assets/flappybird.png",
     "category": "Arcade"
   },
   {
