@@ -85,15 +85,7 @@ export default function App() {
   const [themeChangeCount] = useState(() => parseInt(localStorage.getItem('capy-theme-changes') || '0'));
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  // --- ADD THIS NEW LOGIC BELOW ---
-  const filteredGames = useMemo(() => {
-    if (supplier === 'GN-MATH') {
-      return gnMathDataRaw; 
-    } 
-    // If you have a Truffled file later, you'd add another 'else if' here
-    return gamesDataRaw; 
-  }, [supplier]); 
-  // --------------------------------
+ 
   
   const userData = { playtimes: playtimes, favorites: favorites, themeChangeCount: themeChangeCount };
 
