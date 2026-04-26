@@ -21,7 +21,9 @@ export function SettingsModal({
   handleReset, confirmReset,
   onViewOwnProfile,
   tracklist,
-  isLightMode, setIsLightMode
+  isLightMode, setIsLightMode,
+  // ADDED PROPS BELOW
+  activeCloak, setActiveCloak
 }) {
   const [friendInput, setFriendInput] = useState('');
   const [copied, setCopied] = useState(false);
@@ -302,6 +304,28 @@ export function SettingsModal({
                       Clean
                     </span>
                   )}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* TAB DISGUISE SECTION */}
+          <section className={`space-y-4 p-4 rounded-2xl border ${isLightMode ? 'bg-zinc-50 border-zinc-200' : 'bg-white/5 border-white/5'}`}>
+            <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest flex items-center gap-2">
+              <Eye className="w-3 h-3 text-[var(--theme)]" /> Tab Disguise
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {['google', 'drive', 'classroom', 'canvas'].map((cloak) => (
+                <button
+                  key={cloak}
+                  onClick={() => setActiveCloak(cloak)}
+                  className={`p-3 border rounded-xl text-[10px] font-black uppercase transition-all shadow-sm ${
+                    activeCloak === cloak 
+                    ? 'bg-[var(--theme)] text-black border-[var(--theme)]' 
+                    : isLightMode ? 'bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50' : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  {cloak}
                 </button>
               ))}
             </div>
