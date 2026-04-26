@@ -38,7 +38,7 @@
     "id": "basket-bros",
     "title": "Basket Bros",
     "url": "https://wizardsbasketball.com/index.php?game=bbros",
-    "thumbnail": "https://images.weserv.nl/?url=https://imgs.crazygames.com/basketbros_1x1/20251107022434/basketbros_1x1-cover?format=auto%26quality=100%26metadata=none%26width=1200&w=240&h=240&fit=cover",
+    "thumbnail": "/assets/basketbros.png",
     "category": "Sports"
   },
   {
