@@ -845,15 +845,19 @@ const filteredGames = useMemo(() => {
           <Header 
   searchQuery={searchQuery} 
   setSearchQuery={setSearchQuery}
+  supplier={supplier}       
+  setSupplier={setSupplier} 
   time={time}
   battery={battery}
   profilePic={profilePic}
   setShowSettings={setShowSettings}
-  DEFAULT_ICON={CAPY_LOGO}  // <--- Changed this to use the Capybara link
+  DEFAULT_ICON={CAPY_LOGO}
   theme={theme}   
   onViewProfile={() => setSelectedFriendId('me')} 
   onRandomGame={() => {
-    const playable = gamesData.filter(g => !['request', 'report'].includes(g.id));
+    // Note: I should also update this to search through filteredGames 
+    // so the "Random" button doesn't give me a hidden game!
+    const playable = filteredGames.filter(g => !['request', 'report'].includes(g.id));
     if (playable.length > 0) {
       launchContent(playable[Math.floor(Math.random() * playable.length)]);
     }
