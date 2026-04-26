@@ -701,24 +701,32 @@ useEffect(() => {
 
 const filteredGames = useMemo(() => {
     const q = (searchQuery || "").toLowerCase();
-    const sourceData = gamesData || [];
+    
+    // 1. Pick the correct data source first!
+    let sourceData = gamesDataRaw || []; 
+    if (supplier === 'GN-MATH') {
+      sourceData = gnMathDataRaw || [];
+    } else if (supplier === 'TRUFFLED') {
+      // sourceData = truffledDataRaw || []; 
+    }
 
     return sourceData.filter(g => {
-      // 1. Check Search Match
+      // 2. Check Search Match
       const matchesSearch = g?.title?.toLowerCase().includes(q);
       if (!matchesSearch) return false;
 
-      // 2. Check Supplier Match (STRICT FILTERING)
-      if (supplier === 'GN Math') {
-        if (!g.urls?.['GN Math']) return false;
-      } else if (supplier === 'Truffled') {
-        if (!g.urls?.['Truffled']) return false;
+      // 3. Strict Supplier Filtering
+      let matchesSupplier = true;
+      if (supplier === 'GN-MATH') {
+        matchesSupplier = !!(g.urls?.['GN Math'] || g.urls?.['GN-MATH']);
+      } else if (supplier === 'TRUFFLED') {
+        matchesSupplier = !!g.urls?.['Truffled'];
       } else {
-        // Default (Capybara Science) - Hide if it belongs to GN Math or Truffled
-        if (g.urls?.['GN Math'] || g.urls?.['Truffled']) return false;
+        matchesSupplier = !(g.urls?.['GN Math'] || g.urls?.['Truffled']);
       }
+      if (!matchesSupplier) return false;
 
-      // 3. Check Category / Favorites Match
+      // 4. Check Category / Favorites Match (KEEP THIS PART)
       if (activeCategory === 'Favorites') {
         return (favorites || []).includes(g?.id);
       }
@@ -726,24 +734,29 @@ const filteredGames = useMemo(() => {
       const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
       return matchesCategory;
     });
-  }, [searchQuery, activeCategory, gamesData, favorites, supplier]); 
+  }, [searchQuery, activeCategory, favorites, supplier, gamesDataRaw, gnMathDataRaw]);
   
-  const recentGamesData = useMemo(() => {
+ const recentGamesData = useMemo(() => {
     if (!recentlyPlayed || !Array.isArray(recentlyPlayed)) return [];
     
     return recentlyPlayed
-      .map(id => (gamesData || []).find(g => g.id === id))
+      .map(id => {
+        // Look in both lists so it finds your Math games too!
+        const allPossibleGames = [...(gamesDataRaw || []), ...(gnMathDataRaw || [])];
+        return allPossibleGames.find(g => g.id === id);
+      })
       .filter(g => {
         if (!g) return false;
-        if (supplier === 'GN Math') return g.urls?.['GN Math'];
-        if (supplier === 'Truffled') return g.urls?.['Truffled'];
         
-        // Default: Hide recent games from other suppliers
-        if (g.urls?.['GN Math'] || g.urls?.['Truffled']) return false;
-        return true;
+        // Match the naming convention
+        if (supplier === 'GN-MATH') return !!(g.urls?.['GN Math'] || g.urls?.['GN-MATH']);
+        if (supplier === 'Truffled') return !!g.urls?.['Truffled'];
+        
+        // Default: Hide special supplier games from the main list
+        return !(g.urls?.['GN Math'] || g.urls?.['Truffled']);
       })
-      .slice(0, 4); // <--- This is the new line that limits the list to 4
-  }, [recentlyPlayed, gamesData, supplier]);
+      .slice(0, 4); 
+  }, [recentlyPlayed, gamesDataRaw, gnMathDataRaw, supplier]); // Added the raw data files to dependencies
 
   const currentFriend = useMemo(() => {
     if (!selectedFriendId || selectedFriendId === 'me') return null;
