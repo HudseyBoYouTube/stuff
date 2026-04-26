@@ -694,61 +694,55 @@ useEffect(() => {
 const filteredGames = useMemo(() => {
     const q = (searchQuery || "").toLowerCase();
     
-    // 1. Pick the correct data source first!
+    // 1. Pick the correct data source
     let sourceData = gamesDataRaw || []; 
-    if (supplier === 'GN MATH') {
+    if (supplier === 'GN Math') {
       sourceData = gnMathDataRaw || [];
-    } else if (supplier === 'TRUFFLED') {
-      // sourceData = truffledDataRaw || []; 
     }
 
     return sourceData.filter(g => {
-      // 2. Check Search Match
+      // 2. Search Match
       const matchesSearch = g?.title?.toLowerCase().includes(q);
       if (!matchesSearch) return false;
 
-      // 3. Strict Supplier Filtering
-      let matchesSupplier = true;
-      if (supplier === 'GN MATH') {
-        matchesSupplier = !!(g.urls?.['GN Math'] || g.urls?.['GN-MATH']);
-      } else if (supplier === 'TRUFFLED') {
-        matchesSupplier = !!g.urls?.['Truffled'];
+      // 3. Supplier Logic - Simplified to ensure visibility
+      if (supplier === 'GN Math') {
+        // If we are in Math mode, show everything in the math file
+        return true; 
       } else {
-        matchesSupplier = !(g.urls?.['GN Math'] || g.urls?.['Truffled']);
+        // In Default mode, hide games that are explicitly marked for other suppliers
+        const isSpecial = g.urls?.['GN Math'] || g.urls?.['GN-MATH'] || g.urls?.['Truffled'];
+        if (isSpecial) return false;
       }
-      if (!matchesSupplier) return false;
 
-      // 4. Check Category / Favorites Match (KEEP THIS PART)
+      // 4. Category / Favorites Match
       if (activeCategory === 'Favorites') {
-        return (favorites || []).includes(g?.id);
+        return (favorites || []).includes(String(g?.id));
       }
       
-      const matchesCategory = activeCategory === 'All' || g?.category === activeCategory;
-      return matchesCategory;
+      return activeCategory === 'All' || g?.category === activeCategory;
     });
   }, [searchQuery, activeCategory, favorites, supplier, gamesDataRaw, gnMathDataRaw]);
   
- const recentGamesData = useMemo(() => {
+const recentGamesData = useMemo(() => {
     if (!recentlyPlayed || !Array.isArray(recentlyPlayed)) return [];
     
     return recentlyPlayed
       .map(id => {
-        // Look in both lists so it finds your Math games too!
         const allPossibleGames = [...(gamesDataRaw || []), ...(gnMathDataRaw || [])];
-        return allPossibleGames.find(g => g.id === id);
+        return allPossibleGames.find(g => String(g.id) === String(id));
       })
       .filter(g => {
         if (!g) return false;
         
-        // Match the naming convention
-        if (supplier === 'GN MATH') return !!(g.urls?.['GN Math'] || g.urls?.['GN-MATH']);
-        if (supplier === 'Truffled') return !!g.urls?.['Truffled'];
+        // This allows recent games to stay visible regardless of mode, 
+        // OR you can keep the strict filter below if you only want math recents in math mode:
+        if (supplier === 'GN Math') return true; 
         
-        // Default: Hide special supplier games from the main list
-        return !(g.urls?.['GN Math'] || g.urls?.['Truffled']);
+        return !(g.urls?.['GN Math'] || g.urls?.['GN-MATH'] || g.urls?.['Truffled']);
       })
       .slice(0, 4); 
-  }, [recentlyPlayed, gamesDataRaw, gnMathDataRaw, supplier]); // Added the raw data files to dependencies
+  }, [recentlyPlayed, gamesDataRaw, gnMathDataRaw, supplier]);
 
   const currentFriend = useMemo(() => {
     if (!selectedFriendId || selectedFriendId === 'me') return null;
