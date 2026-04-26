@@ -87,20 +87,15 @@ export default function App() {
 
   const [achievements, setAchievements] = useState([]);
 
-  // 1. Set the state to true by default
-const [isCloaked] = useState(true);
+  // 1. The "Brain" - remembers which specific disguise you picked
+const [activeCloak, setActiveCloak] = useState(() => localStorage.getItem('capy-cloak-type') || 'google');
 
-// 2. This effect handles the initial load AND any changes
+// 2. The "Action" - updates the tab whenever activeCloak changes
 useEffect(() => {
-  if (isCloaked) {
-    // Pass the actual Google object, not just 'true'
-    applyCloak(DISGUISE_CONFIG.google);
-  } else {
-    // If you ever add a toggle to turn it off, this goes back to 'none'
-    applyCloak(DISGUISE_CONFIG.none);
-  }
-  localStorage.setItem('capy-cloak', isCloaked);
-}, [isCloaked]);
+  const config = DISGUISE_CONFIG[activeCloak] || DISGUISE_CONFIG.google;
+  applyCloak(config);
+  localStorage.setItem('capy-cloak-type', activeCloak);
+}, [activeCloak]);
 
 const gamesData = useMemo(() => {
   const main = Array.isArray(gamesDataRaw) ? gamesDataRaw : [];
@@ -958,147 +953,148 @@ const filteredGames = useMemo(() => {
       />
 
       <SettingsModal 
-        show={showSettings} 
-        onClose={() => setShowSettings(false)}
-        tracklist={tracklist} 
-        performanceMode={performanceMode}
-        setPerformanceMode={(val) => { 
-            setPerformanceMode(val); 
-            localStorage.setItem('capy-perf-mode', val);
-        }}
-        onViewOwnProfile={() => {
-          setShowSettings(false);
-          setSelectedFriendId('me');
-        }}
-        themes={THEMES}
-        applyTheme={applyTheme}
-        panicKey={panicKey}
-        setPanicKey={(val) => { setPanicKey(val); localStorage.setItem('capy-panic-key', val); }}
-        panicUrl={panicUrl}
-        setPanicUrl={(val) => { setPanicUrl(val); localStorage.setItem('capy-panic-url', val); }}
-        handleBackgroundUpload={handleBackgroundUpload}
-        handleResetBackground={handleResetBackground}
-        handleAudioUpload={handleAudioUpload}
-        handleResetMusic={handleResetMusic}
-        profilePic={profilePic}
-        handlePfpUpload={handlePfpUpload}
-        handleResetPfp={() => { setProfilePic(''); localStorage.removeItem('capy-pfp'); }}
-        handleClearSettings={handleClearSettings}
-        handleReset={handleReset}
-        confirmReset={confirmReset}
-        confirmClearSettings={confirmClearSettings}
-        bgMusic={bgMusic}
-        bgEnabled={bgEnabled}
-        volume={volume}
-        setVolume={setVolume}
-        bgOpacity={bgOpacity}
-        setBgOpacity={setBgOpacity}
-        
-        displayName={displayName}
-        setDisplayName={(val) => {
-          const nameExists = friends.some(f => f.name.toLowerCase() === val.trim().toLowerCase());
-          if (nameExists) {
-            alert("Name is already taken by a friend! Please choose a unique name.");
-            return;
-          }
-          setDisplayName(val); 
-          localStorage.setItem('capy-display-name', val); 
-        }}
-        
-        friendCode={friendCode}
-        fullSyncCode={fullSyncCode}
-        onImportSync={(code) => {
-          const decoded = safeDecode(code);
-          if (decoded && decoded.n) {
-            setDisplayName(decoded.n);
-            localStorage.setItem('capy-display-name', decoded.n);
-            if (decoded.p) {
-              setProfilePic(decoded.p);
-              localStorage.setItem('capy-pfp', decoded.p);
-            }
-            if (decoded.t) {
-              setTheme(decoded.t);
-              localStorage.setItem('capy-theme', decoded.t);
-            }
-            if (decoded.g) {
-              setGlowIntensity(decoded.g);
-              localStorage.setItem('capy-glow', decoded.g);
-            }
-            setNotification("Profile Synced Successfully!");
-            setTimeout(() => window.location.reload(), 1000);
-          } else {
-            alert("Invalid Sync Code!");
-          }
-        }}
-      
-        friends={friends}
-        isSyncing={isSyncing}
-        disguise={disguise}
-        setDisguise={(val) => { setDisguise(val); localStorage.setItem('capy-stealth-type', val); }}
-        customTitle={customTitle}
-        setCustomTitle={(val) => { setCustomTitle(val); localStorage.setItem('capy-custom-title', val); }}
-        customIcon={customIcon}
-        setCustomIcon={(val) => { setCustomIcon(val); localStorage.setItem('capy-custom-icon', val); }}
-        
-        isLightMode={isLightMode}
-        setIsLightMode={setIsLightMode}
+  show={showSettings} 
+  onClose={() => setShowSettings(false)}
+  tracklist={tracklist} 
+  performanceMode={performanceMode}
+  setPerformanceMode={(val) => { 
+      setPerformanceMode(val); 
+      localStorage.setItem('capy-perf-mode', val);
+  }}
+  onViewOwnProfile={() => {
+    setShowSettings(false);
+    setSelectedFriendId('me');
+  }}
+  themes={THEMES}
+  applyTheme={applyTheme}
+  panicKey={panicKey}
+  setPanicKey={(val) => { setPanicKey(val); localStorage.setItem('capy-panic-key', val); }}
+  panicUrl={panicUrl}
+  setPanicUrl={(val) => { setPanicUrl(val); localStorage.setItem('capy-panic-url', val); }}
+  handleBackgroundUpload={handleBackgroundUpload}
+  handleResetBackground={handleResetBackground}
+  handleAudioUpload={handleAudioUpload}
+  handleResetMusic={handleResetMusic}
+  profilePic={profilePic}
+  handlePfpUpload={handlePfpUpload}
+  handleResetPfp={() => { setProfilePic(''); localStorage.removeItem('capy-pfp'); }}
+  handleClearSettings={handleClearSettings}
+  handleReset={handleReset}
+  confirmReset={confirmReset}
+  confirmClearSettings={confirmClearSettings}
+  bgMusic={bgMusic}
+  bgEnabled={bgEnabled}
+  volume={volume}
+  setVolume={setVolume}
+  bgOpacity={bgOpacity}
+  setBgOpacity={setBgOpacity}
+  
+  displayName={displayName}
+  setDisplayName={(val) => {
+    const nameExists = friends.some(f => f.name.toLowerCase() === val.trim().toLowerCase());
+    if (nameExists) {
+      alert("Name is already taken by a friend! Please choose a unique name.");
+      return;
+    }
+    setDisplayName(val);
+    localStorage.setItem('capy-display-name', val);
+  }}
+  
+  friendCode={friendCode}
+  fullSyncCode={fullSyncCode}
+  onImportSync={(code) => {
+    const decoded = safeDecode(code);
+    if (decoded && decoded.n) {
+      setDisplayName(decoded.n);
+      localStorage.setItem('capy-display-name', decoded.n);
+      if (decoded.p) {
+        setProfilePic(decoded.p);
+        localStorage.setItem('capy-pfp', decoded.p);
+      }
+      if (decoded.t) {
+        setTheme(decoded.t);
+        localStorage.setItem('capy-theme', decoded.t);
+      }
+      if (decoded.g) {
+        setGlowIntensity(decoded.g);
+        localStorage.setItem('capy-glow', decoded.g);
+      }
+      setNotification("Profile Synced Successfully!");
+      setTimeout(() => window.location.reload(), 1000);
+    } else {
+      alert("Invalid Sync Code!");
+    }
+  }}
 
-        onAddFriend={(code) => {
-          const decodedData = safeDecode(code);
-          if (decodedData && decodedData.id) {
-            const { n: name, id: friendId } = decodedData;
-            if (name.toLowerCase() === displayName.toLowerCase()) {
-              alert("You cannot add yourself!");
-              return;
-            }
-            const otherFriends = friends.filter(f => {
-              const existingData = safeDecode(f.code);
-              return existingData?.id !== friendId;
-            });
-            const updatedFriends = [...otherFriends, { name, code: code.trim() }];
-            setFriends(updatedFriends);
-            localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
-            setNotification(`Added ${name}!`);
-          } else {
-            alert("Invalid Friend Code!");
-          }
-        }}
-        onRemoveFriend={(code) => {
-          const newFriends = friends.filter(f => f.code !== code);
-          setFriends(newFriends);
-          localStorage.setItem('capy-friends', JSON.stringify(newFriends));
-        }}
-        onViewFriend={(friend) => {
+  friends={friends}
+  isSyncing={isSyncing}
+  disguise={disguise}
+  setDisguise={(val) => { setDisguise(val); localStorage.setItem('capy-stealth-type', val); }}
+  customTitle={customTitle}
+  setCustomTitle={(val) => { setCustomTitle(val); localStorage.setItem('capy-custom-title', val); }}
+  customIcon={customIcon}
+  setCustomIcon={(val) => { setCustomIcon(val); localStorage.setItem('capy-custom-icon', val); }}
+  
+  isLightMode={isLightMode}
+  setIsLightMode={setIsLightMode}
+
+  onAddFriend={(code) => {
+    const decodedData = safeDecode(code);
+    if (decodedData && decodedData.id) {
+      const { n: name, id: friendId } = decodedData;
+      if (name.toLowerCase() === displayName.toLowerCase()) {
+        alert("You cannot add yourself!");
+        return;
+      }
+      const otherFriends = friends.filter(f => {
+        const existingData = safeDecode(f.code);
+        return existingData?.id !== friendId;
+      });
+      const updatedFriends = [...otherFriends, { name, code: code.trim() }];
+      setFriends(updatedFriends);
+      localStorage.setItem('capy-friends', JSON.stringify(updatedFriends));
+      setNotification(`Added ${name}!`);
+    } else {
+      alert("Invalid Friend Code!");
+    }
+  }}
+  onRemoveFriend={(code) => {
+    const newFriends = friends.filter(f => f.code !== code);
+    setFriends(newFriends);
+    localStorage.setItem('capy-friends', JSON.stringify(newFriends));
+  }}
+  onViewFriend={(friend) => {
+    setSelectedFriendId(null);
+    setTimeout(() => setSelectedFriendId(friend.code), 10);
+  }}
+  onRefreshFriend={(code) => {
+      setIsSyncing(true);
+      const freshFriends = [...friends];
+      setFriends(freshFriends);
+      if (selectedFriendId === code) {
           setSelectedFriendId(null);
-          setTimeout(() => setSelectedFriendId(friend.code), 10);
-        }}
-       onRefreshFriend={(code) => {
-            setIsSyncing(true);
-            const freshFriends = [...friends];
-            setFriends(freshFriends);
-            if (selectedFriendId === code) {
-                setSelectedFriendId(null);
-                setTimeout(() => setSelectedFriendId(code), 50);
-            }
-            setTimeout(() => {
-              setIsSyncing(false);
-              setNotification("Friend view refreshed!");
-            }, 500);
-        }}
-        myAchievements={achievements}
-      />
+          setTimeout(() => setSelectedFriendId(code), 50);
+      }
+      setTimeout(() => {
+        setIsSyncing(false);
+        setNotification("Friend view refreshed!");
+      }, 500);
+  }}
+  myAchievements={achievements}
+  activeCloak={activeCloak}
+  setActiveCloak={setActiveCloak}
+/>
 
-      <footer style={{ 
-        padding: '20px', 
-        textAlign: 'center', 
-        color: '#666', 
-        fontSize: '14px',
-        borderTop: 'none', // Changes from '1px solid #222' to 'none'
-        marginTop: '40px'
-      }}>
-        <p>&copy; 2026 Capybara Science. All rights reserved.</p>
-      </footer>
-    </div>
-  );
+<footer style={{ 
+  padding: '20px', 
+  textAlign: 'center', 
+  color: '#666', 
+  fontSize: '14px',
+  borderTop: 'none',
+  marginTop: '40px'
+}}>
+  <p>&copy; 2026 Capybara Science. All rights reserved.</p>
+</footer>
+</div>
+);
 }
-// NOTHING SHOULD BE BELOW THIS BRACKET
