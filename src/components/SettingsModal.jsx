@@ -315,7 +315,7 @@ export function SettingsModal({
               <Eye className="w-3 h-3 text-[var(--theme)]" /> Tab Disguise
             </label>
             <div className="grid grid-cols-2 gap-2">
-              {['google', 'drive', 'classroom', 'canvas'].map((cloak) => (
+              {['google', 'drive', 'classroom', 'powerschool'].map((cloak) => (
                 <button
                   key={cloak}
                   onClick={() => setActiveCloak(cloak)}
