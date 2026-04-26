@@ -698,6 +698,8 @@ const filteredGames = useMemo(() => {
     let sourceData = gamesDataRaw || []; 
     if (supplier === 'GN Math') {
       sourceData = gnMathDataRaw || [];
+    } else if (supplier === 'Truffled') {
+      sourceData = []; // <--- THIS MAKES THE GRID EMPTY FOR TRUFFLED
     }
 
     return sourceData.filter(g => {
@@ -705,10 +707,11 @@ const filteredGames = useMemo(() => {
       const matchesSearch = g?.title?.toLowerCase().includes(q);
       if (!matchesSearch) return false;
 
-      // 3. Supplier Logic - Simplified to ensure visibility
+      // 3. Supplier Logic
       if (supplier === 'GN Math') {
-        // If we are in Math mode, show everything in the math file
         return true; 
+      } else if (supplier === 'Truffled') {
+        return true; // (Will return nothing anyway since sourceData is empty)
       } else {
         // In Default mode, hide games that are explicitly marked for other suppliers
         const isSpecial = g.urls?.['GN Math'] || g.urls?.['GN-MATH'] || g.urls?.['Truffled'];
@@ -734,10 +737,8 @@ const recentGamesData = useMemo(() => {
       })
       .filter(g => {
         if (!g) return false;
-        
-        // This allows recent games to stay visible regardless of mode, 
-        // OR you can keep the strict filter below if you only want math recents in math mode:
-        if (supplier === 'GN Math') return true; 
+        if (supplier === 'GN Math') return true;
+        if (supplier === 'Truffled') return false;
         
         return !(g.urls?.['GN Math'] || g.urls?.['GN-MATH'] || g.urls?.['Truffled']);
       })
