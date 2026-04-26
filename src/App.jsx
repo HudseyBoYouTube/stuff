@@ -60,7 +60,7 @@ const DISGUISE_CONFIG = {
   },
   drive: { 
     title: "My Drive - Google Drive", 
-    icon: "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" 
+    icon: "https://ssl.gstatic.com/images/branding/product/2x/drive_2020q4_48dp.png" 
   },
   classroom: { 
     title: "Home - Classroom", 
