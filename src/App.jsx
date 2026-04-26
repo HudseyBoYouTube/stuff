@@ -64,7 +64,7 @@ const DISGUISE_CONFIG = {
   },
   classroom: { 
     title: "Home - Classroom", 
-    icon: "https://www.gstatic.com/classroom/favicon.png" 
+    icon: "https://ssl.gstatic.com/classroom/favicon.png" 
   },
   powerschool: { 
     title: "Grades and Attendance", 
