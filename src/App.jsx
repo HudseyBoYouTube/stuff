@@ -855,9 +855,8 @@ const filteredGames = useMemo(() => {
   theme={theme}   
   onViewProfile={() => setSelectedFriendId('me')} 
   onRandomGame={() => {
-    // Note: I should also update this to search through filteredGames 
-    // so the "Random" button doesn't give me a hidden game!
-    const playable = filteredGames.filter(g => !['request', 'report'].includes(g.id));
+    // Now it pulls from filteredGames so it respects your GN-MATH selection!
+    const playable = (filteredGames || []).filter(g => !['request', 'report'].includes(g?.id));
     if (playable.length > 0) {
       launchContent(playable[Math.floor(Math.random() * playable.length)]);
     }
@@ -865,7 +864,6 @@ const filteredGames = useMemo(() => {
   isChatOpen={isChatOpen}
   setIsChatOpen={setIsChatOpen}
 />
-
           <div className={`${isLightMode ? 'bg-white' : 'bg-[#09090b]/90'} backdrop-blur-md px-4 pt-1.5 overflow-hidden sticky top-16 z-40 transition-colors group`}>
             <div className="max-w-7xl mx-auto relative flex items-center">
               {canScrollLeft && (
