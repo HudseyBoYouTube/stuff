@@ -741,7 +741,7 @@ const filteredGames = useMemo(() => {
         if (!g) return false;
         
         // Match the naming convention
-        if (supplier === 'GN-MATH') return !!(g.urls?.['GN Math'] || g.urls?.['GN-MATH']);
+        if (supplier === 'GN MATH') return !!(g.urls?.['GN Math'] || g.urls?.['GN-MATH']);
         if (supplier === 'Truffled') return !!g.urls?.['Truffled'];
         
         // Default: Hide special supplier games from the main list
