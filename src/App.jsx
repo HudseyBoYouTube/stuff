@@ -709,7 +709,7 @@ const filteredGames = useMemo(() => {
 
       // 3. Strict Supplier Filtering
       let matchesSupplier = true;
-      if (supplier === 'GN-MATH') {
+      if (supplier === 'GN MATH') {
         matchesSupplier = !!(g.urls?.['GN Math'] || g.urls?.['GN-MATH']);
       } else if (supplier === 'TRUFFLED') {
         matchesSupplier = !!g.urls?.['Truffled'];
