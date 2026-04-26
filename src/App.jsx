@@ -64,9 +64,9 @@ const DISGUISE_CONFIG = {
     title: "Home - Classroom", 
     icon: "https://www.gstatic.com/classroom/favicon.png" 
   },
-  canvas: { 
-    title: "Dashboard", 
-    icon: "https://du11hjcvx0uq_cloudfront_net/dist/images/favicon-e10d657a73.ico" 
+  powerschool: { 
+    title: "Grades and Attendance", 
+    icon: "https://ps.bhmsd.org/favicon-196x196.png" 
   }
 };
 
