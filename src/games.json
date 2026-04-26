@@ -1,10 +1,10 @@
 [
   {
-    "id": "request",
-    "title": "Request a Game",
-    "url": "https://docs.google.com/forms/d/e/1FAIpQLSchc4UVIaZj0_wiEQgnQMK0iSyaxo8_bzuOCeKylOeY77tIlw/viewform",
-    "thumbnail": "https://images.weserv.nl/?url=https://cdn-icons-png.flaticon.com/512/5968/5968528.png&w=240&h=240&fit=contain&bg=transparent",
-    "category": "Community"
+  "id": "request",
+  "title": "Request a Game",
+  "url": "https://docs.google.com/forms/d/e/1FAIpQLSchc4UVIaZj0_wiEQgnQMK0iSyaxo8_bzuOCeKylOeY77tIlw/viewform",
+  "thumbnail": "/assets/googleform.png",
+  "category": "Community"
   },
   {
     "id": "report",
