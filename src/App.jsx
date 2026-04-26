@@ -63,7 +63,7 @@ const DISGUISE_CONFIG = {
     icon: "https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" 
   },
   classroom: { 
-    title: "Home – Classroom", 
+    title: "Home - Classroom", 
     icon: "https://ssl.gstatic.com/classroom/favicon.png" 
   },
   powerschool: { 
