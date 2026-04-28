@@ -623,13 +623,6 @@
     "category": "Skill"
   },
   {
-    "id": "ballistic-chickens",
-    "title": "Ballistic Chickens",
-    "url": "https://play.coolmathgames.eu.org/storage/ag/echo/ballistic-chickens/",
-    "thumbnail": "https://www5.minijuegosgratis.com/v3/games/thumbnails/254610_7_sq.jpg",
-    "category": "Arcade"
-  },
-  {
     "id": "webgl-fluid-simulation",
     "title": "WebGL Fluid Simulation",
     "url": "https://play.coolmathgames.eu.org/storage/ag/echo/webgl-fluid-simulation/",
