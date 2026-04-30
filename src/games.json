@@ -1090,6 +1090,13 @@
     "url": "https://play.coolmathgames.eu.org/storage/ag/arsenic/double-panda/",
     "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_86_XNGhmbt7WmAHkd67mkcs--wjCwNl_mQ&s",
     "category": "Platformer"
+  },
+  {
+  "id": "test",
+  "title": "test",
+  "url": "/stores/games/EaglercraftX_1.8_u49_Offline_Signed (1) (1).html",
+  "thumbnail": "/assets/googleform.png",
+  "category": "test"
   }
 ]
   
