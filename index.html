@@ -2,10 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Keeping the tab icon we set up earlier -->
     <link rel="icon" type="image/png" href="/assets/capybara.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- This keeps the browser tab looking like a school project for safety -->
     <title>Science Project - Period 4</title>
 
+    <!-- Google Fonts: Baloo 2 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&display=swap" rel="stylesheet">
@@ -13,91 +17,33 @@
     <style>
       :root {
         --bg-color: #121212;
-        --text-color: #ffffff;
-        --accent-blue: #007bff; 
       }
 
-      body {
+      /* This section makes the site go full screen and removes all gaps */
+      body, html {
         margin: 0;
         padding: 0;
-        font-family: 'Baloo 2', cursive;
-        background-color: var(--bg-color);
-        color: var(--text-color);
-        display: flex;
-        flex-direction: column;
-        /* Height stays 100vh to prevent awkward gaps */
-        height: 100vh;
-        overflow: hidden; /* Prevents double scrollbars */
-      }
-
-      #header-bar {
-        height: 50px;
-        background: #1e1e1e;
-        border-bottom: 1px solid #333;
-        display: flex;
-        align-items: center;
-        padding: 0 20px;
-        font-weight: 600;
-        color: #888;
-        font-size: 0.9rem;
-        flex-shrink: 0; /* Keeps the header from squishing */
-      }
-
-      .main-content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        /* Removed centering and padding to let the app go full-width */
         width: 100%;
-        overflow-y: auto; /* Allows only the game area to scroll */
+        height: 100%;
+        background-color: var(--bg-color);
+        font-family: 'Baloo 2', cursive;
+        overflow: hidden; /* Prevents double scrollbars from appearing */
       }
 
-      /* Hidden headers for the "Stealth" look */
-      .stealth-text {
-        text-align: center;
-        padding: 10px 0;
-      }
-
-      h1 {
-        font-weight: 800;
-        margin: 10px 0 5px 0;
-        color: var(--accent-blue);
-        font-size: 1.2rem;
-      }
-
+      /* Ensures the React app fills the entire browser window */
       #root {
         width: 100%;
-        flex: 1;
-      }
-
-      footer {
-        padding: 10px;
-        font-size: 0.7rem;
-        opacity: 0.4;
-        text-align: center;
-        flex-shrink: 0;
+        height: 100%;
       }
     </style>
   </head>
   <body>
-    <div id="header-bar">
-      Shared Drive > Science > Projects > Capybara_Data_v2.1
-    </div>
 
-    <div class="main-content">
-      <div class="stealth-text">
-        <h1>Capybara Science</h1>
-        <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">Initializing Research Modules...</p>
-      </div>
-      
-      <!-- React app now fills the remaining space -->
-      <div id="root"></div>
-    </div>
+    <!-- The root div is now the only thing visible, allowing the dashboard to take over -->
+    <div id="root"></div>
 
-    <footer>
-      &copy; 2026 Capybara Science Research Group
-    </footer>
-
+    <!-- This script starts your Vite/React engine -->
     <script type="module" src="/src/main.jsx"></script>
+    
   </body>
 </html>
