@@ -1,4 +1,4 @@
-/* Updated with Fredoka 600 (SemiBold) */
+/* Updated with Fredoka 600 (SemiBold) and Scaled Status Bar */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Fredoka:wght@600&family=Baloo+2:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
@@ -176,7 +176,7 @@ header .flex.items-center.gap-2 span,
 header h1, 
 .logo-text {
   font-family: 'Fredoka', sans-serif !important;
-  font-weight: 600 !important; /* SemiBold 600 */
+  font-weight: 600 !important; 
   letter-spacing: 0.5px;
 }
 
@@ -188,12 +188,22 @@ button.inline-flex.items-center.gap-2.px-3 {
   font-weight: 600;
 }
 
-/* 3. Date, Time, and Battery Percentage (Top Right) */
-.text-xs.font-medium.text-zinc-400,
+/* 3. Date, Time, and Battery Percentage (Top Right) - BIGGER VERSION */
+header .flex.items-center.gap-4.ml-auto {
+  gap: 1.5rem !important; /* Extra breathing room between stats */
+}
+
 header .flex.items-center.gap-4.ml-auto span,
 .battery-text,
 .time-text {
   font-family: 'Baloo 2', cursive !important;
-  font-weight: 500;
-  font-size: 0.85rem !important; 
+  font-weight: 600 !important; /* Thicker font for better visibility */
+  font-size: 1.15rem !important; /* Scaled up from 0.85rem */
+}
+
+/* Scale the Icons themselves */
+header .flex.items-center.gap-4.ml-auto svg,
+header .flex.items-center.gap-4.ml-auto img {
+  width: 24px !important; /* Scaled up icons */
+  height: 24px !important;
 }
