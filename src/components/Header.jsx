@@ -76,9 +76,8 @@ export function Header({
               </div>
             </div>
 
-            {/* CHAT TOGGLE BUTTON - UPDATED TO USE STATE */}
             <button 
-              onClick={() => setIsChatOpen(true)} // Changed from navigate to state
+              onClick={() => setIsChatOpen(true)} 
               className={`p-2 border rounded-lg transition-all hover:scale-105 active:scale-95 ${
                 isChatOpen 
                   ? 'bg-[var(--theme)] border-[var(--theme)] text-black shadow-[0_0_10px_var(--theme)]' 
@@ -91,14 +90,15 @@ export function Header({
           </div>
         </div>
 
-        {/* STATS & PROFILE SECTION - RIGHT COLUMN */}
+        {/* STATS & PROFILE SECTION - RIGHT COLUMN (SCALED UP) */}
         <div className="flex items-center justify-end gap-4 justify-self-end">
-          <div className={`hidden sm:flex items-center gap-3 text-[9px] font-black uppercase text-[var(--theme)] ${isLightMode ? 'bg-black/5 border-black/5' : 'bg-white/5 border-white/5'} px-3 py-1.5 rounded-full border`}>
-            <span className="flex items-center gap-1"><Calendar className="w-2.5 h-2.5" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-            <span className="flex items-center gap-1"><Clock className="w-2.5 h-2.5" /> {time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
+          <div className={`hidden sm:flex items-center gap-4 text-sm font-bold uppercase text-[var(--theme)] ${isLightMode ? 'bg-black/5 border-black/5' : 'bg-white/5 border-white/5'} px-4 py-2 rounded-full border`}
+               style={{ fontFamily: "'Baloo 2', cursive" }}>
+            <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+            <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> {time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
             
-            <div className="flex items-center gap-1">
-              <Battery className={`w-3 h-3 ${battery.charging ? 'text-green-500 animate-pulse' : ''}`} />
+            <div className="flex items-center gap-1.5">
+              <Battery className={`w-5 h-5 ${battery.charging ? 'text-green-500 animate-pulse' : ''}`} />
               <span>{battery.level}%</span>
             </div>
           </div>
