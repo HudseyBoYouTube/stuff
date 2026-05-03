@@ -1,4 +1,4 @@
-/* Final Force-Scale index.css */
+/* Final "Right-Side Only" Scale index.css */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Fredoka:wght@600&family=Baloo+2:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
@@ -169,45 +169,37 @@
   cursor: url('https://img.icons8.com/color/28/test-tube.png'), pointer !important;
 }
 
-/* --- THE ULTIMATE STATUS BAR OVERRIDE --- */
+/* --- TARGETED STATUS BAR (TOP RIGHT) --- */
 
-/* Targets the right side of the header where stats live */
-header div.flex.items-center.gap-4.ml-auto {
-  gap: 2rem !important; 
+/* 1. Spread out the Date, Time, and Battery */
+header .flex.items-center.gap-4.ml-auto {
+  gap: 1.75rem !important; 
 }
 
-/* Forces EVERYTHING in that container (text, spans, p tags) to be big */
-header div.flex.items-center.gap-4.ml-auto * {
+/* 2. Force the Font and Size on the Text */
+header .flex.items-center.gap-4.ml-auto span,
+header .flex.items-center.gap-4.ml-auto p,
+header .flex.items-center.gap-4.ml-auto div {
   font-family: 'Baloo 2', cursive !important;
-  font-size: 1.25rem !important; /* Extremely clear size */
+  font-size: 1.25rem !important; 
   font-weight: 600 !important;
-  color: #f4f4f5 !important;
+  line-height: 1 !important;
 }
 
-/* Forces Icons (SVG/Images) to be much bigger */
-header div.flex.items-center.gap-4.ml-auto svg,
-header div.flex.items-center.gap-4.ml-auto img {
-  width: 28px !important;
-  height: 28px !important;
-  min-width: 28px !important;
-  min-height: 28px !important;
-  stroke-width: 2.5px !important; /* Thickens SVG lines */
+/* 3. Force the Icons to scale up */
+header .flex.items-center.gap-4.ml-auto svg,
+header .flex.items-center.gap-4.ml-auto img {
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  min-height: 26px !important;
+  stroke-width: 2.5px !important;
 }
 
-/* Fixes the "Capybara Science" Logo Font specifically */
+/* Keep the Logo (Top Left) clean */
 header .flex.items-center.gap-2 span, 
 header h1, 
 .logo-text {
   font-family: 'Fredoka', sans-serif !important;
   font-weight: 600 !important;
-  font-size: 1.4rem !important;
-}
-
-/* Dropdown Menu styling */
-.capybara-dropdown, 
-select, 
-button.inline-flex.items-center.gap-2.px-3 {
-  font-family: 'Baloo 2', cursive !important;
-  font-weight: 600;
-  font-size: 1rem !important;
 }
