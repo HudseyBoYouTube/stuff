@@ -2,12 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- Makes the tab look like a real school project -->
     <link rel="icon" type="image/png" href="/assets/capybara.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Science Project - Period 4</title>
 
-    <!-- Google Fonts: Baloo 2 for that clean gaming look -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&display=swap" rel="stylesheet">
@@ -16,7 +14,7 @@
       :root {
         --bg-color: #121212;
         --text-color: #ffffff;
-        --accent-blue: #007bff; /* Using "blue" as preferred */
+        --accent-blue: #007bff; 
       }
 
       body {
@@ -27,7 +25,9 @@
         color: var(--text-color);
         display: flex;
         flex-direction: column;
-        min-height: 100vh;
+        /* Height stays 100vh to prevent awkward gaps */
+        height: 100vh;
+        overflow: hidden; /* Prevents double scrollbars */
       }
 
       #header-bar {
@@ -40,43 +40,57 @@
         font-weight: 600;
         color: #888;
         font-size: 0.9rem;
+        flex-shrink: 0; /* Keeps the header from squishing */
       }
 
       .main-content {
         flex: 1;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        /* Removed centering and padding to let the app go full-width */
+        width: 100%;
+        overflow-y: auto; /* Allows only the game area to scroll */
+      }
+
+      /* Hidden headers for the "Stealth" look */
+      .stealth-text {
         text-align: center;
-        padding: 20px;
+        padding: 10px 0;
       }
 
       h1 {
         font-weight: 800;
-        margin-bottom: 10px;
+        margin: 10px 0 5px 0;
         color: var(--accent-blue);
+        font-size: 1.2rem;
+      }
+
+      #root {
+        width: 100%;
+        flex: 1;
       }
 
       footer {
-        padding: 20px;
-        font-size: 0.8rem;
-        opacity: 0.5;
+        padding: 10px;
+        font-size: 0.7rem;
+        opacity: 0.4;
         text-align: center;
+        flex-shrink: 0;
       }
     </style>
   </head>
   <body>
-    <!-- The "Stealth" header to look like a doc -->
     <div id="header-bar">
       Shared Drive > Science > Projects > Capybara_Data_v2.1
     </div>
 
     <div class="main-content">
-      <h1>Capybara Science</h1>
-      <p>Initializing Research Modules...</p>
+      <div class="stealth-text">
+        <h1>Capybara Science</h1>
+        <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">Initializing Research Modules...</p>
+      </div>
       
-      <!-- This is where your React/Vite app injects all the games -->
+      <!-- React app now fills the remaining space -->
       <div id="root"></div>
     </div>
 
@@ -84,7 +98,6 @@
       &copy; 2026 Capybara Science Research Group
     </footer>
 
-    <!-- Points to your main JS file to start the site -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
