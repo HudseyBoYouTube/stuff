@@ -534,11 +534,10 @@
 			var pckSize = GODOT_CONFIG.fileSizes['index.pck'];
 			var wasmSize = GODOT_CONFIG.fileSizes['index.wasm'];
 
-			GODOT_CONFIG.executable = 'index-nothreads';
-			GODOT_CONFIG.fileSizes = {
-				'index-nothreads.pck' : pckSize,
-				'index-nothreads.wasm' : wasmSize,
-			};
+GODOT_CONFIG.fileSizes = {
+    'engine.pck' : pckSize,
+    'index-nothreads.wasm' : wasmSize
+};
 
 		}
 		document.body.appendChild(mainJsScript);
