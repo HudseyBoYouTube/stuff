@@ -90,20 +90,28 @@ export function Header({
           </div>
         </div>
 
-        {/* STATS & PROFILE SECTION - RIGHT COLUMN (SCALED UP) */}
+        {/* STATS & PROFILE SECTION - RIGHT COLUMN (REFINED FOR BALOO 2) */}
         <div className="flex items-center justify-end gap-4 justify-self-end">
-          <div className={`hidden sm:flex items-center gap-4 text-sm font-bold uppercase text-[var(--theme)] ${isLightMode ? 'bg-black/5 border-black/5' : 'bg-white/5 border-white/5'} px-4 py-2 rounded-full border`}
-               style={{ fontFamily: "'Baloo 2', cursive" }}>
-            <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" /> {time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-            <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> {time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
+          <div 
+            className={`hidden sm:flex items-center gap-5 text-sm font-bold uppercase text-[var(--theme)] ${isLightMode ? 'bg-black/5 border-black/5' : 'bg-white/5 border-white/5'} px-5 py-2 rounded-full border`}
+            style={{ fontFamily: "'Baloo 2', cursive" }}
+          >
+            <span className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" /> 
+              <span className="translate-y-[1px]">{time.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+            </span>
+            <span className="flex items-center gap-2">
+              <Clock className="w-4 h-4" /> 
+              <span className="translate-y-[1px]">{time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}</span>
+            </span>
             
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               <Battery className={`w-5 h-5 ${battery.charging ? 'text-green-500 animate-pulse' : ''}`} />
-              <span>{battery.level}%</span>
+              <span className="translate-y-[1px]">{battery.level}%</span>
             </div>
           </div>
           
-          <div className={`flex items-center gap-1 ${isLightMode ? 'bg-black/5 border-black/5' : 'bg-white/5 border-white/5'} rounded-full p-1 border`}>
+          <div className={`flex items-center gap-1.5 ${isLightMode ? 'bg-black/5 border-black/5' : 'bg-white/5 border-white/5'} rounded-full p-1 border`}>
               <button 
                 onClick={() => onViewProfile?.()} 
                 className="w-8 h-8 rounded-full border border-transparent hover:border-[var(--theme)] overflow-hidden bg-zinc-800 transition-all active:scale-90"
