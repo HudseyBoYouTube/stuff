@@ -1,4 +1,4 @@
-/* Updated with Fredoka 600, Baloo 2, and Larger Status Icons/Fonts */
+/* Updated with Fredoka 600, Baloo 2, and Forced Scaling for Status Icons/Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Fredoka:wght@600&family=Baloo+2:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
@@ -188,26 +188,39 @@ button.inline-flex.items-center.gap-2.px-3 {
   font-weight: 600;
 }
 
-/* 3. Date, Time, and Battery Percentage (Top Right) - SCALED UP */
+/* 3. Date, Time, and Battery Percentage (Top Right) - FORCED SCALING */
+
+/* Spread items out so they don't overlap */
 header .flex.items-center.gap-4.ml-auto {
-  gap: 1.5rem !important; /* Space items out more */
+  gap: 1.75rem !important; 
 }
 
+/* Increase Text Size and Weight */
 header .flex.items-center.gap-4.ml-auto span,
+header .text-xs.font-medium,
 .battery-text,
 .time-text {
   font-family: 'Baloo 2', cursive !important;
   font-weight: 600 !important; 
-  font-size: 1.15rem !important; /* Made significantly larger */
-  display: flex;
-  align-items: center;
-  gap: 8px; /* Space between icon and text */
+  font-size: 1.2rem !important; /* Larger for better visibility */
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
 }
 
-/* Scaling the actual Icons */
+/* Increase Icon Size */
 header .flex.items-center.gap-4.ml-auto svg,
-header .flex.items-center.gap-4.ml-auto img {
-  width: 24px !important;  /* Icons now 24px */
-  height: 24px !important;
-  flex-shrink: 0;
+header .flex.items-center.gap-4.ml-auto img,
+header .flex.items-center.gap-4.ml-auto i {
+  width: 26px !important;  /* Bigger target size */
+  height: 26px !important;
+  min-width: 26px !important;
+  min-height: 26px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Thicken icon lines for balance */
+header .flex.items-center.gap-4.ml-auto svg * {
+  stroke-width: 2.5px !important;
 }
