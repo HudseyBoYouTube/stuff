@@ -1,4 +1,4 @@
-/* Updated with Fredoka 600, Baloo 2, and Forced Scaling for Status Icons/Fonts */
+/* Final Force-Scale index.css */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Fredoka:wght@600&family=Baloo+2:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
@@ -169,58 +169,45 @@
   cursor: url('https://img.icons8.com/color/28/test-tube.png'), pointer !important;
 }
 
-/* --- CUSTOM FONTS FOR DASHBOARD ELEMENTS --- */
+/* --- THE ULTIMATE STATUS BAR OVERRIDE --- */
 
-/* 1. Capybara Science Logo (Top Left) set to Fredoka SemiBold 600 */
+/* Targets the right side of the header where stats live */
+header div.flex.items-center.gap-4.ml-auto {
+  gap: 2rem !important; 
+}
+
+/* Forces EVERYTHING in that container (text, spans, p tags) to be big */
+header div.flex.items-center.gap-4.ml-auto * {
+  font-family: 'Baloo 2', cursive !important;
+  font-size: 1.25rem !important; /* Extremely clear size */
+  font-weight: 600 !important;
+  color: #f4f4f5 !important;
+}
+
+/* Forces Icons (SVG/Images) to be much bigger */
+header div.flex.items-center.gap-4.ml-auto svg,
+header div.flex.items-center.gap-4.ml-auto img {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  stroke-width: 2.5px !important; /* Thickens SVG lines */
+}
+
+/* Fixes the "Capybara Science" Logo Font specifically */
 header .flex.items-center.gap-2 span, 
 header h1, 
 .logo-text {
   font-family: 'Fredoka', sans-serif !important;
-  font-weight: 600 !important; 
-  letter-spacing: 0.5px;
+  font-weight: 600 !important;
+  font-size: 1.4rem !important;
 }
 
-/* 2. Dropdown Supplier Menu */
+/* Dropdown Menu styling */
 .capybara-dropdown, 
 select, 
 button.inline-flex.items-center.gap-2.px-3 {
   font-family: 'Baloo 2', cursive !important;
   font-weight: 600;
-}
-
-/* 3. Date, Time, and Battery Percentage (Top Right) - FORCED SCALING */
-
-/* Spread items out so they don't overlap */
-header .flex.items-center.gap-4.ml-auto {
-  gap: 1.75rem !important; 
-}
-
-/* Increase Text Size and Weight */
-header .flex.items-center.gap-4.ml-auto span,
-header .text-xs.font-medium,
-.battery-text,
-.time-text {
-  font-family: 'Baloo 2', cursive !important;
-  font-weight: 600 !important; 
-  font-size: 1.2rem !important; /* Larger for better visibility */
-  line-height: 1 !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-}
-
-/* Increase Icon Size */
-header .flex.items-center.gap-4.ml-auto svg,
-header .flex.items-center.gap-4.ml-auto img,
-header .flex.items-center.gap-4.ml-auto i {
-  width: 26px !important;  /* Bigger target size */
-  height: 26px !important;
-  min-width: 26px !important;
-  min-height: 26px !important;
-  flex-shrink: 0 !important;
-}
-
-/* Thicken icon lines for balance */
-header .flex.items-center.gap-4.ml-auto svg * {
-  stroke-width: 2.5px !important;
+  font-size: 1rem !important;
 }
