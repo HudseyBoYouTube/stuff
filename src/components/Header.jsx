@@ -61,18 +61,19 @@ export function Header({
                   setSupplier(e.target.value);
                   localStorage.setItem('capy-supplier', e.target.value);
                 }}
-                className={`text-[10px] font-bold uppercase py-2 pl-3 pr-8 rounded-lg border transition-all outline-none cursor-pointer appearance-none ${
+                className={`text-xs font-bold uppercase py-2.5 pl-4 pr-10 rounded-xl border transition-all outline-none cursor-pointer appearance-none ${
                   isLightMode 
                     ? 'bg-black/5 border-black/10 text-black' 
                     : 'bg-white/5 border-white/10 text-white'
                 } focus:border-[var(--theme)]`}
+                style={{ fontFamily: "'Baloo 2', cursive" }}
               >
                 <option value="Default" className="bg-[#09090b] text-white">Capybara Science</option>
                 <option value="GN Math" className="bg-[#09090b] text-white">gn-math</option>
                 <option value="Truffled" className="bg-[#09090b] text-white">Truffled</option>
               </select>
-              <div className="absolute right-2 pointer-events-none flex items-center justify-center">
-                <span style={{ fontSize: '8px', color: 'var(--theme)', opacity: 0.8 }}>▼</span>
+              <div className="absolute right-3 pointer-events-none flex items-center justify-center">
+                <span style={{ fontSize: '10px', color: 'var(--theme)', opacity: 0.9 }}>▼</span>
               </div>
             </div>
 
@@ -90,7 +91,7 @@ export function Header({
           </div>
         </div>
 
-        {/* STATS & PROFILE SECTION - RIGHT COLUMN (REFINED FOR BALOO 2) */}
+        {/* STATS & PROFILE SECTION - RIGHT COLUMN */}
         <div className="flex items-center justify-end gap-4 justify-self-end">
           <div 
             className={`hidden sm:flex items-center gap-5 text-sm font-bold uppercase text-[var(--theme)] ${isLightMode ? 'bg-black/5 border-black/5' : 'bg-white/5 border-white/5'} px-5 py-2 rounded-full border`}
