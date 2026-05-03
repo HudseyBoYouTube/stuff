@@ -1,32 +1,13 @@
 <!DOCTYPE html>
-<html xmlns='http://www.w3.org/1999/xhtml' lang='' xml:lang=''>
+<html lang='en'>
 <head>
-	<meta http-equiv="origin-trial" content="Agx/ZZBZv7jLhqLGycrhKcIfxkgDXQdr2hFJP47tVXsUzAzrrqeBQoLZvNNdEhP4C2CLo5DJTuLa4MrgzAsUdw8AAAB4eyJvcmlnaW4iOiJodHRwczovL3dpbnRlcnBpeGVsLmlvOjQ0MyIsImZlYXR1cmUiOiJVbnJlc3RyaWN0ZWRTaGFyZWRBcnJheUJ1ZmZlciIsImV4cGlyeSI6MTc2OTQ3MjAwMCwiaXNTdWJkb21haW4iOnRydWV9" />
 	<meta charset='utf-8' />
-	<meta name='viewport' content='width=device-width, user-scalable=no' />
-	<link id='-gd-engine-icon' rel='icon' type='image/png' href='https://img.icons8.com/color/32/capybara.png' />	
-        <link rel="preconnect" href="https://fonts.googleapis.com">
+	<meta name='viewport' content='width=device-width, initial-scale=1' />
+	<link rel='icon' type='image/png' href='https://img.icons8.com/color/32/capybara.png' />	
+	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&display=swap" rel="stylesheet">
 	<title>Capybara Science</title>
-	<!-- <script src="https://sdk.crazygames.com/crazygames-sdk-v1.js"></script> -->
-
-	<script type='text/javascript'>
-		function getAdDriver() {
-			var adDriver = "adinplay"; 
-			var referrer = document.referrer.toLowerCase();
-			if(referrer.indexOf("crazygames") != -1 || referrer.indexOf("onlinegame") != -1 || referrer.indexOf("speelspelletjes") != -1 || referrer.indexOf("1001juegos") != -1) {
-				adDriver = "crazygames";
-			}
-			else if(referrer.indexOf("poki") != -1 || referrer.indexOf("po.ki") != -1) {
-				adDriver = "poki";
-			}
-			return adDriver;  //return "crazygames";
-		};
-		function getReferrer() {
-			return document.referrer.toLowerCase();
-		};
-	</script>
 	
 	<!-- Google tag (gtag.js) -->
 	<script async src="https://www.googletagmanager.com/gtag/js?id=G-2NQ6SJKW25"></script>
@@ -34,120 +15,60 @@
 	window.dataLayer = window.dataLayer || [];
 	function gtag(){dataLayer.push(arguments);}
 	gtag('js', new Date());
-
 	gtag('config', 'G-2NQ6SJKW25');
 	</script>
 
-	<script type="text/javascript" src="winterpixelads.js"></script>
-	<script type="text/javascript" src="winterpixel_discord.js"></script>
-	<script type="text/javascript" src="screenfull.js"></script>
-	<script src="/paystation.js"></script>
 	<style type='text/css'>
-
-		:root {
-			--sait: var(--discord-safe-area-inset-top, env(safe-area-inset-top));
-			--saib: var(--discord-safe-area-inset-bottom, env(safe-area-inset-bottom));
-			--sail: var(--discord-safe-area-inset-left, env(safe-area-inset-left));
-			--sair: var(--discord-safe-area-inset-right, env(safe-area-inset-right));
-		}
 		body {
-			touch-action: none;
-			margin: 0;
-			border: 0 none;
-			padding: 0;
-			text-align: center;
-			background-color: #000a15;
+			background-color: #f0f8ff;
 			font-family: 'Baloo 2', cursive;
-		}
-
-		#canvas {
-			display: block;
-			margin: 0;
-			color: white;
-		}
-
-		#canvas:focus {
-			outline: none;
-		}
-
-		.godot {
-			font-family: 'Baloo 2', 'Noto Sans', 'Droid Sans', Arial, sans-serif;
-			color: #e0e0e0;
-			font-size: 24pt;
-		}
-
-
-		/* Status display
-		 * ============== */
-
-		 #status {
-			position: absolute;
-			left: 0;
-			top: 0;
-			right: 0;
-			bottom: 0;
 			display: flex;
-			justify-content: center;
+			flex-direction: column;
 			align-items: center;
-			/* don't consume click events - make children visible explicitly */
-			visibility: hidden;
+			justify-content: center;
+			height: 100vh;
+			margin: 0;
+			color: #333;
+			text-align: center;
 		}
-
-		#status-progress {
-			width: 366px;
-			height: 42px;
-			background-color: #000000;
-			border: 6px solid #111111;
-			padding: 0px;
-			border-radius: 8px;
-			border-color: #050505;
-			visibility: visible;
-			margin: 0px auto;
+		.container {
+			background: white;
+			padding: 2.5rem;
+			border-radius: 30px;
+			box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+			max-width: 80%;
 		}
-
-		@media only screen and (orientation:portrait) {
-			#status-progress {
-				width: 61.8%;
-			}
+		h1 {
+			color: #2a9d8f;
+			font-size: 3.5rem;
+			margin-bottom: 5px;
 		}
-
-		#status-progress-inner {
-			height: 100%;
-			width: 0;
-			box-sizing: border-box;
-			transition: width 0.5s linear;
-			background-color: #38363A;
-			background-image: linear-gradient(to bottom, #2DFDA6, #00BA60);
-			border-radius: 3px;
+		img.logo {
+			width: 120px;
+			height: 120px;
+			margin: 20px 0;
 		}
-
-		#status-indeterminate {
-			visibility: visible;
-			position: relative;
-			width: 1px;
-			height: 42px;
-			margin: 0px auto;
+		p {
+			font-size: 1.4rem;
+			color: #555;
 		}
-
-		#status-indeterminate > div {
-			width: 4.5px;
-			height: 0;
-			border-style: solid;
-			border-width: 9px 3px 0 3px;
-			border-color: #2b2b2b transparent transparent transparent;
-			transform-origin: center 21px;
-			position: absolute;
+		.footer-text {
+			font-size: 0.9rem;
+			margin-top: 20px;
+			color: #888;
 		}
-
-		#status-indeterminate > div:nth-child(1) { transform: rotate( 22.5deg); }
-		#status-indeterminate > div:nth-child(2) { transform: rotate( 67.5deg); }
-		#status-indeterminate > div:nth-child(3) { transform: rotate(112.5deg); }
-		#status-indeterminate > div:nth-child(4) { transform: rotate(157.5deg); }
-		#status-indeterminate > div:nth-child(5) { transform: rotate(202.5deg); }
-		#status-indeterminate > div:nth-child(6) { transform: rotate(247.5deg); }
-		#status-indeterminate > div:nth-child(7) { transform: rotate(292.5deg); }
-		#status-indeterminate > div:nth-child(8) { transform: rotate(337.5deg); }
-
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>Capybara Science</h1>
+		<img src="https://img.icons8.com/color/32/capybara.png" alt="Capybara Icon" class="logo">
+		<p>Welcome back! The site is currently being rebuilt.</p>
+		<p>Check back soon for more gaming and science updates!</p>
+		<div class="footer-text">Powered by Capybara Science</div>
+	</div>
+</body>
+</html>
 		#status-notice {
 			margin: 0 100px;
 			line-height: 1.3;
