@@ -1,4 +1,4 @@
-/* Final "Right-Side Only" Scale index.css */
+/* Updated Force-Scale index.css */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Fredoka:wght@600&family=Baloo+2:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
@@ -169,34 +169,38 @@
   cursor: url('https://img.icons8.com/color/28/test-tube.png'), pointer !important;
 }
 
-/* --- TARGETED STATUS BAR (TOP RIGHT) --- */
+/* --- THE "NUCLEAR" OVERRIDE FOR STATUS BAR (TOP RIGHT) --- */
 
-/* 1. Spread out the Date, Time, and Battery */
+/* This targets the right-aligned container and scales everything inside it */
+header div[class*="ml-auto"], 
 header .flex.items-center.gap-4.ml-auto {
-  gap: 1.75rem !important; 
+  gap: 2rem !important; 
 }
 
-/* 2. Force the Font and Size on the Text */
-header .flex.items-center.gap-4.ml-auto span,
-header .flex.items-center.gap-4.ml-auto p,
-header .flex.items-center.gap-4.ml-auto div {
+/* Force Font Size on all text/numbers in the right corner */
+header div[class*="ml-auto"] span,
+header div[class*="ml-auto"] p,
+header div[class*="ml-auto"] div {
   font-family: 'Baloo 2', cursive !important;
-  font-size: 1.25rem !important; 
-  font-weight: 600 !important;
+  font-size: 1.3rem !important; /* Bumped up even more */
+  font-weight: 700 !important;
   line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
 }
 
-/* 3. Force the Icons to scale up */
-header .flex.items-center.gap-4.ml-auto svg,
-header .flex.items-center.gap-4.ml-auto img {
-  width: 26px !important;
-  height: 26px !important;
-  min-width: 26px !important;
-  min-height: 26px !important;
-  stroke-width: 2.5px !important;
+/* Force Icon Scaling (SVG and Images) */
+header div[class*="ml-auto"] svg,
+header div[class*="ml-auto"] img,
+header div[class*="ml-auto"] .lucide {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  stroke-width: 2.5px !important; /* Make icon lines thicker */
 }
 
-/* Keep the Logo (Top Left) clean */
+/* Ensure the Logo (Top Left) stays Fredoka 600 */
 header .flex.items-center.gap-2 span, 
 header h1, 
 .logo-text {
