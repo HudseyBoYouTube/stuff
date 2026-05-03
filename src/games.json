@@ -406,17 +406,10 @@
     "category": "Skill"
   },
   {
-    "id": "minecraft-1.8-(fake)",
-    "title": "Minecraft 1.8 (fake)",
-    "url": "/stores/games/minecraft-1.8.html",
-    "thumbnail": "https://assets-prd.ignimgs.com/2021/12/14/minecraft-1639513933156.jpg?crop=1%3A1%2Csmart&format=jpg&auto=webp&quality=80",
-    "category": "Creative"
-  },
-  {
-    "id": "minecraft-1.12-(fake)",
-    "title": "Minecraft 1.12 (fake)",
+    "id": "minecraft-1.8-(fake&chooseversion)",
+    "title": "Minecraft 1.8 (fake & choose version)",
     "url": "https://denisonisd.org/stuff/selfhosted/minecraft/",
-    "thumbnail": "https://imgcdn.latestmodapks.com/api/resize?url=https://www.latestmodapks.com/wp-content/uploads/2022/04/images-2021-10-25T132519.475.jpg&width=160",
+    "thumbnail": "https://assets-prd.ignimgs.com/2021/12/14/minecraft-1639513933156.jpg?crop=1%3A1%2Csmart&format=jpg&auto=webp&quality=80",
     "category": "Creative"
   },
   {
